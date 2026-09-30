@@ -5,91 +5,235 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Listening History | Suhani Tiwari</title>
     <meta name="description" content="Four years of my Spotify listening, run through an ETL pipeline into a PostgreSQL star schema and explored with SQL.">
+    <meta name="author" content="Suhani Tiwari">
+    <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238A4D57'/><circle cx='50' cy='50' r='14' fill='%23FAF1EF'/></svg>">
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-<main class="page">
 
+<nav class="topnav" aria-label="Sections">
+    <div class="topnav-in">
+        <a class="brand" href="#top">Listening History</a>
+        <div class="topnav-links">
+            <a href="#about">About</a>
+            <a href="#data">The data</a>
+            <a href="#watch">Watch</a>
+            <a href="#play">Play</a>
+            <a href="#method">How it works</a>
+            <a class="topnav-cta" href="#your-turn">Your turn</a>
+        </div>
+    </div>
+</nav>
+
+<main class="page" id="top">
+
+    <!-- HELLO -->
     <header class="hero">
-        <p class="eyebrow">A data project by <a href="https://suhanitiwari.com">Suhani Tiwari</a></p>
-        <h1>Four years of my listening, in data.</h1>
-        <p class="lede">Spotify let me download every song I've played since May 2022. I ran all 182,293 records through an ETL pipeline into a PostgreSQL star schema, then asked it questions in SQL. This is what it said.</p>
+        <div class="hero-text">
+            <p class="eyebrow">A data project by <a href="https://suhanitiwari.com">Suhani Tiwari</a></p>
+            <h1>Four years of my listening, in data.</h1>
+            <p class="lede">Spotify let me download every song I've played since May 2022. I cleaned it, modeled it into a real database and asked it questions in SQL. This is what it said about me.</p>
+            <div class="hero-actions">
+                <a class="pill solid" href="#play">Test how well you know me</a>
+                <a class="pill" href="#method">See how it's built</a>
+            </div>
+        </div>
+        <figure class="hero-photo">
+            <img src="/static/suhani.jpg" width="1100" height="619" alt="Suhani sitting at a café table among flowers and an olive tree">
+            <figcaption class="now-playing">
+                <button type="button" class="play" id="heroPlay" aria-label="Play my most-played song"></button>
+                <span><small>My most-played song</small><b id="heroSong">Loading…</b></span>
+            </figcaption>
+        </figure>
         <dl class="stats" id="stats"></dl>
     </header>
 
-    <section class="block" aria-labelledby="t-time">
-        <p class="eyebrow">Scrub through time</p>
-        <h2 id="t-time">Who owned each month</h2>
-        <p class="sub">Drag through every month since May 2022. Each bar is how many hours I listened; the dark ones were Ariana months.</p>
-        <div class="bars" id="bars" aria-hidden="true"></div>
-        <input type="range" id="monthSlider" class="slider" min="0" max="0" value="0" aria-label="Month">
-        <article class="month-card" id="monthCard" aria-live="polite"></article>
-        <button type="button" class="pill" id="openMonth">See this month's top five</button>
-        <ol class="song-list" id="monthSongs" hidden></ol>
-    </section>
-
-    <section class="block split" aria-labelledby="t-clock">
+    <!-- ABOUT ME -->
+    <section class="block about split two" id="about" aria-labelledby="t-about">
         <div>
-            <p class="eyebrow">My listening clock</p>
-            <h2 id="t-clock">When I listen, year by year</h2>
-            <p class="sub">Each spoke is one hour of the day, sized by its share of that year's listening.</p>
-            <div class="chips" id="yearChips" role="group" aria-label="Year"></div>
-            <p class="callout" id="clockNote"></p>
-        </div>
-        <svg class="clock" id="clock" viewBox="-160 -160 320 320" role="img" aria-label="Listening by hour of day"></svg>
-    </section>
-
-    <section class="block" aria-labelledby="t-streak">
-        <p class="eyebrow">Streak race</p>
-        <h2 id="t-streak">Most days in a row with one song</h2>
-        <p class="sub">Found with the gaps and islands pattern in SQL: on consecutive days, the date minus a row number stays the same.</p>
-        <ol class="race" id="race"></ol>
-    </section>
-
-    <section class="block" aria-labelledby="t-years">
-        <p class="eyebrow">Year in review</p>
-        <h2 id="t-years">Every year in one card</h2>
-        <div class="years" id="years"></div>
-    </section>
-
-    <section class="block split two" aria-labelledby="t-obs">
-        <div>
-            <p class="eyebrow">First listen to obsession</p>
-            <h2 id="t-obs">Fastest to 25 listens</h2>
-            <ol class="song-list" id="obsessions"></ol>
+            <p class="eyebrow">About me</p>
+            <h2 id="t-about">Hi, I'm Suhani.</h2>
+            <p class="about-p">I study Management Information Systems at the McCombs School of Business at UT Austin, with a side of psychology, marketing and product strategy. I'm fascinated by why people choose what they choose, and it turns out my own music is a pretty good case study.</p>
+            <p class="about-p">Wrapped gives me one year at a time. I wanted all four at once, so I treated my Spotify export like a real company's data: clean it, model it, load it into a database and ask it questions nobody had asked yet.</p>
+            <p class="about-links"><a href="https://suhanitiwari.com">My portfolio ↗</a> <a href="https://www.linkedin.com/in/suhxnitiwari/">LinkedIn ↗</a></p>
         </div>
         <div>
-            <p class="eyebrow">Skip rate</p>
-            <h2>Who I start and don't finish</h2>
-            <div class="chips" role="group" aria-label="Skip list">
-                <button type="button" class="chip" data-skip="most" aria-pressed="true">Most skipped</button>
-                <button type="button" class="chip" data-skip="least" aria-pressed="false">Least skipped</button>
+            <p class="eyebrow">Get to know me through my data</p>
+            <div class="flips" id="flips">
+                <button type="button" class="flip" aria-pressed="false"><span class="flip-front">Who's my #1 artist?</span><span class="flip-back" data-fact="artist">…</span></button>
+                <button type="button" class="flip" aria-pressed="false"><span class="flip-front">What time of day do I listen most?</span><span class="flip-back" data-fact="hour">…</span></button>
+                <button type="button" class="flip" aria-pressed="false"><span class="flip-front">How many different artists?</span><span class="flip-back" data-fact="artists">…</span></button>
+                <button type="button" class="flip" aria-pressed="false"><span class="flip-front">My longest streak with one song?</span><span class="flip-back" data-fact="streak">…</span></button>
             </div>
-            <ol class="skip-list" id="skips"></ol>
+            <p class="hint">Tap a card to flip it.</p>
         </div>
     </section>
 
-    <section class="block" aria-labelledby="t-game">
-        <p class="eyebrow">Guess the stat</p>
-        <h2 id="t-game">How well do you know my listening?</h2>
-        <div class="game" id="game"></div>
+    <!-- THE DATA -->
+    <div id="data">
+        <section class="block" aria-labelledby="t-time">
+            <p class="eyebrow">Scrub through time</p>
+            <h2 id="t-time">Who owned each month</h2>
+            <p class="sub">Drag through every month since May 2022. Each bar is how many hours I listened; the dark ones were Ariana months.</p>
+            <div class="bars" id="bars" aria-hidden="true"></div>
+            <input type="range" id="monthSlider" class="slider" min="0" max="0" value="0" aria-label="Month">
+            <article class="month-card" id="monthCard" aria-live="polite"></article>
+            <button type="button" class="pill" id="openMonth">See this month's top five</button>
+            <ol class="song-list" id="monthSongs" hidden></ol>
+        </section>
+
+        <section class="block split" aria-labelledby="t-clock">
+            <div>
+                <p class="eyebrow">My listening clock</p>
+                <h2 id="t-clock">When I listen, year by year</h2>
+                <p class="sub">Each spoke is one hour of the day, sized by its share of that year's listening.</p>
+                <div class="chips" id="yearChips" role="group" aria-label="Year"></div>
+                <p class="callout" id="clockNote"></p>
+            </div>
+            <svg class="clock" id="clock" viewBox="-160 -160 320 320" role="img" aria-label="Listening by hour of day"></svg>
+        </section>
+
+        <section class="block" aria-labelledby="t-streak">
+            <p class="eyebrow">Streak race</p>
+            <h2 id="t-streak">Most days in a row with one song</h2>
+            <p class="sub">Found with the gaps and islands pattern in SQL: on consecutive days, the date minus a row number stays the same.</p>
+            <ol class="race" id="race"></ol>
+        </section>
+
+        <section class="block" aria-labelledby="t-years">
+            <p class="eyebrow">Year in review</p>
+            <h2 id="t-years">Every year in one card</h2>
+            <div class="years" id="years"></div>
+        </section>
+
+        <section class="block split two" aria-labelledby="t-obs">
+            <div>
+                <p class="eyebrow">First listen to obsession</p>
+                <h2 id="t-obs">Fastest to 25 listens</h2>
+                <ol class="song-list" id="obsessions"></ol>
+            </div>
+            <div>
+                <p class="eyebrow">Skip rate</p>
+                <h2>Who I start and don't finish</h2>
+                <div class="chips" role="group" aria-label="Skip list">
+                    <button type="button" class="chip" data-skip="most" aria-pressed="true">Most skipped</button>
+                    <button type="button" class="chip" data-skip="least" aria-pressed="false">Least skipped</button>
+                </div>
+                <ol class="skip-list" id="skips"></ol>
+            </div>
+        </section>
+    </div>
+
+    <!-- WATCH -->
+    <section class="block" id="watch" aria-labelledby="t-watch">
+        <p class="eyebrow">Watch</p>
+        <h2 id="t-watch">My most-played songs, as music videos</h2>
+        <p class="sub">Thirty-second previews from the iTunes Search API, matched to my top songs by artist and title.</p>
+        <div class="watch">
+            <div class="screen">
+                <video id="screen" playsinline controls preload="none"></video>
+                <p class="screen-cap" id="screenCap"></p>
+            </div>
+            <ol class="reel" id="reel"></ol>
+        </div>
     </section>
 
-    <section class="block how" aria-labelledby="t-how">
-        <p class="eyebrow">How it's built</p>
+    <!-- PLAY -->
+    <section class="block" id="play" aria-labelledby="t-game">
+        <p class="eyebrow">Play</p>
+        <h2 id="t-game">How well do you know my listening?</h2>
+        <div class="chips" role="tablist" aria-label="Games">
+            <button type="button" class="chip" role="tab" data-game="more" aria-pressed="true">Which did I play more?</button>
+            <button type="button" class="chip" role="tab" data-game="stat" aria-pressed="false">Guess the stat</button>
+        </div>
+        <div class="game" id="more"></div>
+        <div class="game" id="game" hidden></div>
+    </section>
+
+    <!-- METHOD -->
+    <section class="block" id="method" aria-labelledby="t-how">
+        <p class="eyebrow">How it works</p>
         <h2 id="t-how">From a zip file to this page</h2>
-        <ol class="steps">
-            <li><b>Extract</b><span>Python reads every file in Spotify's export.</span></li>
-            <li><b>Transform</b><span>Songs only, Austin time, duplicates merged, overnight loops removed, and my IP address and location dropped.</span></li>
-            <li><b>Load</b><span>A star schema in PostgreSQL on Neon: one fact table of plays, five dimensions.</span></li>
-            <li><b>Ask</b><span>SQL views with window functions, CTEs and gaps and islands.</span></li>
-            <li><b>Serve</b><span>A FastAPI server, one endpoint per question, with song previews from the iTunes Search API.</span></li>
-        </ol>
-        <p class="links"><a class="pill solid" href="/api/docs">Explore the API</a> <a class="pill" href="https://suhanitiwari.com">Back to my portfolio</a></p>
+        <p class="sub">Tap each step to see what it does and the real code behind it.</p>
+        <div class="steps" role="tablist" aria-label="Pipeline steps" id="steps">
+            <button type="button" role="tab" aria-selected="true" data-step="0"><b>Extract</b><span>Read the export</span></button>
+            <button type="button" role="tab" aria-selected="false" data-step="1"><b>Transform</b><span>Clean every play</span></button>
+            <button type="button" role="tab" aria-selected="false" data-step="2"><b>Load</b><span>Into PostgreSQL</span></button>
+            <button type="button" role="tab" aria-selected="false" data-step="3"><b>Ask</b><span>SQL views</span></button>
+            <button type="button" role="tab" aria-selected="false" data-step="4"><b>Serve</b><span>API and this page</span></button>
+        </div>
+        <div class="step-panel" id="stepPanel" role="tabpanel" aria-live="polite"></div>
+
+        <div class="schema-wrap">
+            <div>
+                <p class="eyebrow">The data model</p>
+                <h3 class="h3">A star schema</h3>
+                <p class="sub">One fact table of plays in the middle, the things a play is about around it. Tap a table to open it.</p>
+                <div class="table-detail" id="tableDetail" aria-live="polite"></div>
+            </div>
+            <div class="schema" id="schema">
+                <svg class="schema-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <line x1="50" y1="50" x2="16" y2="14"/><line x1="50" y1="50" x2="84" y2="14"/>
+                    <line x1="50" y1="50" x2="16" y2="86"/><line x1="50" y1="50" x2="84" y2="86"/><line x1="50" y1="50" x2="50" y2="8"/>
+                </svg>
+                <button type="button" class="tbl" style="left:16%;top:14%" data-t="dim_artist">dim_artist</button>
+                <button type="button" class="tbl" style="left:50%;top:8%" data-t="dim_album">dim_album</button>
+                <button type="button" class="tbl" style="left:84%;top:14%" data-t="dim_track">dim_track</button>
+                <button type="button" class="tbl fact" style="left:50%;top:50%" data-t="fact_play" aria-pressed="true">fact_play</button>
+                <button type="button" class="tbl" style="left:16%;top:86%" data-t="dim_date">dim_date</button>
+                <button type="button" class="tbl" style="left:84%;top:86%" data-t="dim_session">dim_session</button>
+            </div>
+        </div>
+
+        <div class="privacy">
+            <p class="eyebrow">What I left out on purpose</p>
+            <p>Spotify's export includes my IP address, the country I was in and the device I used. The pipeline drops all of it, skips private sessions, and the raw files never touch GitHub. The website reads the database with a read-only login, so even this page can't change a row.</p>
+        </div>
+        <ul class="stack" aria-label="Built with">
+            <li>Python</li><li>PostgreSQL on Neon</li><li>Star schema</li><li>Window functions</li><li>CTEs</li><li>FastAPI</li><li>REST API</li><li>iTunes Search API</li><li>Deployed on Render</li>
+        </ul>
+    </section>
+
+    <!-- YOUR TURN -->
+    <section class="block" id="your-turn" aria-labelledby="t-turn">
+        <p class="eyebrow">Your turn</p>
+        <h2 id="t-turn">Do I listen to your favorite artist?</h2>
+        <form class="search" id="artistForm" autocomplete="off">
+            <input type="text" id="artistInput" list="artistNames" placeholder="Type an artist, like Taylor Swift" aria-label="Artist name" minlength="2" maxlength="80" required>
+            <datalist id="artistNames"></datalist>
+            <button type="submit" class="pill solid">Look it up</button>
+        </form>
+        <div class="artist-card" id="artistCard" aria-live="polite" hidden></div>
+
+        <div class="cta">
+            <div class="cta-card">
+                <p class="eyebrow">Get your own data</p>
+                <h3 class="h3">Spotify will send you yours, too.</h3>
+                <ol class="cta-steps">
+                    <li>Open your Spotify account's <b>Privacy</b> page.</li>
+                    <li>Check <b>Extended streaming history</b> and request it.</li>
+                    <li>Confirm the email. It can take up to 30 days to arrive.</li>
+                </ol>
+                <a class="pill solid" href="https://www.spotify.com/account/privacy/" target="_blank" rel="noopener">Request my Spotify data ↗</a>
+            </div>
+            <div class="cta-card dark">
+                <p class="eyebrow">Like how I think about data?</p>
+                <h3 class="h3">Let's talk.</h3>
+                <p>I'm an MIS student at UT Austin who likes turning messy data into something people can actually use. I'd love to hear what you're building.</p>
+                <div class="links">
+                    <a class="pill solid" href="https://www.linkedin.com/in/suhxnitiwari/" target="_blank" rel="noopener">Connect on LinkedIn ↗</a>
+                    <a class="pill" href="https://suhanitiwari.com">See my portfolio ↗</a>
+                    <a class="pill" href="https://github.com/suhxnitiwari/listening-history" target="_blank" rel="noopener">View the code ↗</a>
+                </div>
+            </div>
+        </div>
     </section>
 
 </main>
+<footer class="foot">
+    <p>© 2026 Suhani Tiwari. All rights reserved. <a href="/api/docs">Explore the API</a></p>
+</footer>
 <audio id="player" preload="none"></audio>
 <script src="/static/app.js"></script>
 </body>

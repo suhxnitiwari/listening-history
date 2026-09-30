@@ -147,13 +147,17 @@ My real export never goes in this repo. It includes an IP address and country fo
 
 ## The app
 
-`app/` is a small FastAPI server with one endpoint per question and an interactive page on top:
+`app/` is a small FastAPI server with one endpoint per question and a full website on top:
 
+- **Hello and about me:** who I am, why I built this, and flip cards that answer questions about me from the data
 - **Scrub through time:** drag through every month to see who owned it, then open its top five
 - **Listening clock:** a 24-hour dial that reshapes for each year
 - **Streak race:** the longest daily streaks, animated
 - **Year in review:** one card per year, with the song of the year
-- **Guess the stat:** a four-question game built from the real numbers
+- **Watch:** music video previews of my most-played songs (iTunes Search API)
+- **Play:** "Which did I play more?" and "Guess the stat," two games built from the real numbers
+- **How it works:** tap through the pipeline with the real code behind each step, and open each table of the star schema
+- **Your turn:** type any artist to see whether I listen to them, where they rank and my most-played song of theirs
 - **Song previews:** 30-second clips from the iTunes Search API, matched by artist and title
 
 The app connects as a **read-only database user** (`listening_reader`): it can read every table and view and change nothing, so even a bug in the app can't alter the data. Answers are cached in memory, since the history only changes when the pipeline reloads it. The API documents itself at `/api/docs`.
