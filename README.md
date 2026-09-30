@@ -154,7 +154,7 @@ My real export never goes in this repo. It includes an IP address and country fo
 - **Guess the stat:** a four-question game built from the real numbers
 - **Song previews:** 30-second clips from the iTunes Search API, matched by artist and title
 
-Answers are cached in memory, since the history only changes when the pipeline reloads it. The API documents itself at `/api/docs`.
+The app connects as a **read-only database user** (`listening_reader`): it can read every table and view and change nothing, so even a bug in the app can't alter the data. Answers are cached in memory, since the history only changes when the pipeline reloads it. The API documents itself at `/api/docs`.
 
 ```bash
 pip install -r requirements.txt

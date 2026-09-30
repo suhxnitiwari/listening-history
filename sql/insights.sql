@@ -119,3 +119,14 @@ SELECT full_date, track_name, artist_name, COUNT(*) AS listens
 FROM v_listen
 GROUP BY full_date, track_key, track_name, artist_name
 HAVING COUNT(*) >= 20;
+
+
+-- The web app connects as a read-only user: it can read every table and view, and change nothing.
+-- Re-granted on every load, since the pipeline rebuilds the tables.
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'listening_reader') THEN
+        GRANT USAGE ON SCHEMA public TO listening_reader;
+        GRANT SELECT ON ALL TABLES IN SCHEMA public TO listening_reader;
+    END IF;
+END $$;
