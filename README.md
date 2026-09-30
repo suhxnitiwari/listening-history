@@ -13,7 +13,7 @@ Built by [Suhani Tiwari](https://suhanitiwari.com), MIS at McCombs, UT Austin.
 | Step | What happens |
 |---|---|
 | **Extract** | Reads every `Streaming_History_Audio_*.json` straight out of Spotify's zip |
-| **Transform** | Keeps songs only (no podcasts), drops private-session plays, removes the fields that aren't mine to publish (IP address, country, device), converts times to Austin time, removes duplicate records, merges the different IDs Spotify gives one song (single, album, deluxe), and groups plays into listening sessions |
+| **Transform** | Keeps songs only (no podcasts), drops private-session plays, removes the fields that aren't mine to publish (IP address, country, device), converts times to Austin time, removes duplicate records and known overnight loops (a song left on repeat while I slept), merges the different IDs Spotify gives one song (single, album, deluxe), and groups plays into listening sessions |
 | **Load** | Runs integrity checks, writes one CSV per table, and bulk-loads them into PostgreSQL with `COPY` |
 
 On my real export it processes all 182,293 records in about two seconds:
@@ -113,7 +113,7 @@ The full DDL is in [`sql/schema.sql`](sql/schema.sql).
 A few answers from my own data:
 
 - **Longest streak:** "intro (end of the world)" by Ariana Grande, every day for 21 days (April 1 to 21, 2024)
-- **Most in one day:** "Party In The U.S.A.", 145 times on March 21, 2023
+- **Most in one day:** "Until I Found You", 119 times on January 9, 2023
 - **Biggest year:** 2023, with 1,639 hours of listening
 - **Peak hour:** 5 PM in 2022 and 2023, 7 PM in 2024
 

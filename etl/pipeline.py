@@ -27,6 +27,13 @@ from zoneinfo import ZoneInfo
 AUSTIN = ZoneInfo("America/Chicago")
 COUNTED_MS = 30_000                     # Spotify counts a stream at 30 seconds
 SESSION_GAP = timedelta(minutes=30)     # a break longer than this starts a new session
+# Known bad data, removed on purpose. Each entry: (Austin date, song title, why).
+# March 21, 2023: "Party In The U.S.A." looped on its own overnight (145 plays, 12:41 to 10:32 AM,
+# 144 of them started only because the last one ended). I was asleep, not obsessed.
+UNATTENDED_LOOPS = [
+    (date(2023, 3, 21), "Party In The U.S.A.", "left on repeat overnight"),
+]
+
 SEASONS = {12: "Winter", 1: "Winter", 2: "Winter", 3: "Spring", 4: "Spring", 5: "Spring",
            6: "Summer", 7: "Summer", 8: "Summer", 9: "Fall", 10: "Fall", 11: "Fall"}
 
@@ -87,6 +94,9 @@ def to_plays(records: list) -> list:
             reason_start=r.get("reason_start") or "",
             reason_end=r.get("reason_end") or "",
         ))
+    # drop the known overnight loops (see UNATTENDED_LOOPS)
+    loops = {(d, clean_key(title)) for d, title, _ in UNATTENDED_LOOPS}
+    plays = [p for p in plays if (p.played_at.date(), clean_key(p.track_name)) not in loops]
     # the same play can appear twice across export files; keep one
     unique = {(p.played_at, p.uri, p.ms_played): p for p in plays}
     return sorted(unique.values(), key=lambda p: p.played_at)
