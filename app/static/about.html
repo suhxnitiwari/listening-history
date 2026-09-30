@@ -18,7 +18,7 @@
     <meta name="twitter:image" content="https://listening-history.onrender.com/static/share-card.jpg">
     <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23D65478'/><circle cx='50' cy='50' r='14' fill='%2322090F'/></svg>">
-    <link rel="stylesheet" href="/static/styles.css?v=23">
+    <link rel="stylesheet" href="/static/styles.css?v=26">
 </head>
 <body>
 
@@ -39,7 +39,7 @@
 <main class="page" id="top">
 
     <section class="about-hero" aria-labelledby="t-hi">
-        <figure style="margin:0"><img src="/static/suhani-notes.jpg" width="800" height="1000" alt="Suhani in headphones, writing notes by hand between two laptops"></figure>
+        <figure style="margin:0"><img src="/static/suhani-notes.jpg?v=2" width="800" height="1000" alt="Suhani in headphones, writing notes by hand between two laptops"></figure>
         <div>
             <p class="eyebrow">About me</p>
             <h1 id="t-hi">Hi, I'm Suhani.</h1>
@@ -70,32 +70,22 @@
 
 
 </main>
-<footer class="site-foot">
-    <div class="site-foot-in">
-        <div class="foot-lead">
-            <p class="foot-title">Still here?<br>You must like my taste.</p>
-            <p class="foot-sub">Or you're nosy. Either way, say hi.</p>
-            <a class="pill foot-report" href="/report.pdf" download>Download my 4-year report (PDF) ↓</a>
+<footer class="player-foot" aria-label="Footer">
+    <div class="player-in">
+        <div class="player-now">
+            <img src="/static/suhani.jpg?v=3" width="56" height="56" alt="" loading="lazy">
+            <div><p class="player-track">The outro</p><p class="player-artist">Suhani Tiwari</p></div>
         </div>
-        <nav class="foot-cols" aria-label="Footer">
-            <div>
-                <p class="foot-h">This site</p>
-                <a href="/about">About me</a><a href="/#data">The data</a><a href="/#watch">Watch</a><a href="/#play">Play</a><a href="/#method">How it works</a><a href="/#your-turn">Your turn</a>
-            </div>
-            <div>
-                <p class="foot-h">The project</p>
-                <a href="/report">Read the report</a><a href="/api/docs">Explore the API</a><a href="https://github.com/suhxnitiwari/listening-history" target="_blank" rel="noopener">View the code ↗</a>
-            </div>
-            <div>
-                <p class="foot-h">Me</p>
-                <a href="https://suhanitiwari.com">Portfolio ↗</a><a href="https://www.linkedin.com/in/suhxnitiwari/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="https://github.com/suhxnitiwari" target="_blank" rel="noopener">GitHub ↗</a><a href="https://www.instagram.com/suhxnitiwari/" target="_blank" rel="noopener">Instagram ↗</a><a href="mailto:suhxnitiwari@gmail.com">Email ↗</a>
-            </div>
+        <div class="player-mid">
+            <a class="player-replay" href="#top" aria-label="Replay from the top">↺</a>
+            <div class="player-bar" aria-hidden="true"><span>4 yrs</span><i><b></b></i><span>4 yrs</span></div>
+        </div>
+        <nav class="player-queue" aria-label="Up next">
+            <p>Up next</p>
+            <a href="/about">About me</a><a href="/report.pdf" download>The report (PDF)</a><a href="https://github.com/suhxnitiwari/listening-history" target="_blank" rel="noopener">The code</a><a href="https://www.linkedin.com/in/suhxnitiwari/" target="_blank" rel="noopener">LinkedIn</a><a href="https://suhanitiwari.com">Portfolio</a><a href="mailto:suhxnitiwari@gmail.com">Email</a>
         </nav>
-        <div class="foot-small">
-            <p>© 2026 Suhani Tiwari. All rights reserved. Data: my own Spotify extended streaming history.</p>
-            <a href="#top">Scroll back up. I'll wait. ↑</a>
-        </div>
     </div>
+    <p class="player-legal">© 2026 Suhani Tiwari. All rights reserved. Data: my own Spotify history.</p>
 </footer>
 </body>
 </html>

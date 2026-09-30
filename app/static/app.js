@@ -271,83 +271,10 @@ api('top-songs').then(songs => {
     ask();
 });
 
-// ---------- how it works: the pipeline, step by step (real code from the repo) ----------
-const STEPS = [
-    { title: 'Extract', text: 'Spotify sends a zip of JSON files. Python opens the zip and reads every audio record straight out of it, nothing unzipped to disk.',
-      list: ['Input: my_spotify_data.zip', 'Output: one list of raw records'],
-      code: `def extract(zip_path: Path) -> list:
-    records = []
-    with zipfile.ZipFile(zip_path) as z:
-        for name in sorted(z.namelist()):
-            if re.search(r"Streaming_History_Audio_.*\\.json$", name):
-                records.extend(json.loads(z.read(name)))
-    return records` },
-    { title: 'Transform', text: 'Raw data is messy. Every play gets checked before it counts.',
-      list: ['Podcasts and audiobooks out, songs only', 'Private sessions stay private', 'Times converted to Austin time', 'Duplicate rows and two overnight loops removed', 'One song under many Spotify IDs merged into one'],
-      code: `for r in records:
-    if not r.get("master_metadata_track_name"):   <span class="c"># podcasts</span>
-        continue
-    if r.get("incognito_mode"):                    <span class="c"># private stays private</span>
-        continue
-    ended = datetime.fromisoformat(r["ts"]).astimezone(AUSTIN)
-    ...
-<span class="c"># the same play can appear twice across files; keep one</span>
-unique = {(p.played_at, p.uri, p.ms_played): p for p in plays}` },
-    { title: 'Load', text: 'Six CSVs go into PostgreSQL on Neon in order, so every foreign key already exists when its row arrives. COPY is the fastest way in.',
-      list: ['Schema rebuilt from sql/schema.sql', 'SQL views rebuilt on every load'],
-      code: `order = ["dim_artist", "dim_album", "dim_track",
-         "dim_date", "dim_session", "fact_play"]
-with psycopg.connect(url) as conn, conn.cursor() as cur:
-    cur.execute(schema.read_text())
-    for name in order:
-        with cur.copy(f"COPY {name} FROM STDIN WITH (FORMAT csv, HEADER true)") as copy:
-            copy.write(open(out / f"{name}.csv").read())` },
-    { title: 'Ask', text: 'Every chart on this page is a SQL view. The streak race uses gaps and islands: on days in a row, the date minus a row number never changes, so each streak shares one number.',
-      list: ['Window functions: ROW_NUMBER, RANK', 'CTEs to build answers step by step', 'A partial index on counted plays'],
-      code: `WITH days AS (
-    SELECT DISTINCT track_key, full_date FROM v_listen
-), islands AS (
-    SELECT track_key, full_date,
-           full_date - (ROW_NUMBER() OVER (
-               PARTITION BY track_key ORDER BY full_date))::int AS island
-    FROM days
-)
-SELECT track_key, COUNT(*) AS days_in_a_row
-FROM islands GROUP BY track_key, island` },
-    { title: 'Serve', text: 'FastAPI turns each question into an endpoint. Answers are cached, since the data only changes when I reload it, and the database login is read-only.',
-      list: ['Deployed on Render', 'Song and video previews from the iTunes Search API', 'Every endpoint documented at /api/docs'],
-      code: `@app.get("/api/streaks")
-def streaks():
-    return query("streaks", """
-        SELECT track_name, artist_name, days_in_a_row, started, ended
-        FROM v_song_streaks
-        ORDER BY days_in_a_row DESC, started LIMIT 8""")` },
-];
-const showStep = i => {
-    const st = STEPS[i];
-    $('#stepPanel').innerHTML = `<div><h3>${st.title}</h3><p>${esc(st.text)}</p><ul>${st.list.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
-        <pre class="code">${st.code.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/&lt;span class="c"&gt;(.*?)&lt;\/span&gt;/g, '<span class="c">$1</span>')}</pre>`;
-    document.querySelectorAll('#steps button').forEach((b, j) => b.setAttribute('aria-selected', j === i));
-};
-$('#steps').addEventListener('click', e => { const b = e.target.closest('button'); if (b) showStep(+b.dataset.step); });
-showStep(0);
-
-// ---------- the star schema ----------
-const TABLES = {
-    fact_play: ['One row per play, the heart of the model. Short plays stay in, because they are the skips.', ['play_key', 'track_key', 'date_key', 'session_key', 'played_at', 'hour', 'ms_played', 'counted', 'skipped', 'shuffle']],
-    dim_track: ['One row per song. Spotify lists one song under several IDs, so the pipeline merges them.', ['track_key', 'track_name', 'artist_key', 'album_key', 'spotify_uri', 'first_played']],
-    dim_artist: ['Every artist I have played, once.', ['artist_key', 'artist_name']],
-    dim_album: ['Albums, tied to their artist.', ['album_key', 'album_name', 'artist_key']],
-    dim_date: ['A calendar row for every day, so any question works by day, month, season or year.', ['date_key', 'full_date', 'year', 'month', 'weekday', 'is_weekend', 'season']],
-    dim_session: ['A stretch of listening with no gap longer than 30 minutes.', ['session_key', 'started_at', 'ended_at', 'play_count', 'minutes']],
-};
-const showTable = t => {
-    const [text, cols] = TABLES[t];
-    $('#tableDetail').innerHTML = `<p><b>${t}</b>: ${esc(text)}</p>${cols.map(c => `<code>${c}</code>`).join('')}`;
-    document.querySelectorAll('.tbl').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
-};
-$('#schema').addEventListener('click', e => { const b = e.target.closest('.tbl'); if (b) showTable(b.dataset.t); });
-showTable('fact_play');
+// ---------- how it works: 25 ticks for the ROW_NUMBER card ----------
+document.querySelectorAll('.sci .ticks').forEach(g => {
+    g.innerHTML = Array.from({ length: 25 }, (_, i) => `<rect x="${30 + i * 9.7}" y="${i === 24 ? 60 : 72}" width="6" height="${i === 24 ? 44 : 32}" rx="1.5" class="${i === 24 ? 'acf' : 'bar2'}"/>`).join('');
+});
 
 // ---------- your turn: do I listen to your favorite artist? ----------
 // suggestions: my own list under the box, names that start with what you typed first
