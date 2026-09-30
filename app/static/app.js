@@ -350,9 +350,45 @@ $('#schema').addEventListener('click', e => { const b = e.target.closest('.tbl')
 showTable('fact_play');
 
 // ---------- your turn: do I listen to your favorite artist? ----------
-api('artist-names').then(names => { $('#artistNames').innerHTML = names.map(n => `<option value="${esc(n)}">`).join(''); });
+// suggestions: my own list under the box, names that start with what you typed first
+let artistNames = [];
+api('artist-names').then(names => { artistNames = names; });
+const input = $('#artistInput'), suggest = $('#artistSuggest');
+let picked = -1;
+const closeSuggest = () => { suggest.hidden = true; input.setAttribute('aria-expanded', 'false'); picked = -1; };
+const markPicked = () => suggest.querySelectorAll('li').forEach((li, i) => li.setAttribute('aria-selected', i === picked));
+input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 1) return closeSuggest();
+    const starts = artistNames.filter(n => n.toLowerCase().startsWith(q));
+    const has = artistNames.filter(n => !n.toLowerCase().startsWith(q) && n.toLowerCase().includes(q));
+    const list = [...starts, ...has].slice(0, 6);
+    if (!list.length || (list.length === 1 && list[0].toLowerCase() === q)) return closeSuggest();
+    suggest.innerHTML = list.map((n, i) => `<li role="option" id="sug-${i}" aria-selected="false" data-name="${esc(n)}">${esc(n)}</li>`).join('');
+    suggest.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+    picked = -1;
+});
+input.addEventListener('keydown', e => {
+    if (suggest.hidden) return;
+    const items = suggest.querySelectorAll('li');
+    if (e.key === 'ArrowDown') { e.preventDefault(); picked = (picked + 1) % items.length; markPicked(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); picked = (picked - 1 + items.length) % items.length; markPicked(); }
+    else if (e.key === 'Enter' && picked >= 0) { e.preventDefault(); input.value = items[picked].dataset.name; closeSuggest(); $('#artistForm').requestSubmit(); }
+    else if (e.key === 'Escape') closeSuggest();
+});
+suggest.addEventListener('mousedown', e => {
+    const li = e.target.closest('li');
+    if (!li) return;
+    e.preventDefault();
+    input.value = li.dataset.name;
+    closeSuggest();
+    $('#artistForm').requestSubmit();
+});
+input.addEventListener('blur', () => setTimeout(closeSuggest, 100));
 $('#artistForm').addEventListener('submit', async e => {
     e.preventDefault();
+    closeSuggest();
     const card = $('#artistCard'), name = $('#artistInput').value.trim();
     if (name.length < 2) return;
     let a;
