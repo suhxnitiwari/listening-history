@@ -441,3 +441,13 @@ html { color-scheme: dark; }
     .player-in { grid-template-columns: 1fr; gap: 16px; padding: 20px 16px; }
     .player-legal { padding: 0 16px 16px; }
 }
+
+/* about: live previews of my other projects */
+.projects { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.live { display: block; margin: -22px -22px 6px; border-bottom: 1px solid var(--line); border-radius: 10px 10px 0 0; overflow: hidden; background: var(--deep); }
+.live-bar { display: flex; gap: 6px; padding: 9px 12px; background: var(--line); }
+.live-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--mul-soft); }
+.live-view { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; }
+.live-view iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 800px; border: 0; transform: scale(var(--s, 0.4)); transform-origin: 0 0; pointer-events: none; background: #fff; }
+.live:hover .live-bar { background: var(--mul-soft); }
+@media (max-width: 800px) { .projects { grid-template-columns: 1fr; } }

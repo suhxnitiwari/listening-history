@@ -18,7 +18,7 @@
     <meta name="twitter:image" content="https://listening-history.onrender.com/static/share-card.jpg">
     <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23D65478'/><circle cx='50' cy='50' r='14' fill='%2322090F'/></svg>">
-    <link rel="stylesheet" href="/static/styles.css?v=26">
+    <link rel="stylesheet" href="/static/styles.css?v=27">
 </head>
 <body>
 
@@ -57,13 +57,13 @@
         <p class="eyebrow">More of my work</p>
         <h2 id="t-more">If you like this project, check out these.</h2>
         <div class="projects">
-            <article class="project"><h3>RideFlow</h3><p>A full-stack rideshare app for riders, drivers and admins, built solo in a course designed for teams.</p>
+            <article class="project"><a class="live" href="https://rideflow-frontend.onrender.com/" target="_blank" rel="noopener" aria-label="Open RideFlow"><span class="live-bar"><i></i><i></i><i></i></span><span class="live-view"><iframe data-src="https://rideflow-frontend.onrender.com/" title="Live preview of RideFlow" tabindex="-1" scrolling="no"></iframe></span></a><h3>RideFlow</h3><p>A full-stack rideshare app for riders, drivers and admins, built solo in a course designed for teams.</p>
                 <div class="links"><a class="pill solid" href="https://rideflow-frontend.onrender.com/" target="_blank" rel="noopener">Open it ↗</a><a class="pill" href="https://github.com/suhxnitiwari/ridemanagement" target="_blank" rel="noopener">Code ↗</a></div></article>
-            <article class="project"><h3>Saturday in Austin</h3><p>208 Austin places, turned into a Python app that plans your perfect Saturday.</p>
+            <article class="project"><a class="live" href="https://suhxnitiwari.github.io/saturday-in-austin/" target="_blank" rel="noopener" aria-label="Open Saturday in Austin"><span class="live-bar"><i></i><i></i><i></i></span><span class="live-view"><iframe data-src="https://suhxnitiwari.github.io/saturday-in-austin/" title="Live preview of Saturday in Austin" tabindex="-1" scrolling="no"></iframe></span></a><h3>Saturday in Austin</h3><p>208 Austin places, turned into a Python app that plans your perfect Saturday.</p>
                 <div class="links"><a class="pill solid" href="https://suhxnitiwari.github.io/saturday-in-austin/" target="_blank" rel="noopener">Open it ↗</a><a class="pill" href="https://github.com/suhxnitiwari/saturday-in-austin" target="_blank" rel="noopener">Code ↗</a></div></article>
-            <article class="project"><h3>Bevo's Tacos</h3><p>A checkout system for an Austin food truck, built in C# first, then rebuilt as a live web app.</p>
+            <article class="project"><a class="live" href="https://suhxnitiwari.github.io/Bevo_Taco-Checkout/" target="_blank" rel="noopener" aria-label="Open Bevo's Tacos"><span class="live-bar"><i></i><i></i><i></i></span><span class="live-view"><iframe data-src="https://suhxnitiwari.github.io/Bevo_Taco-Checkout/" title="Live preview of Bevo's Tacos" tabindex="-1" scrolling="no"></iframe></span></a><h3>Bevo's Tacos</h3><p>A checkout system for an Austin food truck, built in C# first, then rebuilt as a live web app.</p>
                 <div class="links"><a class="pill solid" href="https://suhxnitiwari.github.io/Bevo_Taco-Checkout/" target="_blank" rel="noopener">Open it ↗</a><a class="pill" href="https://github.com/suhxnitiwari/Bevo_Taco-Checkout" target="_blank" rel="noopener">Code ↗</a></div></article>
-            <article class="project"><h3>My portfolio</h3><p>Live Spotify data, an interactive map of my life, and Sitara, my AI guide.</p>
+            <article class="project"><a class="live" href="https://suhanitiwari.com/" target="_blank" rel="noopener" aria-label="Open My portfolio"><span class="live-bar"><i></i><i></i><i></i></span><span class="live-view"><iframe data-src="https://suhanitiwari.com/" title="Live preview of My portfolio" tabindex="-1" scrolling="no"></iframe></span></a><h3>My portfolio</h3><p>Live Spotify data, an interactive map of my life, and Sitara, my AI guide.</p>
                 <div class="links"><a class="pill solid" href="https://suhanitiwari.com" target="_blank" rel="noopener">Open it ↗</a><a class="pill" href="https://github.com/suhxnitiwari/suhanitiwari-portfolio" target="_blank" rel="noopener">Code ↗</a></div></article>
         </div>
     </section>
@@ -87,5 +87,20 @@
     </div>
     <p class="player-legal">© 2026 Suhani Tiwari. All rights reserved. Data: my own Spotify history.</p>
 </footer>
+<script>
+    // live previews: load each site when its card scrolls near, shrunk to fit the card
+    (() => {
+        const fit = () => document.querySelectorAll('.live-view').forEach(v => v.style.setProperty('--s', v.clientWidth / 1280));
+        new ResizeObserver(fit).observe(document.body);
+        const io = new IntersectionObserver(entries => entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            const f = e.target.querySelector('iframe');
+            f.src = f.dataset.src;
+            io.unobserve(e.target);
+        }), { rootMargin: '300px' });
+        document.querySelectorAll('.live').forEach(l => io.observe(l));
+        fit();
+    })();
+</script>
 </body>
 </html>
