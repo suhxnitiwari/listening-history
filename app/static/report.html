@@ -6,13 +6,13 @@
     <title>Listening Report | Suhani Tiwari</title>
     <meta name="author" content="Suhani Tiwari">
     <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238A4D57'/><circle cx='50' cy='50' r='14' fill='%23FAF1EF'/></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23D65478'/><circle cx='50' cy='50' r='14' fill='%2322090F'/></svg>">
     <style>
-        :root { --bg: #FAF1EF; --card: #FFF8F6; --line: #EBD5D0; --mul: #8A4D57; --mul-soft: #C9969E; --blush: #F5E5E1; --choc: #2A1810; --muted: #6B5048; --sage: #56634A;
+        :root { --bg: #FFFBFB; --card: #FFF4F6; --line: #F0D6DC; --mul: #B8325B; --mul-soft: #F3A6B8; --blush: #FBE8EC; --choc: #22090F; --muted: #6E3F4A; --sage: #681F34;
                 --serif: Georgia, "Times New Roman", serif; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
         @page { size: Letter; margin: 0; }
         * { box-sizing: border-box; }
-        html, body { margin: 0; background: #E9DCD8; color: var(--choc); font-family: var(--sans); font-size: 10.5pt; line-height: 1.45;
+        html, body { margin: 0; background: #22090F; color: var(--choc); font-family: var(--sans); font-size: 10.5pt; line-height: 1.45;
                      -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .sheet { width: 8.5in; height: 11in; margin: 24px auto; padding: 0.6in 0.65in 0.5in; background: var(--bg); position: relative; overflow: hidden; }
         @media print { html, body { background: var(--bg); } .sheet { margin: 0; break-after: page; } .sheet:last-child { break-after: auto; } }
@@ -24,10 +24,10 @@
         p { margin: 0; }
         .muted { color: var(--muted); }
         .folio { position: absolute; left: 0.65in; right: 0.65in; bottom: 0.3in; display: flex; justify-content: space-between; font-size: 7.5pt; color: var(--muted); border-top: 1px solid var(--line); padding-top: 6px; }
-        .cover-band { margin: -0.6in -0.65in 0.28in; padding: 0.5in 0.65in 0.32in; background: var(--mul); color: #FFF8F6; }
-        .cover-band .eyebrow { color: #F0C9CF; }
-        .cover-band h1 { color: #FFF8F6; }
-        .cover-band p { margin-top: 10px; font-size: 11pt; color: #F5E5E1; max-width: 5.6in; }
+        .cover-band { margin: -0.6in -0.65in 0.28in; padding: 0.5in 0.65in 0.32in; background: #22090F; color: #F7E9E8; }
+        .cover-band .eyebrow { color: #F3A6B8; }
+        .cover-band h1 { color: #F7E9E8; }
+        .cover-band p { margin-top: 10px; font-size: 11pt; color: #D89AA8; max-width: 5.6in; }
         .stats { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 2px solid var(--choc); margin-bottom: 0.24in; }
         .stats div { padding-top: 8px; }
         .stats dt { font-size: 7pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
@@ -91,7 +91,7 @@
         <p class="eyebrow">Month by month</p>
         <h2>How much I listened, and who owned each month</h2>
         <svg class="chart" id="months" preserveAspectRatio="none"></svg>
-        <div class="legend"><span><i style="background:#8A4D57"></i>Ariana Grande owned the month</span><span><i style="background:#C9969E"></i>Someone else did</span></div>
+        <div class="legend"><span><i style="background:#D65478"></i>Ariana Grande owned the month</span><span><i style="background:#681F34"></i>Someone else did</span></div>
     </div>
     <div class="section">
         <p class="eyebrow">Year in review</p>
@@ -167,8 +167,8 @@
         svg.setAttribute('viewBox', `0 0 ${W} ${H + 16}`);
         svg.innerHTML = months.map((m, i) => {
             const h = Math.max(2, m.hours / most * H);
-            return `<rect x="${i * bw + 1}" y="${H - h}" width="${bw - 2}" height="${h}" rx="1.5" fill="${m.era_artist === 'Ariana Grande' ? '#8A4D57' : '#C9969E'}"/>`;
-        }).join('') + months.map((m, i) => m.month.endsWith('-01-01') ? `<text x="${i * bw}" y="${H + 13}" font-size="11" fill="#6B5048" font-family="sans-serif">${m.month.slice(0, 4)}</text>` : '').join('');
+            return `<rect x="${i * bw + 1}" y="${H - h}" width="${bw - 2}" height="${h}" rx="1.5" fill="${m.era_artist === 'Ariana Grande' ? '#D65478' : '#681F34'}"/>`;
+        }).join('') + months.map((m, i) => m.month.endsWith('-01-01') ? `<text x="${i * bw}" y="${H + 13}" font-size="11" fill="#6E3F4A" font-family="sans-serif">${m.month.slice(0, 4)}</text>` : '').join('');
 
         $('#years').innerHTML = years.map(y => `<tr><td class="num">${y.year}</td><td>${fmt(y.hours)}</td><td>${fmt(y.listens)}</td><td>${fmt(y.songs)}</td><td>${fmt(y.artists)}</td><td>${fmt(y.new_songs)}</td>
             <td><b>${esc(y.song_of_the_year)}</b><br><span class="muted">${esc(y.song_of_the_year_artist)}, ${y.song_listens} listens</span></td></tr>`).join('');
@@ -177,8 +177,8 @@
         const ys = [...new Set(clock.map(c => c.year))], max = Math.max(...clock.map(c => c.share_pct));
         $('#clocks').innerHTML = ys.map(y => {
             const d = clock.filter(c => c.year === y), peak = d.reduce((a, b) => b.share_pct > a.share_pct ? b : a);
-            const spokes = d.map(c => `<rect x="-2.2" y="${-12 - (4 + c.share_pct / max * 44)}" width="4.4" height="${4 + c.share_pct / max * 44}" rx="2" fill="${c.hour === peak.hour ? '#2A1810' : '#8A4D57'}" transform="rotate(${c.hour * 15})"/>`).join('');
-            return `<figure><svg viewBox="-62 -62 124 124" width="94" height="94"><circle r="12" fill="none" stroke="#EBD5D0"/>${spokes}</svg><figcaption><b>${y}</b>peak at ${hour(peak.hour)}</figcaption></figure>`;
+            const spokes = d.map(c => `<rect x="-2.2" y="${-12 - (4 + c.share_pct / max * 44)}" width="4.4" height="${4 + c.share_pct / max * 44}" rx="2" fill="${c.hour === peak.hour ? '#22090F' : '#D65478'}" transform="rotate(${c.hour * 15})"/>`).join('');
+            return `<figure><svg viewBox="-62 -62 124 124" width="94" height="94"><circle r="12" fill="none" stroke="#F0D6DC"/>${spokes}</svg><figcaption><b>${y}</b>peak at ${hour(peak.hour)}</figcaption></figure>`;
         }).join('');
 
         $('#streaks').innerHTML = streaks.slice(0, 5).map(r => row(r.track_name, `${r.artist_name}, ${day(r.started)} to ${day(r.ended)}`, `${r.days_in_a_row} days`)).join('');

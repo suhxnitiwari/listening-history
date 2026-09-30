@@ -153,6 +153,7 @@ My real export never goes in this repo. It includes an IP address and country fo
 - **Scrub through time:** drag through every month to see who owned it, then open its top five
 - **Listening clock:** a 24-hour dial that reshapes for each year
 - **Streak race:** the longest daily streaks, animated
+- **Loyalty:** my #1 artist every year, the songs I've played every single year, and how much of my listening goes to just ten artists
 - **Year in review:** one card per year, with the song of the year
 - **Watch:** music video previews of my most-played songs (iTunes Search API)
 - **Play:** "Which did I play more?" and "Guess the stat," two games built from the real numbers

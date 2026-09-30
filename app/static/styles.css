@@ -1,13 +1,16 @@
 :root {
-    --bg: #FAF1EF;
-    --card: #FFF8F6;
-    --line: #EBD5D0;
-    --mul: #8A4D57;
-    --mul-soft: #C9969E;
-    --blush: #F5E5E1;
-    --choc: #2A1810;
-    --muted: #6B5048;
-    --sage: #56634A;
+    /* Deepest cherry: Black Cherry After Dark as the base, Eternal Sunshine rose and Pop Girl Martini pink on top */
+    --bg: #22090F;
+    --card: #35131C;
+    --line: #4A1A28;
+    --mul: #F3A6B8;
+    --mul-soft: #681F34;
+    --hot: #D65478;
+    --blush: #2E0E17;
+    --choc: #F7E9E8;
+    --muted: #D89AA8;
+    --sage: #F3A6B8;
+    --deep: #16060A;
     --serif: Georgia, "Times New Roman", serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 }
@@ -355,3 +358,54 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
 .project .links { margin: 0; gap: 8px; }
 .project .pill { padding: 7px 14px; font-size: 0.82rem; }
 @media (max-width: 800px) { .about-hero { grid-template-columns: 1fr; gap: 20px; } .about-hero figure { max-width: 240px; } }
+
+/* loyalty */
+.loyal-years { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+.loyal-years div { padding: 14px 16px; border-radius: 10px; background: var(--mul); color: #FFF8F6; }
+.loyal-years span { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; opacity: 0.85; }
+.loyal-years b { display: block; margin-top: 4px; font-family: var(--serif); font-size: 1.05rem; }
+.loyal-years small { font-size: 0.8rem; opacity: 0.85; }
+.loyal-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 28px 0 0; border-top: 2px solid var(--choc); }
+.loyal-stats div { padding: 14px 16px 0 0; }
+.loyal-stats dt { font-family: var(--serif); font-size: 2rem; font-weight: 700; color: var(--mul); }
+.loyal-stats dd { margin: 2px 0 0; font-size: 0.88rem; color: var(--muted); }
+.loyal-sub { margin-top: 32px; }
+.loyal-songs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: 32px; margin-top: 0; }
+@media (max-width: 800px) {
+    .loyal-years { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .loyal-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+    .loyal-songs { grid-template-columns: 1fr; grid-template-rows: none; grid-auto-flow: row; }
+}
+
+/* Deepest cherry: pink surfaces take dark text, dark bands go one shade deeper, charts glow in hot pink */
+html { color-scheme: dark; }
+.topnav { background: rgba(34, 9, 15, 0.94); }
+.topnav-links .topnav-cta, .pill.solid, .chip[aria-pressed="true"], .tbl:hover, .tbl[aria-pressed="true"],
+.flip-back, .transform-steps li::before { color: var(--bg); }
+.topnav-links .topnav-cta:hover { background: var(--choc); color: var(--bg); }
+.pill { background: var(--card); color: var(--choc); }
+.bars i.ari { background: var(--hot); }
+.bars i.on { background: var(--choc); }
+.now-playing { background: rgba(53, 19, 28, 0.95); }
+.play::before { border-left-color: var(--bg); }
+.play.playing::before { border-left-color: var(--bg); border-right-color: var(--bg); }
+.code, .privacy-block, .site-foot { background: var(--deep); }
+.site-foot .foot-report { background: var(--mul); border-color: var(--mul); color: var(--bg); }
+.foot-cols a { color: var(--choc); }
+.vs-song { background: var(--card); }
+.vs-song.right { background: var(--card); border-color: var(--mul); }
+.clock .spoke { fill: var(--hot); }
+.clock .spoke.peak { fill: var(--mul); }
+.race .fill { background: var(--hot); }
+.race li:first-child .fill { background: var(--mul); }
+.race li:first-child .days { color: var(--bg); }
+.skip-list .meter i { background: var(--hot); }
+.loyal-years div { background: var(--hot); color: #FFF6F4; }
+.cta-card.dark { background: var(--deep); border-color: var(--line); }
+.search input { background: var(--card); color: var(--choc); }
+.screen video { background: var(--deep); }
+.tbl { background: var(--card); color: var(--choc); }
+.schema-lines line { stroke: var(--hot); }
+.slider { accent-color: var(--hot); }
+.privacy-block .eyebrow, .privacy-list span, .cta-card.dark .eyebrow { color: var(--mul); }
+.hint, .hint-line { color: var(--muted); }

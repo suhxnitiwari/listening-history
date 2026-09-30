@@ -445,3 +445,18 @@ Promise.all(['summary', 'months', 'clock', 'streaks', 'years', 'obsessions', 'to
         ? `Even ${esc(star)}, my #1 artist, gets skipped ${starSkip.skip_pct}% of the time. A skip usually means "not this one right now," not "not this artist."`
         : `The artists I skip most are the ones shuffle hands me, not the ones I choose.`);
 });
+
+// ---------- loyalty: who stayed #1, what I played every year, how concentrated my listening is ----------
+api('loyalty').then(L => {
+    $('#loyalYears').innerHTML = L.yearly.map(y => `<div><span>${y.year}</span><b>${esc(y.artist_name)}</b><small>${fmt(y.hours)} hours</small></div>`).join('');
+    const pct = (a, b) => Math.round(a / b * 100);
+    const same = L.yearly.every(y => y.artist_name === L.yearly[0].artist_name);
+    $('#loyalStats').innerHTML = [
+        [same ? `${L.yearly.length} of ${L.yearly.length}` : `${L.yearly.length}`, same ? `years with the same #1 artist` : 'years of #1 artists'],
+        [`${pct(L.top_artist_days, L.listening_days)}%`, `of my listening days had ${esc(L.yearly[0].artist_name)} in them`],
+        [fmt(L.songs_every_year), `songs I played every single year`],
+        [`${L.top10_share}%`, `of all my listening goes to just 10 artists`],
+    ].map(([n, t]) => `<div><dt>${n}</dt><dd>${t}</dd></div>`).join('');
+    $('#loyalSongs').innerHTML = L.songs.map(t => songRow(t, `${fmt(t.listens)} listens`)).join('');
+    takeaway('tk-loyal', `Loyal, not closed off: ${fmt(L.one_listen_artists)} of my ${fmt(L.artists)} artists got exactly one listen. I try a lot of music, and I keep a little of it forever.`);
+});

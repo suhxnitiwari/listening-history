@@ -143,6 +143,41 @@ def big_days():
     return query("days", "SELECT * FROM v_most_in_a_day ORDER BY listens DESC LIMIT 5")
 
 
+@app.get("/api/loyalty")
+def loyalty():
+    """How loyal I am: my #1 artist each year, what I played every single year, and how concentrated my listening is."""
+    yearly = query("loyal-yearly", """
+        SELECT DISTINCT ON (year) year, artist_name, ROUND(SUM(minutes) / 60) AS hours
+        FROM v_listen GROUP BY year, artist_name ORDER BY year, SUM(minutes) DESC""")
+    numbers = query("loyal-numbers", """
+        WITH years AS (SELECT COUNT(DISTINCT year) AS n FROM v_listen),
+        top_artist AS (SELECT artist_key FROM v_listen GROUP BY artist_key ORDER BY SUM(minutes) DESC LIMIT 1),
+        artist_minutes AS (SELECT artist_key, SUM(minutes) AS m, COUNT(*) AS listens FROM v_listen GROUP BY artist_key)
+        SELECT
+            (SELECT n FROM years) AS years,
+            (SELECT COUNT(*) FROM (SELECT artist_key FROM v_listen GROUP BY artist_key
+                HAVING COUNT(DISTINCT year) = (SELECT n FROM years)) a) AS artists_every_year,
+            (SELECT COUNT(*) FROM (SELECT track_key FROM v_listen GROUP BY track_key
+                HAVING COUNT(DISTINCT year) = (SELECT n FROM years)) t) AS songs_every_year,
+            (SELECT COUNT(DISTINCT full_date) FROM v_listen WHERE artist_key = (SELECT artist_key FROM top_artist)) AS top_artist_days,
+            (SELECT COUNT(DISTINCT full_date) FROM v_listen) AS listening_days,
+            (SELECT ROUND(100 * SUM(m) FILTER (WHERE r <= 10) / SUM(m), 1)
+                FROM (SELECT m, RANK() OVER (ORDER BY m DESC) AS r FROM artist_minutes) x) AS top10_share,
+            (SELECT COUNT(*) FROM artist_minutes WHERE listens = 1) AS one_listen_artists,
+            (SELECT COUNT(*) FROM artist_minutes) AS artists""")[0]
+    songs = query("loyal-songs", """
+        WITH every_year AS (
+            SELECT track_key FROM v_listen GROUP BY track_key
+            HAVING COUNT(DISTINCT year) = (SELECT COUNT(DISTINCT year) FROM v_listen)
+        ), ranked AS (
+            SELECT DISTINCT ON (artist_name) track_name, artist_name, COUNT(*) AS listens
+            FROM v_listen WHERE track_key IN (SELECT track_key FROM every_year)
+            GROUP BY track_key, track_name, artist_name ORDER BY artist_name, COUNT(*) DESC
+        )
+        SELECT * FROM ranked ORDER BY listens DESC LIMIT 6""")
+    return {"yearly": yearly, **numbers, "songs": songs}
+
+
 @app.get("/api/top-artists")
 def top_artists():
     """My ten most-listened artists by hours."""
