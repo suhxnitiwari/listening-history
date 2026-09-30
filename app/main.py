@@ -315,6 +315,118 @@ async def videos():
         _cache["videos"] = picked
     return _cache["videos"]
 
+# ---------- life stories: one song, one artist, one year, one stretch of time ----------
+
+LIFE = """
+    days AS (SELECT DISTINCT full_date FROM p),
+    isl AS (SELECT full_date - (ROW_NUMBER() OVER (ORDER BY full_date))::int AS g FROM days),
+    gaps AS (SELECT full_date, full_date - LAG(full_date) OVER (ORDER BY full_date) AS gap FROM days),
+    by_day AS (SELECT full_date, COUNT(*) AS n FROM p GROUP BY full_date),
+    by_month AS (SELECT to_char(date_trunc('month', full_date), 'YYYY-MM') AS m, COUNT(*) AS n FROM p GROUP BY 1)
+    SELECT
+        (SELECT COUNT(*) FROM p) AS listens,
+        (SELECT MIN(full_date) FROM p) AS first_listen,
+        (SELECT MAX(full_date) FROM p) AS last_listen,
+        (SELECT full_date FROM by_day ORDER BY n DESC, full_date LIMIT 1) AS peak_day,
+        (SELECT MAX(n) FROM by_day) AS peak_day_plays,
+        (SELECT m FROM by_month ORDER BY n DESC, m LIMIT 1) AS peak_month,
+        (SELECT MAX(n) FROM by_month) AS peak_month_plays,
+        (SELECT MAX(c) FROM (SELECT COUNT(*) AS c FROM isl GROUP BY g) x) AS longest_streak,
+        (SELECT gap FROM gaps ORDER BY gap DESC NULLS LAST LIMIT 1) AS longest_gap,
+        (SELECT full_date - gap FROM gaps ORDER BY gap DESC NULLS LAST LIMIT 1) AS gap_from,
+        (SELECT full_date FROM gaps ORDER BY gap DESC NULLS LAST LIMIT 1) AS gap_to,
+        (SELECT json_object_agg(m, n) FROM by_month) AS by_month"""
+
+
+def bounded_key(prefix: str, *parts: str) -> str:
+    """Cache key for a visitor-typed lookup; the oldest such entry is dropped once the cache gets big."""
+    key = prefix + "|".join(" ".join(p.split()).lower() for p in parts)
+    if key not in _cache and len(_cache) > 2000:
+        _cache.pop(next((k for k in _cache if k.startswith(prefix)), key), None)
+    return key
+
+
+@app.get("/api/song")
+def song(title: str = Query(min_length=1, max_length=150), artist: str = Query(min_length=1, max_length=100)):
+    """The life of one song in my listening: first listen, the 25th, its peak, its longest streak and longest silence."""
+    rows = query(bounded_key("song:", title, artist), """
+        WITH p AS (SELECT full_date, played_at FROM v_listen WHERE track_name = %s AND artist_name = %s),
+        nth AS (SELECT full_date, ROW_NUMBER() OVER (ORDER BY played_at) AS n FROM p),""" + LIFE + """,
+        (SELECT full_date FROM nth WHERE n = 25) AS twenty_fifth""", (title, artist))
+    if not rows or not rows[0]["listens"]:
+        raise HTTPException(404, "not in my history")
+    return {"track_name": title, "artist_name": artist, **rows[0]}
+
+
+@app.get("/api/artist-life")
+def artist_life(name: str = Query(min_length=1, max_length=100)):
+    """An artist's arc in my listening: peak month, longest streak of days, longest gap, top songs."""
+    key = bounded_key("artistlife:", name)
+    rows = query(key, """
+        WITH p AS (SELECT full_date FROM v_listen WHERE artist_name = %s),""" + LIFE, (name,))
+    if not rows or not rows[0]["listens"]:
+        raise HTTPException(404, "not in my history")
+    top = query(key + ":top", """
+        SELECT track_name, COUNT(*) AS listens FROM v_listen WHERE artist_name = %s
+        GROUP BY track_key, track_name ORDER BY listens DESC LIMIT 3""", (name,))
+    return {"artist_name": name, **rows[0], "top_songs": top}
+
+
+YEAR_STATS = """
+    SELECT {group} AS period,
+           ROUND(SUM(minutes) / 60) AS hours,
+           COUNT(*) AS listens,
+           COUNT(DISTINCT full_date) AS active_days,
+           ROUND(SUM(minutes) / 60 / COUNT(DISTINCT full_date), 1) AS hours_per_day,
+           COUNT(DISTINCT artist_key) AS artists,
+           COUNT(DISTINCT track_key) AS songs,
+           ROUND(COUNT(*)::numeric / COUNT(DISTINCT track_key), 1) AS listens_per_song
+    FROM v_listen {where} GROUP BY 1"""
+
+
+@app.get("/api/change")
+def change():
+    """How I changed year to year: volume, variety, repetition, concentration and skipping."""
+    base = query("change-base", YEAR_STATS.format(group="year", where="") + " ORDER BY 1")
+    extra = query("change-extra", """
+        WITH a AS (SELECT year, artist_key, SUM(minutes) AS m,
+                          RANK() OVER (PARTITION BY year ORDER BY SUM(minutes) DESC) AS r
+                   FROM v_listen GROUP BY year, artist_key),
+        conc AS (SELECT year, ROUND(100 * SUM(m) FILTER (WHERE r <= 10) / SUM(m), 1) AS top10_share FROM a GROUP BY year),
+        skips AS (SELECT d.year, ROUND(100.0 * COUNT(*) FILTER (WHERE f.skipped) / COUNT(*), 1) AS skip_rate
+                  FROM fact_play f JOIN dim_date d USING (date_key) GROUP BY d.year),
+        peak AS (SELECT DISTINCT ON (year) year, hour AS peak_hour FROM v_listening_clock ORDER BY year, share_pct DESC)
+        SELECT conc.year, top10_share, skip_rate, peak_hour
+        FROM conc JOIN skips USING (year) JOIN peak USING (year) ORDER BY year""")
+    by_year = {r["year"]: r for r in extra}
+    return [{**r, **{k: v for k, v in by_year[r["period"]].items() if k != "year"}} for r in base]
+
+
+@app.get("/api/period")
+def period(start: str = Query(pattern=r"^20\d\d-(0[1-9]|1[0-2])$"), end: str = Query(pattern=r"^20\d\d-(0[1-9]|1[0-2])$")):
+    """Any stretch of months (start and end as YYYY-MM), for comparing two eras side by side."""
+    if end < start:
+        raise HTTPException(400, "end comes before start")
+    key = bounded_key("period:", start, end)
+    lo, hi = f"{start}-01", f"{end}-01"
+    stats = query(key, YEAR_STATS.format(group="1", where="WHERE date_trunc('month', full_date) BETWEEN %s::date AND %s::date"), (lo, hi))
+    if not stats:
+        raise HTTPException(404, "no listening in that stretch")
+    more = query(key + ":more", """
+        WITH p AS (SELECT * FROM v_listen WHERE date_trunc('month', full_date) BETWEEN %s::date AND %s::date),
+        a AS (SELECT artist_name, artist_key, SUM(minutes) AS m, RANK() OVER (ORDER BY SUM(minutes) DESC) AS r FROM p GROUP BY 1, 2),
+        first_artist AS (SELECT artist_key, MIN(full_date) AS f FROM v_listen GROUP BY artist_key)
+        SELECT
+            (SELECT artist_name FROM a WHERE r = 1 LIMIT 1) AS top_artist,
+            (SELECT ROUND(100 * m / (SELECT SUM(m) FROM a), 1) FROM a WHERE r = 1 LIMIT 1) AS top_artist_share,
+            (SELECT ROUND(100 * SUM(m) FILTER (WHERE r <= 10) / SUM(m), 1) FROM a) AS top10_share,
+            (SELECT track_name || '|' || artist_name FROM p GROUP BY track_key, track_name, artist_name ORDER BY COUNT(*) DESC LIMIT 1) AS top_song,
+            (SELECT COUNT(*) FROM first_artist WHERE f BETWEEN %s::date AND (%s::date + INTERVAL '1 month' - INTERVAL '1 day')) AS new_artists,
+            (SELECT hour FROM p GROUP BY hour ORDER BY SUM(minutes) DESC LIMIT 1) AS peak_hour""", (lo, hi, lo, hi))[0]
+    song_name, song_artist = (more.get("top_song") or "|").split("|", 1)   # read, never change, the cached row
+    return {**stats[0], **more, "top_song": song_name, "top_song_artist": song_artist}
+
+
 def clean(text: str) -> str:
     text = re.sub(r"[\(\[].*?[\)\]]", "", text).split(" - ")[0]
     text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()

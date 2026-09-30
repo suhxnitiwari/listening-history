@@ -27,7 +27,8 @@ document.addEventListener('click', async e => {
     player.src = btn.dataset.src;
     player.play().then(() => btn.classList.add('playing')).catch(() => {});
 });
-const songRow = (s, extra) => `<li>${playButton(s.track_name, s.artist_name)}<div><b>${esc(s.track_name)}</b><span>${esc(s.artist_name)}</span></div><em>${extra}</em></li>`;
+const songOpen = (title, artist) => `<button type="button" class="song-open" data-title="${esc(title)}" data-artist="${esc(artist)}">${esc(title)}</button>`;
+const songRow = (s, extra) => `<li>${playButton(s.track_name, s.artist_name)}<div><b>${songOpen(s.track_name, s.artist_name)}</b><span>${esc(s.artist_name)}</span></div><em>${extra}</em></li>`;
 
 // ---------- headline numbers ----------
 api('summary').then(s => {
@@ -357,9 +358,6 @@ Promise.all(['summary', 'months', 'clock', 'streaks', 'years', 'obsessions', 'to
     const april = streaks.filter(r => r.started.startsWith('2024-04')).length;
     takeaway('tk-streaks', `${byStar} of my ${streaks.length} longest streaks are ${esc(star)} songs${april > 1 ? `, and ${april} of them ran at the same time in April 2024` : ''}. A streak isn't one song on repeat: it's a song I came back to every single day.`);
 
-    const big = years.reduce((a, b) => (b.hours > a.hours ? b : a));
-    const disc = years.reduce((a, b) => (b.new_songs > a.new_songs ? b : a));
-    takeaway('tk-years', `${big.year} was my biggest year: ${fmt(big.hours)} hours, about ${Math.round(big.hours / 24)} full days of music. ${disc.year === big.year ? 'It was also' : `${disc.year} was`} my biggest year for new songs, ${fmt(disc.new_songs)} of them.`);
 
     const topNames = new Set(top.map(t => `${t.track_name}|${t.artist_name}`));
     const lasting = obs.filter(o => topNames.has(`${o.track_name}|${o.artist_name}`)).length;
@@ -459,4 +457,138 @@ api('discovery').then(rows => {
     const avg = later.reduce((t, r) => t + r.new_song_share, 0) / later.length;
     const lowArtist = rows.slice(1).reduce((a, b) => (b.new_artist_share < a.new_artist_share ? b : a));
     takeaway('tk-disc', `After 2023, only about ${Math.round(avg)}% of my listening each year went to songs I'd never heard before. In ${lowArtist.year}, just ${lowArtist.new_artist_share}% went to brand-new artists. I explore, but mostly I return.`);
+});
+
+// ---------- shared: every month in the history, for sparklines ----------
+const MONTH_KEYS = api('months').then(ms => ms.map(m => m.month.slice(0, 7)));
+const spark = (byMonth, keys, hot) => {
+    const vals = keys.map(k => (byMonth || {})[k] || 0), max = Math.max(1, ...vals), w = 600 / keys.length;
+    return `<svg class="spark" viewBox="0 0 600 70" preserveAspectRatio="none" aria-hidden="true">${vals.map((v, i) =>
+        `<rect x="${i * w + 0.5}" y="${70 - Math.max(v ? 2 : 0, v / max * 66)}" width="${w - 1}" height="${Math.max(v ? 2 : 0, v / max * 66)}" rx="1" class="${keys[i] === hot ? 'hot' : ''}"/>`).join('')}</svg>
+        <div class="spark-axis"><span>${monthName(keys[0] + '-01')}</span><span>${monthName(keys[keys.length - 1] + '-01')}</span></div>`;
+};
+const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+
+// ---------- 3: the life of a song, opened from any song title ----------
+const life = $('#life');
+$('#lifeClose').addEventListener('click', () => life.close());
+life.addEventListener('click', e => { if (e.target === life) life.close(); });
+document.addEventListener('click', async e => {
+    const b = e.target.closest('.song-open');
+    if (!b) return;
+    const [s, keys] = await Promise.all([api(`song?title=${encodeURIComponent(b.dataset.title)}&artist=${encodeURIComponent(b.dataset.artist)}`).catch(() => null), MONTH_KEYS]);
+    if (!s) return;
+    const comeback = s.longest_gap > 30 && s.gap_to < s.last_listen;
+    const facts = [
+        ['First listen', dayName(s.first_listen)],
+        ['25th listen', s.twenty_fifth ? `${dayName(s.twenty_fifth)}, ${daysBetween(s.first_listen, s.twenty_fifth) === 0 ? 'same day' : daysBetween(s.first_listen, s.twenty_fifth) + ' days later'}` : 'Not yet'],
+        ['Biggest day', `${s.peak_day_plays} plays, ${dayName(s.peak_day)}`],
+        ['Peak month', `${monthName(s.peak_month + '-01')}, ${s.peak_month_plays} listens`],
+        ['Longest streak', `${s.longest_streak} ${s.longest_streak === 1 ? 'day' : 'days in a row'}`],
+        ['Longest silence', s.longest_gap > 1 ? `${s.longest_gap} days, ${dayName(s.gap_from)} to ${dayName(s.gap_to)}` : 'None, it never left'],
+        ['Last listen', dayName(s.last_listen)],
+        ['All time', `${fmt(s.listens)} listens`],
+    ];
+    $('#lifeBody').innerHTML = `
+        <p class="eyebrow">The life of a song</p>
+        <div class="life-head">${playButton(s.track_name, s.artist_name)}<div><h3 id="lifeTitle">${esc(s.track_name)}</h3><p>${esc(s.artist_name)}</p></div></div>
+        ${spark(s.by_month, keys, s.peak_month)}
+        <dl class="life-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+        <p class="takeaway"><b>The arc</b>${comeback
+            ? `It went quiet for ${s.longest_gap} days and came back. That's a song I keep returning to.`
+            : s.twenty_fifth && daysBetween(s.first_listen, s.twenty_fifth) <= 7 ? 'Instant obsession: 25 listens inside a week.' : 'A slow burn: it grew on me over time.'}</p>`;
+    life.showModal();
+});
+
+// ---------- 3: fuller artist results in "Your turn" ----------
+const artistCard = $('#artistCard');
+new MutationObserver(async () => {
+    if (artistCard.dataset.done === artistCard.innerHTML.length + '' || artistCard.classList.contains('none') || !artistCard.querySelector('h3')) return;
+    const name = artistCard.querySelector('h3').textContent;
+    const [a, keys] = await Promise.all([api(`artist-life?name=${encodeURIComponent(name)}`).catch(() => null), MONTH_KEYS]);
+    if (!a || artistCard.querySelector('h3')?.textContent !== name) return;
+    artistCard.insertAdjacentHTML('beforeend', `
+        <div class="artist-life">
+            <p class="label">Our history</p>
+            ${spark(a.by_month, keys, a.peak_month)}
+            <dl class="life-facts">
+                <div><dt>Peak month</dt><dd>${monthName(a.peak_month + '-01')}, ${fmt(a.peak_month_plays)} listens</dd></div>
+                <div><dt>Longest streak</dt><dd>${a.longest_streak} days in a row</dd></div>
+                <div><dt>Biggest day</dt><dd>${a.peak_day_plays} plays, ${dayName(a.peak_day)}</dd></div>
+                <div><dt>Last listen</dt><dd>${dayName(a.last_listen)}</dd></div>
+            </dl>
+            <p class="label">Top songs, tap one for its story</p>
+            <ol class="artist-top">${a.top_songs.map(t => `<li>${songOpen(t.track_name, name)} <span>${fmt(t.listens)} listens</span></li>`).join('')}</ol>
+        </div>`);
+    artistCard.dataset.done = artistCard.innerHTML.length + '';
+}).observe(artistCard, { childList: true });
+
+// ---------- 4: how I changed, year by year ----------
+api('change').then(rows => {
+    const METRICS = [
+        ['hours', 'Hours of music', v => fmt(v)],
+        ['hours_per_day', 'Hours per listening day', v => v],
+        ['artists', 'Different artists', v => fmt(v)],
+        ['songs', 'Different songs', v => fmt(v)],
+        ['listens_per_song', 'Listens per song', v => v],
+        ['top10_share', 'Share going to my top 10 artists', v => v + '%'],
+        ['skip_rate', 'Plays I skipped', v => v + '%'],
+        ['peak_hour', 'Busiest hour', v => hourName(v)],
+    ];
+    const arrow = (cur, prev, k) => {
+        if (prev === undefined || k === 'peak_hour') return '';
+        const d = cur - prev; if (Math.abs(d) < 0.05) return '<i class="flat">=</i>';
+        return d > 0 ? '<i class="up">↑</i>' : '<i class="down">↓</i>';
+    };
+    $('#change').innerHTML = `<table><thead><tr><th></th>${rows.map(r => `<th>${r.period}</th>`).join('')}</tr></thead><tbody>${METRICS.map(([k, label, f]) =>
+        `<tr><th>${label}</th>${rows.map((r, i) => `<td>${f(r[k])}${arrow(r[k], i ? rows[i - 1][k] : undefined, k)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    const full = rows.slice(1);
+    const heavy = full.reduce((a, b) => (b.hours_per_day > a.hours_per_day ? b : a));
+    const repeat = full.reduce((a, b) => (b.listens_per_song > a.listens_per_song ? b : a));
+    const varied = full.reduce((a, b) => (b.top10_share < a.top10_share ? b : a));
+    takeaway('tk-years', `${heavy.period} was my heaviest year, ${heavy.hours_per_day} hours a day${repeat.period === heavy.period ? `, and my most repetitive: ${repeat.listens_per_song} listens per song` : ''}. ${varied.period} was my most varied: my top 10 artists got just ${varied.top10_share}% of my listening.`);
+});
+
+// ---------- 5: compare two eras ----------
+MONTH_KEYS.then(keys => {
+    const first = keys[0], last = keys[keys.length - 1];
+    const opts = [];
+    const years = [...new Set(keys.map(k => k.slice(0, 4)))];
+    years.forEach(y => opts.push({ label: y, start: `${y}-01` < first ? first : `${y}-01`, end: `${y}-12` > last ? last : `${y}-12` }));
+    const SEASONS = [['Spring', '03', '05'], ['Summer', '06', '08'], ['Fall', '09', '11']];
+    years.forEach(y => SEASONS.forEach(([n, a, b]) => {
+        const start = `${y}-${a}`, end = `${y}-${b}`;
+        if (start >= first && end <= last) opts.push({ label: `${n} ${y}`, start, end });
+    }));
+    const fill = (sel, pick) => { sel.innerHTML = opts.map((o, i) => `<option value="${i}" ${o.label === pick ? 'selected' : ''}>${o.label}</option>`).join(''); };
+    const A = $('#cmpA'), B = $('#cmpB');
+    fill(A, '2023'); fill(B, '2025');
+    const months = o => (+o.end.slice(0, 4) - +o.start.slice(0, 4)) * 12 + (+o.end.slice(5) - +o.start.slice(5)) + 1;
+    const run = async () => {
+        const oa = opts[A.value], ob = opts[B.value];
+        const [a, b] = await Promise.all([oa, ob].map(o => api(`period?start=${o.start}&end=${o.end}`)));
+        const ma = months(oa), mb = months(ob);
+        const rows = [
+            ['Top artist', x => `${esc(x.top_artist)}, ${x.top_artist_share}%`],
+            ['Top song', x => `${songOpen(x.top_song, x.top_song_artist)}`],
+            ['Hours per listening day', x => x.hours_per_day],
+            ['Different artists', x => fmt(x.artists)],
+            ['New artists per month', (x, m) => (x.new_artists / m).toFixed(1)],
+            ['Listens per song', x => x.listens_per_song],
+            ['Share going to my top 10 artists', x => x.top10_share + '%'],
+            ['Busiest hour', x => hourName(x.peak_hour)],
+        ];
+        $('#cmpTable').innerHTML = `<table><thead><tr><th></th><th>${oa.label}</th><th>${ob.label}</th></tr></thead><tbody>${rows.map(([l, f]) =>
+            `<tr><th>${l}</th><td>${f(a, ma)}</td><td>${f(b, mb)}</td></tr>`).join('')}</tbody></table>`;
+        if (oa.label === ob.label) { $('#cmpSummary').textContent = 'Pick two different eras.'; return; }
+        const explorer = a.new_artists / ma > b.new_artists / mb ? [oa, a, ma] : [ob, b, mb];
+        const repeater = a.listens_per_song > b.listens_per_song ? [oa, a] : [ob, b];
+        const other = repeater[0] === oa ? b : a;
+        const explored = `${(explorer[1].new_artists / explorer[2]).toFixed(1)} new artists a month`, repeated = `${repeater[1].listens_per_song} listens per song, against ${other.listens_per_song}`;
+        $('#cmpSummary').innerHTML = explorer[0] === repeater[0]
+            ? `<b>${explorer[0].label} me explored more and repeated more</b>: ${explored}, and ${repeated}.`
+            : `<b>${explorer[0].label} me explored more</b> (${explored}). <b>${repeater[0].label} me repeated more</b> (${repeated}).`;
+    };
+    A.addEventListener('change', run); B.addEventListener('change', run);
+    run();
 });

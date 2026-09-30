@@ -18,7 +18,7 @@
     <meta name="twitter:image" content="https://listening-history.onrender.com/static/share-card.jpg">
     <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23D65478'/><circle cx='50' cy='50' r='14' fill='%2322090F'/></svg>">
-    <link rel="stylesheet" href="/static/styles.css?v=30">
+    <link rel="stylesheet" href="/static/styles.css?v=34">
 </head>
 <body>
 
@@ -144,10 +144,24 @@
             <p class="takeaway" id="tk-months"></p>
         </section>
         <section class="block" aria-labelledby="t-years">
-            <p class="eyebrow">Year in review</p>
-            <h2 id="t-years">Every year in one card</h2>
+            <p class="eyebrow">How I changed</p>
+            <h2 id="t-years">Year by year, side by side</h2>
+            <p class="sub">What Wrapped can't show: each year next to the one before. Arrows compare with the year before. 2022 starts in May.</p>
+            <div class="change" id="change"></div>
+            <p class="eyebrow change-cards">Songs of the year</p>
             <div class="years" id="years"></div>
             <p class="takeaway" id="tk-years"></p>
+        </section>
+
+        <section class="block" id="compare" aria-labelledby="t-cmp">
+            <p class="eyebrow">Compare two eras</p>
+            <h2 id="t-cmp">Me then, me now</h2>
+            <div class="cmp-pick">
+                <label>Compare <select id="cmpA" aria-label="First era"></select></label>
+                <label>with <select id="cmpB" aria-label="Second era"></select></label>
+            </div>
+            <p class="cmp-summary" id="cmpSummary" aria-live="polite"></p>
+            <div class="cmp-table" id="cmpTable"></div>
         </section>
     <header class="chapter" id="habits">
         <p class="chapter-n">Chapter 03</p>
@@ -460,7 +474,11 @@ shuffle       false</pre>
     </div>
     <p class="player-legal">© 2026 Suhani Tiwari. All rights reserved. Data: my own Spotify history.</p>
 </footer>
+<dialog class="life" id="life" aria-labelledby="lifeTitle">
+    <button type="button" class="life-close" id="lifeClose" aria-label="Close">×</button>
+    <div id="lifeBody"></div>
+</dialog>
 <audio id="player" preload="none"></audio>
-<script src="/static/app.js?v=30"></script>
+<script src="/static/app.js?v=36"></script>
 </body>
 </html>
