@@ -449,21 +449,25 @@ async def preview(title: str = Query(max_length=150), artist: str = Query(max_le
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 
+# pages are always re-checked, so returning visitors see the newest version
+FRESH = {"Cache-Control": "no-cache"}
+
+
 @app.get("/")
 def home():
-    return FileResponse(STATIC / "index.html")
+    return FileResponse(STATIC / "index.html", headers=FRESH)
 
 
 @app.get("/about")
 def about():
     """Who I am, what MIS means to me, and my other projects. The main page stays all Spotify."""
-    return FileResponse(STATIC / "about.html")
+    return FileResponse(STATIC / "about.html", headers=FRESH)
 
 
 @app.get("/report")
 def report():
     """The printable report page (the PDF is made from this)."""
-    return FileResponse(STATIC / "report.html")
+    return FileResponse(STATIC / "report.html", headers=FRESH)
 
 
 @app.get("/report.pdf")
