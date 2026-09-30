@@ -17,7 +17,7 @@
     <meta name="twitter:image" content="https://listening-history.onrender.com/static/share-card.jpg">
     <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238A4D57'/><circle cx='50' cy='50' r='14' fill='%23FAF1EF'/></svg>">
-    <link rel="stylesheet" href="/static/styles.css?v=13">
+    <link rel="stylesheet" href="/static/styles.css?v=15">
 </head>
 <body>
 
@@ -25,7 +25,7 @@
     <div class="topnav-in">
         <a class="brand" href="#top">Listening History</a>
         <div class="topnav-links">
-            <a href="#about">About</a>
+            <a href="/about">About me</a>
             <a href="#data">The data</a>
             <a href="#watch">Watch</a>
             <a href="#play">Play</a>
@@ -59,19 +59,9 @@
     </header>
 
     <!-- ABOUT ME -->
-    <section class="block about" id="about" aria-labelledby="t-about">
-        <div class="about-top">
-            <figure class="about-photo"><img src="/static/suhani-notes.jpg" width="800" height="1000" loading="lazy" alt="Suhani in headphones, writing notes by hand between two laptops"></figure>
-        <div>
-            <p class="eyebrow">About me</p>
-            <h2 id="t-about">Hi, I'm Suhani.</h2>
-            <p class="about-p">I study Management Information Systems at the McCombs School of Business at UT Austin, with a side of psychology, marketing and product strategy. I'm fascinated by why people choose what they choose, and it turns out my own music is a pretty good case study.</p>
-            <p class="about-p">Wrapped gives me one year at a time. I wanted all four at once, so I treated my Spotify export like a real company's data: clean it, model it, load it into a database and ask it questions nobody had asked yet.</p>
-            <p class="about-links"><a href="https://suhanitiwari.com">My portfolio ↗</a> <a href="https://www.linkedin.com/in/suhxnitiwari/">LinkedIn ↗</a></p>
-        </div>
-        </div>
-        <div class="about-facts">
-            <p class="eyebrow">Get to know me through my data <span class="hint">Tap a card to flip it.</span></p>
+    <section class="block about" id="questions" aria-label="Four questions">
+        <div class="about-facts first">
+            <p class="eyebrow">I had the data, so I started asking questions <span class="hint">Tap a card to flip it.</span></p>
             <div class="flips" id="flips">
                 <button type="button" class="flip" aria-pressed="false"><span class="flip-front">Who's my #1 artist?</span><span class="flip-back" data-fact="artist">…</span></button>
                 <button type="button" class="flip" aria-pressed="false"><span class="flip-front">What time of day do I listen most?</span><span class="flip-back" data-fact="hour">…</span></button>
@@ -92,6 +82,7 @@
             <article class="month-card" id="monthCard" aria-live="polite"></article>
             <button type="button" class="pill" id="openMonth">See this month's top five</button>
             <ol class="song-list" id="monthSongs" hidden></ol>
+            <p class="takeaway" id="tk-months"></p>
         </section>
 
         <section class="block split" aria-labelledby="t-clock">
@@ -101,6 +92,7 @@
                 <p class="sub">Each spoke is one hour of the day, sized by its share of that year's listening.</p>
                 <div class="chips" id="yearChips" role="group" aria-label="Year"></div>
                 <p class="callout" id="clockNote"></p>
+                <p class="takeaway" id="tk-clock"></p>
             </div>
             <svg class="clock" id="clock" viewBox="-160 -160 320 320" role="img" aria-label="Listening by hour of day"></svg>
         </section>
@@ -110,12 +102,14 @@
             <h2 id="t-streak">Most days in a row with one song</h2>
             <p class="sub">Found with the gaps and islands pattern in SQL: on consecutive days, the date minus a row number stays the same.</p>
             <ol class="race" id="race"></ol>
+            <p class="takeaway" id="tk-streaks"></p>
         </section>
 
         <section class="block" aria-labelledby="t-years">
             <p class="eyebrow">Year in review</p>
             <h2 id="t-years">Every year in one card</h2>
             <div class="years" id="years"></div>
+            <p class="takeaway" id="tk-years"></p>
         </section>
 
         <section class="block split two" aria-labelledby="t-obs">
@@ -123,6 +117,7 @@
                 <p class="eyebrow">First listen to obsession</p>
                 <h2 id="t-obs">Fastest to 25 listens</h2>
                 <ol class="song-list" id="obsessions"></ol>
+                <p class="takeaway" id="tk-obs"></p>
             </div>
             <div>
                 <p class="eyebrow">Skip rate</p>
@@ -132,6 +127,7 @@
                     <button type="button" class="chip" data-skip="least" aria-pressed="false">Least skipped</button>
                 </div>
                 <ol class="skip-list" id="skips"></ol>
+                <p class="takeaway" id="tk-skips"></p>
             </div>
         </section>
     </div>
@@ -176,6 +172,48 @@
         </div>
         <div class="step-panel" id="stepPanel" role="tabpanel" aria-live="polite"></div>
 
+        <div class="transform">
+            <div>
+                <p class="eyebrow">Before: one raw record from Spotify</p>
+<pre class="code raw">{
+  "ts": "2024-04-01T14:04:00Z",
+  "platform": <s>"sample"</s>,
+  "ms_played": 240000,
+  "conn_country": <s>"ZZ"</s>,
+  "ip_addr": <s>"0.0.0.0"</s>,
+  "master_metadata_track_name": "Midnight Draft",
+  "master_metadata_album_artist_name": "The Examples",
+  "master_metadata_album_album_name": "Demo Days",
+  "spotify_track_uri": "spotify:track:sample01",
+  "reason_start": "trackdone",
+  "reason_end": "trackdone",
+  "shuffle": false,
+  "skipped": false,
+  "incognito_mode": false
+}</pre>
+            </div>
+            <ol class="transform-steps" aria-label="What the pipeline does to it">
+                <li>Crosses out IP, country and device</li>
+                <li>Converts UTC to Austin time</li>
+                <li>Counts it: 30 seconds or more</li>
+                <li>Swaps names for keys</li>
+            </ol>
+            <div>
+                <p class="eyebrow">After: one row in fact_play</p>
+<pre class="code clean">play_key      84213
+track_key     1507     <span class="c">→ Midnight Draft</span>
+date_key      20240401 <span class="c">→ Monday, spring</span>
+session_key   2210     <span class="c">→ one session</span>
+played_at     2024-04-01 09:04
+hour          9
+ms_played     240000
+counted       true
+skipped       false
+shuffle       false</pre>
+                <p class="hint-line">A made-up example with the real field names. My actual export never leaves my laptop.</p>
+            </div>
+        </div>
+
         <div class="schema-wrap">
             <div>
                 <p class="eyebrow">The data model</p>
@@ -197,13 +235,38 @@
             </div>
         </div>
 
-        <div class="privacy">
-            <p class="eyebrow">What I left out on purpose</p>
-            <p>Spotify's export includes my IP address, the country I was in and the device I used. The pipeline drops all of it, skips private sessions, and the raw files never touch GitHub. The website reads the database with a read-only login, so even this page can't change a row.</p>
+        <div class="privacy-block">
+            <div>
+                <p class="eyebrow">What I left out on purpose</p>
+                <h3 class="h3">Good analysis doesn't need everything Spotify gave me.</h3>
+            </div>
+            <ul class="privacy-list">
+                <li><b>IP address</b><span>Dropped</span></li>
+                <li><b>Country</b><span>Dropped</span></li>
+                <li><b>Device</b><span>Dropped</span></li>
+                <li><b>Private sessions</b><span>Excluded</span></li>
+                <li><b>Raw export files</b><span>Never on GitHub</span></li>
+                <li><b>This website</b><span>Read-only access</span></li>
+            </ul>
         </div>
-        <ul class="stack" aria-label="Built with">
-            <li>Python</li><li>PostgreSQL on Neon</li><li>Star schema</li><li>Window functions</li><li>CTEs</li><li>FastAPI</li><li>REST API</li><li>iTunes Search API</li><li>Deployed on Render</li>
-        </ul>
+        <dl class="stack-grid" aria-label="Built with">
+            <div><dt>Ingestion</dt><dd>Python</dd></div>
+            <div><dt>Storage</dt><dd>PostgreSQL on Neon</dd></div>
+            <div><dt>Modeling</dt><dd>Star schema</dd></div>
+            <div><dt>Analysis</dt><dd>CTEs, window functions, gaps and islands</dd></div>
+            <div><dt>Backend</dt><dd>FastAPI, REST</dd></div>
+            <div><dt>Outside data</dt><dd>iTunes Search API</dd></div>
+            <div><dt>Deployment</dt><dd>Render</dd></div>
+        </dl>
+
+        <div class="learned">
+            <p class="eyebrow">What I learned</p>
+            <ol>
+                <li><b>Cleaning decides the questions.</b><span>Spotify files one song under several IDs: the single, the album, the deluxe. Until I merged them, my top songs were split across copies of themselves.</span></li>
+                <li><b>Not every play is a listen.</b><span>Twice, a song kept looping while I wasn't listening. Left in, one of those loops would have been my biggest single day ever. The 30-second rule and a loop filter keep the data honest.</span></li>
+                <li><b>Having a field isn't a reason to keep it.</b><span>The export tracks where and on what I listened. None of my questions needed it, so none of it was kept.</span></li>
+            </ol>
+        </div>
     </section>
 
     <!-- YOUR TURN -->
@@ -220,28 +283,20 @@
         </form>
         <div class="artist-card" id="artistCard" aria-live="polite" hidden></div>
 
-        <div class="cta">
-            <div class="cta-card">
-                <p class="eyebrow">Get your own data</p>
-                <h3 class="h3">Spotify will send you yours, too.</h3>
+        <div class="cta one">
+            <div class="turn-end">
+                <a class="pill solid" href="/report.pdf" download>Download my 4-year report (PDF) ↓</a>
+                <a class="pill" href="/report">Read it online</a>
+            </div>
+            <details class="own-data">
+                <summary>Want to analyze yours? →</summary>
                 <ol class="cta-steps">
                     <li>Open your Spotify account's <b>Privacy</b> page.</li>
                     <li>Check <b>Extended streaming history</b> and request it.</li>
                     <li>Confirm the email. It can take up to 30 days to arrive.</li>
                 </ol>
                 <a class="pill solid" href="https://www.spotify.com/account/privacy/" target="_blank" rel="noopener">Request my Spotify data ↗</a>
-            </div>
-            <div class="cta-card dark">
-                <p class="eyebrow">Like how I think about data?</p>
-                <h3 class="h3">Let's talk.</h3>
-                <p>I'm an MIS student at UT Austin who likes turning messy data into something people can actually use. I'd love to hear what you're building.</p>
-                <div class="links">
-                    <a class="pill solid" href="https://www.linkedin.com/in/suhxnitiwari/" target="_blank" rel="noopener">Connect on LinkedIn ↗</a>
-                    <a class="pill" href="https://suhanitiwari.com">See my portfolio ↗</a>
-                    <a class="pill" href="https://github.com/suhxnitiwari/listening-history" target="_blank" rel="noopener">View the code ↗</a>
-                    <a class="pill" href="/report.pdf" download>Download the report ↓</a>
-                </div>
-            </div>
+            </details>
         </div>
     </section>
 
@@ -256,7 +311,7 @@
         <nav class="foot-cols" aria-label="Footer">
             <div>
                 <p class="foot-h">This site</p>
-                <a href="#about">About</a><a href="#data">The data</a><a href="#watch">Watch</a><a href="#play">Play</a><a href="#method">How it works</a><a href="#your-turn">Your turn</a>
+                <a href="/about">About me</a><a href="#data">The data</a><a href="#watch">Watch</a><a href="#play">Play</a><a href="#method">How it works</a><a href="#your-turn">Your turn</a>
             </div>
             <div>
                 <p class="foot-h">The project</p>
@@ -274,6 +329,6 @@
     </div>
 </footer>
 <audio id="player" preload="none"></audio>
-<script src="/static/app.js?v=12"></script>
+<script src="/static/app.js?v=15"></script>
 </body>
 </html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About me | Listening History</title>
+    <meta name="description" content="Four years of my Spotify listening, run through an ETL pipeline into a PostgreSQL star schema and explored with SQL.">
+    <meta name="author" content="Suhani Tiwari">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Four years of my listening, in data | Suhani Tiwari">
+    <meta property="og:description" content="182,293 Spotify records, cleaned in Python, modeled into PostgreSQL and asked questions in SQL. Guess my stats, watch my top songs and see if I listen to your favorite artist.">
+    <meta property="og:url" content="https://listening-history.onrender.com/">
+    <meta property="og:image" content="https://listening-history.onrender.com/static/share-card.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://listening-history.onrender.com/static/share-card.jpg">
+    <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238A4D57'/><circle cx='50' cy='50' r='14' fill='%23FAF1EF'/></svg>">
+    <link rel="stylesheet" href="/static/styles.css?v=15">
+</head>
+<body>
+
+<nav class="topnav" aria-label="Sections">
+    <div class="topnav-in">
+        <a class="brand" href="/">Listening History</a>
+        <div class="topnav-links">
+            <a href="/about">About me</a>
+            <a href="/#data">The data</a>
+            <a href="/#watch">Watch</a>
+            <a href="/#play">Play</a>
+            <a href="/#method">How it works</a>
+            <a class="topnav-cta" href="/#your-turn">Your turn</a>
+        </div>
+    </div>
+</nav>
+
+<main class="page" id="top">
+
+    <section class="about-hero" aria-labelledby="t-hi">
+        <figure style="margin:0"><img src="/static/suhani-notes.jpg" width="800" height="1000" alt="Suhani in headphones, writing notes by hand between two laptops"></figure>
+        <div>
+            <p class="eyebrow">About me</p>
+            <h1 id="t-hi">Hi, I'm Suhani.</h1>
+            <p class="lede">I study Management Information Systems at the McCombs School of Business at UT Austin, with a side of psychology, marketing and product strategy. I'm fascinated by why people choose what they choose, and it turns out my own music is a pretty good case study.</p>
+            <p class="about-p">Wrapped gives me one year at a time. I wanted all four at once, so I treated my Spotify export like a real company's data: clean it, model it, load it into a database and ask it questions nobody had asked yet.</p>
+            <div class="hero-actions">
+                <a class="pill solid" href="/">Back to my listening</a>
+                <a class="pill" href="https://suhanitiwari.com">My portfolio ↗</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="block" aria-labelledby="t-mis">
+        <p class="eyebrow">Why MIS</p>
+        <h2 id="t-mis">So why not English, Design, Studio Art, or Music Performance?</h2>
+        <p class="about-p">I read constantly, I write, I love playing instruments, and I've been making art for as long as I can remember. But the more I made, the more I noticed technology was already inside everything I loved: the tools I draw with, the apps that put stories in my hands, the playlist that finds a song before I know I want it. Someone had to understand people to build those things well.</p>
+        <p class="about-p">That's what MIS is to me. It's the major for people who care as much about <em>why</em> someone uses a product as <em>how</em> it's built. I didn't leave the humanities behind. I brought them with me.</p>
+        <p class="mis-quote">I learn enough technology to build it, enough business to know why we're building it, and enough about people to make sure what we build actually works for them.</p>
+    </section>
+
+    <section class="block" aria-labelledby="t-more">
+        <p class="eyebrow">More of my work</p>
+        <h2 id="t-more">If you like this project, check out these.</h2>
+        <div class="projects">
+            <article class="project"><h3>RideFlow</h3><p>A full-stack rideshare app for riders, drivers and admins, built solo in a course designed for teams.</p>
+                <div class="links"><a class="pill solid" href="https://rideflow-frontend.onrender.com/" target="_blank" rel="noopener">Open it ↗</a><a class="pill" href="https://github.com/suhxnitiwari/ridemanagement" target="_blank" rel="noopener">Code ↗</a></div></article>
+            <article class="project"><h3>Saturday in Austin</h3><p>208 Austin places, turned into a Python app that plans your perfect Saturday.</p>
+                <div class="links"><a class="pill solid" href="https://suhxnitiwari.github.io/saturday-in-austin/" target="_blank" rel="noopener">Open it ↗</a><a class="pill" href="https://github.com/suhxnitiwari/saturday-in-austin" target="_blank" rel="noopener">Code ↗</a></div></article>
+            <article class="project"><h3>Bevo's Tacos</h3><p>A checkout system for an Austin food truck, built in C# first, then rebuilt as a live web app.</p>
+                <div class="links"><a class="pill solid" href="https://suhxnitiwari.github.io/Bevo_Taco-Checkout/" target="_blank" rel="noopener">Open it ↗</a><a class="pill" href="https://github.com/suhxnitiwari/Bevo_Taco-Checkout" target="_blank" rel="noopener">Code ↗</a></div></article>
+            <article class="project"><h3>My portfolio</h3><p>Live Spotify data, an interactive map of my life, and Sitara, my AI guide.</p>
+                <div class="links"><a class="pill solid" href="https://suhanitiwari.com" target="_blank" rel="noopener">Open it ↗</a><a class="pill" href="https://github.com/suhxnitiwari/suhanitiwari-portfolio" target="_blank" rel="noopener">Code ↗</a></div></article>
+        </div>
+    </section>
+
+    <section class="block" aria-labelledby="t-talk">
+        <div class="cta-card dark">
+            <p class="eyebrow">Like how I think about data?</p>
+            <h3 class="h3" id="t-talk">Let's talk.</h3>
+            <p>I'm an MIS student at UT Austin who likes turning messy data into something people can actually use. I'd love to hear what you're building.</p>
+            <div class="links">
+                <a class="pill solid" href="https://www.linkedin.com/in/suhxnitiwari/" target="_blank" rel="noopener">Connect on LinkedIn ↗</a>
+                <a class="pill" href="https://suhanitiwari.com">See my portfolio ↗</a>
+            </div>
+        </div>
+    </section>
+
+</main>
+<footer class="site-foot">
+    <div class="site-foot-in">
+        <div class="foot-lead">
+            <p class="foot-title">Still here? You must like my taste.</p>
+            <p class="foot-sub">Or you're nosy. Either way, say hi.</p>
+            <a class="pill foot-report" href="/report.pdf" download>Download my 4-year report (PDF) ↓</a>
+        </div>
+        <nav class="foot-cols" aria-label="Footer">
+            <div>
+                <p class="foot-h">This site</p>
+                <a href="/about">About me</a><a href="/#data">The data</a><a href="/#watch">Watch</a><a href="/#play">Play</a><a href="/#method">How it works</a><a href="/#your-turn">Your turn</a>
+            </div>
+            <div>
+                <p class="foot-h">The project</p>
+                <a href="/report">Read the report</a><a href="/api/docs">Explore the API</a><a href="https://github.com/suhxnitiwari/listening-history" target="_blank" rel="noopener">View the code ↗</a>
+            </div>
+            <div>
+                <p class="foot-h">Me</p>
+                <a href="https://suhanitiwari.com">Portfolio ↗</a><a href="https://www.linkedin.com/in/suhxnitiwari/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="https://github.com/suhxnitiwari" target="_blank" rel="noopener">GitHub ↗</a><a href="https://www.instagram.com/suhxnitiwari/" target="_blank" rel="noopener">Instagram ↗</a><a href="mailto:suhxnitiwari@gmail.com">Email ↗</a>
+            </div>
+        </nav>
+        <div class="foot-small">
+            <p>© 2026 Suhani Tiwari. All rights reserved. Data: my own Spotify extended streaming history.</p>
+            <a href="#top">Scroll back up. I'll wait. ↑</a>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

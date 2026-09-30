@@ -261,6 +261,12 @@ def home():
     return FileResponse(STATIC / "index.html")
 
 
+@app.get("/about")
+def about():
+    """Who I am, what MIS means to me, and my other projects. The main page stays all Spotify."""
+    return FileResponse(STATIC / "about.html")
+
+
 @app.get("/report")
 def report():
     """The printable report page (the PDF is made from this)."""

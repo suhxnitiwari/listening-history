@@ -409,3 +409,39 @@ $('#artistForm').addEventListener('submit', async e => {
         <div><p class="label">First listen</p><p class="big">${dayName(a.first_listen)}</p></div>
         <div class="top">${playButton(a.top_song, a.artist_name)}<div><b>${esc(a.top_song)}</b><br><span class="muted">My most-played of theirs, ${fmt(a.top_song_listens)} listens</span></div></div>`;
 });
+
+// ---------- takeaways: one computed line under each chart, so it reads as analysis, not just a picture ----------
+const takeaway = (id, text) => { const el = document.getElementById(id); if (el) el.innerHTML = `<b>Takeaway</b>${text}`; };
+const monthLong = iso => new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+Promise.all(['summary', 'months', 'clock', 'streaks', 'years', 'obsessions', 'top-songs', 'skips', 'days'].map(api))
+.then(([s, months, clock, streaks, years, obs, top, skips, days]) => {
+    const star = s.top_artist.artist_name;
+    const owned = months.filter(m => m.era_artist === star);
+    const peakShare = owned.reduce((a, b) => (b.share_pct > a.share_pct ? b : a));
+    takeaway('tk-months', `${esc(star)} owned ${owned.length} of my ${months.length} months, and ${Math.floor(s.top_artist.hours / s.hours * 100)}% of everything I played. Her strongest month was ${monthLong(peakShare.month)}, at ${peakShare.share_pct}% of my listening.`);
+
+    const ys = [...new Set(clock.map(c => c.year))];
+    const peaks = ys.map(y => clock.filter(c => c.year === y).reduce((a, b) => (b.share_pct > a.share_pct ? b : a)).hour);
+    const last = ys[ys.length - 1];
+    const late = clock.filter(c => c.year === last && c.hour < 6).reduce((t, c) => t + c.share_pct, 0);
+    takeaway('tk-clock', `Every year my busiest hour lands between ${hourName(Math.min(...peaks))} and ${hourName(Math.max(...peaks))}. In ${last}, only ${late.toFixed(1)}% of my listening happened between midnight and 6 AM.`);
+
+    const byStar = streaks.filter(r => r.artist_name === star).length;
+    const april = streaks.filter(r => r.started.startsWith('2024-04')).length;
+    takeaway('tk-streaks', `${byStar} of my ${streaks.length} longest streaks are ${esc(star)} songs${april > 1 ? `, and ${april} of them ran at the same time in April 2024` : ''}. A streak isn't one song on repeat: it's a song I came back to every single day.`);
+
+    const big = years.reduce((a, b) => (b.hours > a.hours ? b : a));
+    const disc = years.reduce((a, b) => (b.new_songs > a.new_songs ? b : a));
+    takeaway('tk-years', `${big.year} was my biggest year: ${fmt(big.hours)} hours, about ${Math.round(big.hours / 24)} full days of music. ${disc.year === big.year ? 'It was also' : `${disc.year} was`} my biggest year for new songs, ${fmt(disc.new_songs)} of them.`);
+
+    const topNames = new Set(top.map(t => `${t.track_name}|${t.artist_name}`));
+    const lasting = obs.filter(o => topNames.has(`${o.track_name}|${o.artist_name}`)).length;
+    takeaway('tk-obs', lasting === 0
+        ? `None of my fastest obsessions made my all-time top 40. The songs I binge hardest aren't the ones I keep: those build up slowly, over years.`
+        : `Only ${lasting} of my ${obs.length} fastest obsessions made my all-time top 40. Binging a song and keeping it are different things.`);
+
+    const starSkip = skips.least.concat(skips.most).find(r => r.artist_name === star);
+    takeaway('tk-skips', starSkip
+        ? `Even ${esc(star)}, my #1 artist, gets skipped ${starSkip.skip_pct}% of the time. A skip usually means "not this one right now," not "not this artist."`
+        : `The artists I skip most are the ones shuffle hands me, not the ones I choose.`);
+});
