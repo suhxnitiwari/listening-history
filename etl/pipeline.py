@@ -30,8 +30,10 @@ SESSION_GAP = timedelta(minutes=30)     # a break longer than this starts a new 
 # Known bad data, removed on purpose. Each entry: (Austin date, song title, why).
 # March 21, 2023: "Party In The U.S.A." looped on its own overnight (145 plays, 12:41 to 10:32 AM,
 # 144 of them started only because the last one ended). I was asleep, not obsessed.
+# January 22, 2025: "Hate Me" did the same, 105 plays starting at 3:32 AM.
 UNATTENDED_LOOPS = [
     (date(2023, 3, 21), "Party In The U.S.A.", "left on repeat overnight"),
+    (date(2025, 1, 22), "Hate Me (with Juice WRLD)", "left on repeat overnight"),
 ]
 
 SEASONS = {12: "Winter", 1: "Winter", 2: "Winter", 3: "Spring", 4: "Spring", 5: "Spring",
