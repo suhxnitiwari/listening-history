@@ -2,6 +2,10 @@
 
 Four years of my Spotify listening, turned into a data warehouse.
 
+## Ownership
+
+© 2026 Suhani Tiwari. **All rights reserved.** This is my original work. The code is public so you can see how I build, not so you can reuse it: copying, reusing or republishing any part of it, including for a portfolio or a class assignment, is not permitted without my written permission. See [LICENSE](LICENSE).
+
 Spotify lets you download your full streaming history: every song, the second it played, and how long you listened. Mine is **182,293 records** from May 2022 to September 2026. This project runs it through an ETL pipeline into a star schema in PostgreSQL, so questions like *which artist owned each month of my life* or *what's my longest streak of playing one song every day* become SQL.
 
 Built by [Suhani Tiwari](https://suhanitiwari.com), MIS at McCombs, UT Austin.
