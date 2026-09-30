@@ -99,8 +99,10 @@ WITH totals AS (
            COUNT(DISTINCT track_key) AS songs, COUNT(DISTINCT artist_key) AS artists
     FROM v_listen GROUP BY year
 ), discoveries AS (
-    SELECT EXTRACT(YEAR FROM first_played)::int AS year, COUNT(*) AS new_songs
-    FROM dim_track GROUP BY 1
+    -- a song is new in the year of its first counted listen (30 seconds or more), not its first skip
+    SELECT EXTRACT(YEAR FROM first_listen)::int AS year, COUNT(*) AS new_songs
+    FROM (SELECT track_key, MIN(full_date) AS first_listen FROM v_listen GROUP BY track_key) f
+    GROUP BY 1
 ), song_of_year AS (
     SELECT DISTINCT ON (year) year, track_name, artist_name, COUNT(*) AS listens
     FROM v_listen GROUP BY year, track_name, artist_name

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Listening Report | Suhani Tiwari</title>
+    <meta name="author" content="Suhani Tiwari">
+    <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238A4D57'/><circle cx='50' cy='50' r='14' fill='%23FAF1EF'/></svg>">
+    <style>
+        :root { --bg: #FAF1EF; --card: #FFF8F6; --line: #EBD5D0; --mul: #8A4D57; --mul-soft: #C9969E; --blush: #F5E5E1; --choc: #2A1810; --muted: #6B5048; --sage: #56634A;
+                --serif: Georgia, "Times New Roman", serif; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+        @page { size: Letter; margin: 0; }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; background: #E9DCD8; color: var(--choc); font-family: var(--sans); font-size: 10.5pt; line-height: 1.45;
+                     -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .sheet { width: 8.5in; height: 11in; margin: 24px auto; padding: 0.6in 0.65in 0.5in; background: var(--bg); position: relative; overflow: hidden; }
+        @media print { html, body { background: var(--bg); } .sheet { margin: 0; break-after: page; } .sheet:last-child { break-after: auto; } }
+        .eyebrow { margin: 0 0 4px; font-size: 7.5pt; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mul); }
+        h1, h2, h3 { margin: 0; font-family: var(--serif); color: var(--choc); }
+        h1 { font-size: 30pt; line-height: 1.05; }
+        h2 { font-size: 16pt; margin-bottom: 8px; }
+        h3 { font-size: 11.5pt; }
+        p { margin: 0; }
+        .muted { color: var(--muted); }
+        .folio { position: absolute; left: 0.65in; right: 0.65in; bottom: 0.3in; display: flex; justify-content: space-between; font-size: 7.5pt; color: var(--muted); border-top: 1px solid var(--line); padding-top: 6px; }
+        .cover-band { margin: -0.6in -0.65in 0.28in; padding: 0.5in 0.65in 0.32in; background: var(--mul); color: #FFF8F6; }
+        .cover-band .eyebrow { color: #F0C9CF; }
+        .cover-band h1 { color: #FFF8F6; }
+        .cover-band p { margin-top: 10px; font-size: 11pt; color: #F5E5E1; max-width: 5.6in; }
+        .stats { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 2px solid var(--choc); margin-bottom: 0.24in; }
+        .stats div { padding-top: 8px; }
+        .stats dt { font-size: 7pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+        .stats dd { margin: 2px 0 0; font-family: var(--serif); font-size: 18pt; font-weight: 700; color: var(--mul); }
+        .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35in; }
+        .rank { list-style: none; margin: 0; padding: 0; counter-reset: n; }
+        .rank li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 3px 0; border-top: 1px solid var(--line); counter-increment: n; }
+        .rank li::before { content: counter(n); font-family: var(--serif); font-weight: 700; color: var(--mul); }
+        .rank b { display: block; font-size: 9pt; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rank span { font-size: 7.5pt; line-height: 1.3; color: var(--muted); }
+        .rank em { font-style: normal; font-weight: 700; font-size: 9pt; color: var(--sage); white-space: nowrap; }
+        .bar { height: 4px; margin-top: 3px; border-radius: 2px; background: var(--mul-soft); }
+        .finding { margin-top: 0.14in; padding: 14px 18px; border-left: 3px solid var(--mul); background: var(--card); }
+        .finding b { font-family: var(--serif); font-size: 12pt; }
+        table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+        th { text-align: left; font-size: 7pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 0 6px 6px 0; border-bottom: 2px solid var(--choc); }
+        td { padding: 5px 6px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+        td.num { font-family: var(--serif); font-weight: 700; color: var(--mul); }
+        .chart { width: 100%; height: 118px; display: block; }
+        .legend { display: flex; gap: 16px; margin-top: 6px; font-size: 8pt; color: var(--muted); }
+        .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+        .clocks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .clocks figure { margin: 0; text-align: center; }
+        .clocks figcaption { font-size: 8pt; color: var(--muted); }
+        .clocks figcaption b { display: block; font-family: var(--serif); font-size: 10pt; color: var(--choc); }
+        .section { margin-bottom: 0.24in; }
+        .box { padding: 14px 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+        .box ul { margin: 6px 0 0; padding-left: 16px; }
+        .box li { margin: 2px 0; }
+        .box .cols { columns: 2; column-gap: 0.3in; }
+        .box .cols li { break-inside: avoid; }
+        .toolbar { width: 8.5in; margin: 24px auto 0; display: flex; justify-content: space-between; align-items: center; font-family: var(--sans); }
+        .toolbar a { padding: 9px 18px; border-radius: 999px; background: var(--mul); color: #FFF8F6; text-decoration: none; font-weight: 600; font-size: 10pt; }
+        .toolbar a.ghost { background: transparent; color: var(--mul); border: 1.5px solid var(--mul-soft); }
+        @media print { .toolbar { display: none; } }
+        @media screen and (max-width: 860px) { .sheet, .toolbar { width: auto; height: auto; margin: 12px; } .folio { position: static; margin-top: 20px; } .two, .clocks { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="toolbar"><a class="ghost" href="/">← Back to the site</a><a href="/report.pdf">Download the PDF</a></div>
+
+<!-- PAGE 1: the big picture -->
+<section class="sheet">
+    <div class="cover-band">
+        <p class="eyebrow">Listening report</p>
+        <h1>Four years of<br>my listening</h1>
+        <p id="coverLine">Every Spotify play I made, cleaned in Python, modeled in PostgreSQL and summarized with SQL.</p>
+    </div>
+    <dl class="stats" id="stats"></dl>
+    <div class="two">
+        <div><p class="eyebrow">By hours</p><h2>Top 10 artists</h2><ol class="rank" id="artists"></ol></div>
+        <div><p class="eyebrow">By listens</p><h2>Top 10 songs</h2><ol class="rank" id="songs"></ol></div>
+    </div>
+    <div class="finding" id="finding"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span>1</span></div>
+</section>
+
+<!-- PAGE 2: over time -->
+<section class="sheet">
+    <div class="section">
+        <p class="eyebrow">Month by month</p>
+        <h2>How much I listened, and who owned each month</h2>
+        <svg class="chart" id="months" preserveAspectRatio="none"></svg>
+        <div class="legend"><span><i style="background:#8A4D57"></i>Ariana Grande owned the month</span><span><i style="background:#C9969E"></i>Someone else did</span></div>
+    </div>
+    <div class="section">
+        <p class="eyebrow">Year in review</p>
+        <h2>Every year in one table</h2>
+        <table><thead><tr><th>Year</th><th>Hours</th><th>Listens</th><th>Songs</th><th>Artists</th><th>New songs</th><th>Song of the year</th></tr></thead><tbody id="years"></tbody></table>
+    </div>
+    <div class="section">
+        <p class="eyebrow">Listening clock</p>
+        <h2>When I listen, year by year</h2>
+        <div class="clocks" id="clocks"></div>
+    </div>
+    <div class="box">
+        <h3>How this was made</h3>
+        <ul class="cols">
+            <li><b>Extract:</b> Python reads Spotify's extended streaming history export.</li>
+            <li><b>Transform:</b> songs only, Austin time, duplicates and overnight loops removed, one song under many IDs merged.</li>
+            <li><b>Load:</b> a star schema in PostgreSQL, one fact table of plays and five dimensions.</li>
+            <li><b>Ask:</b> SQL views with CTEs and window functions, served by FastAPI.</li>
+        </ul>
+    </div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span>2</span></div>
+</section>
+
+<!-- PAGE 3: habits, and how it was made -->
+<section class="sheet">
+    <div class="two section">
+        <div><p class="eyebrow">Gaps and islands</p><h2>Longest daily streaks</h2><ol class="rank" id="streaks"></ol></div>
+        <div><p class="eyebrow">First listen to obsession</p><h2>Fastest to 25 listens</h2><ol class="rank" id="obsessions"></ol></div>
+    </div>
+    <div class="two section">
+        <div><p class="eyebrow">Skip rate</p><h2>Most skipped artists</h2><ol class="rank" id="skipsMost"></ol></div>
+        <div><p class="eyebrow">Skip rate</p><h2>Least skipped artists</h2><ol class="rank" id="skipsLeast"></ol></div>
+    </div>
+    <div class="two section">
+        <div><p class="eyebrow">One song, one day</p><h2>My biggest single days</h2><ol class="rank" id="days"></ol></div>
+        <div class="box">
+            <h3>What I left out on purpose</h3>
+            <ul>
+                <li>IP address, country and device: dropped.</li>
+                <li>Private sessions: excluded.</li>
+                <li>Raw export files: never on GitHub.</li>
+                <li>A play counts at 30 seconds, Spotify's own threshold.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="folio"><span>listening-history.onrender.com &nbsp; © 2026 Suhani Tiwari. All rights reserved.</span><span>3</span></div>
+</section>
+
+<script>
+    const $ = s => document.querySelector(s);
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fmt = n => Number(n).toLocaleString('en-US');
+    const day = iso => new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const hour = h => `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
+    const api = p => fetch(`/api/${p}`).then(r => r.json());
+    const row = (name, sub, right, share) => `<li><div><b>${esc(name)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}${share !== undefined ? `<div class="bar" style="width:${share}%"></div>` : ''}</div><em>${right}</em></li>`;
+
+    Promise.all(['summary', 'top-artists', 'top-songs', 'months', 'years', 'clock', 'streaks', 'obsessions', 'skips', 'days'].map(api))
+    .then(([s, artists, songs, months, years, clock, streaks, obs, skips, days]) => {
+        $('#coverLine').textContent = `Every Spotify play from ${day(s.first_day)} to ${day(s.last_day)}, cleaned in Python, modeled in PostgreSQL and summarized with SQL.`;
+        $('#stats').innerHTML = [['Hours', s.hours], ['Listens', s.listens], ['Songs', s.songs], ['Artists', s.artists], ['Sessions', s.sessions]]
+            .map(([k, v]) => `<div><dt>${k}</dt><dd>${fmt(v)}</dd></div>`).join('');
+        const topH = artists[0].hours;
+        $('#artists').innerHTML = artists.map(a => row(a.artist_name, `${fmt(a.listens)} listens`, `${fmt(Math.round(a.hours))} h`, a.hours / topH * 100)).join('');
+        $('#songs').innerHTML = songs.slice(0, 10).map(t => row(t.track_name, t.artist_name, fmt(t.listens))).join('');
+        const share = Math.round(artists[0].hours / s.hours * 100);
+        const nextFour = artists.slice(1, 5).reduce((t, a) => t + a.hours, 0);
+        const owned = months.filter(m => m.era_artist === artists[0].artist_name).length;
+        $('#finding').innerHTML = `<b>${esc(artists[0].artist_name)} owned ${owned} of my ${months.length} months.</b><p class="muted">She is ${share}% of everything I listened to: ${fmt(Math.round(artists[0].hours))} hours${nextFour < artists[0].hours ? ', more than my next four artists combined' : ''}.</p>`;
+
+        // month bars
+        const svg = $('#months'), W = 1000, H = 150, n = months.length, bw = W / n, most = Math.max(...months.map(m => m.hours));
+        svg.setAttribute('viewBox', `0 0 ${W} ${H + 16}`);
+        svg.innerHTML = months.map((m, i) => {
+            const h = Math.max(2, m.hours / most * H);
+            return `<rect x="${i * bw + 1}" y="${H - h}" width="${bw - 2}" height="${h}" rx="1.5" fill="${m.era_artist === 'Ariana Grande' ? '#8A4D57' : '#C9969E'}"/>`;
+        }).join('') + months.map((m, i) => m.month.endsWith('-01-01') ? `<text x="${i * bw}" y="${H + 13}" font-size="11" fill="#6B5048" font-family="sans-serif">${m.month.slice(0, 4)}</text>` : '').join('');
+
+        $('#years').innerHTML = years.map(y => `<tr><td class="num">${y.year}</td><td>${fmt(y.hours)}</td><td>${fmt(y.listens)}</td><td>${fmt(y.songs)}</td><td>${fmt(y.artists)}</td><td>${fmt(y.new_songs)}</td>
+            <td><b>${esc(y.song_of_the_year)}</b><br><span class="muted">${esc(y.song_of_the_year_artist)}, ${y.song_listens} listens</span></td></tr>`).join('');
+
+        // one small 24-hour dial per year
+        const ys = [...new Set(clock.map(c => c.year))], max = Math.max(...clock.map(c => c.share_pct));
+        $('#clocks').innerHTML = ys.map(y => {
+            const d = clock.filter(c => c.year === y), peak = d.reduce((a, b) => b.share_pct > a.share_pct ? b : a);
+            const spokes = d.map(c => `<rect x="-2.2" y="${-12 - (4 + c.share_pct / max * 44)}" width="4.4" height="${4 + c.share_pct / max * 44}" rx="2" fill="${c.hour === peak.hour ? '#2A1810' : '#8A4D57'}" transform="rotate(${c.hour * 15})"/>`).join('');
+            return `<figure><svg viewBox="-62 -62 124 124" width="94" height="94"><circle r="12" fill="none" stroke="#EBD5D0"/>${spokes}</svg><figcaption><b>${y}</b>peak at ${hour(peak.hour)}</figcaption></figure>`;
+        }).join('');
+
+        $('#streaks').innerHTML = streaks.slice(0, 5).map(r => row(r.track_name, `${r.artist_name}, ${day(r.started)} to ${day(r.ended)}`, `${r.days_in_a_row} days`)).join('');
+        $('#obsessions').innerHTML = obs.slice(0, 5).map(r => row(r.track_name, r.artist_name, r.days_to_obsession === 0 ? 'same day' : r.days_to_obsession === 1 ? '1 day' : `${r.days_to_obsession} days`)).join('');
+        $('#skipsMost').innerHTML = skips.most.map(r => row(r.artist_name, `${fmt(r.plays)} plays`, `${r.skip_pct}%`)).join('');
+        $('#skipsLeast').innerHTML = skips.least.map(r => row(r.artist_name, `${fmt(r.plays)} plays`, `${r.skip_pct}%`)).join('');
+        $('#days').innerHTML = days.slice(0, 5).map(r => row(r.track_name, `${r.artist_name}, ${day(r.full_date)}`, `${r.listens} plays`)).join('');
+        document.body.dataset.ready = '1';
+    });
+</script>
+</body>
+</html>

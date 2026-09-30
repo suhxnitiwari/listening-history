@@ -163,7 +163,7 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
 .flip[aria-pressed="true"] .flip-front { transform: rotateY(-180deg); }
 .flip[aria-pressed="true"] .flip-back { transform: rotateY(0); }
 .hint { margin-left: 10px; font-size: 0.8rem; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--muted); }
-.about-top { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 48px; align-items: center; }
+.about-top { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: center; }
 .about-photo { margin: 0; }
 .about-photo img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
 .about-facts { margin-top: 44px; }
@@ -248,14 +248,13 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
 .cta-card.dark .h3 { color: #FFF8F6; }
 .cta-card.dark .links { margin-top: auto; }
 .cta-card.dark .pill:not(.solid) { background: transparent; border-color: #6B5048; color: #FFF8F6; }
-.foot { max-width: 1100px; margin: 0 auto; padding: 24px 24px 40px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
-.foot a { margin-left: 12px; }
 
 @media (max-width: 800px) {
     html { scroll-padding-top: 110px; }
     .topnav-in { height: auto; padding: 10px 16px; flex-direction: column; align-items: flex-start; gap: 6px; }
     .page { padding: 32px 16px 56px; }
-    .hero, .watch, .schema-wrap, .step-panel, .cta, .about-top { grid-template-columns: 1fr; gap: 24px; }
+    .hero, .watch, .schema-wrap, .step-panel, .cta { grid-template-columns: 1fr; gap: 24px; }
+    .about-top { grid-template-columns: 110px minmax(0, 1fr); gap: 18px; align-items: start; }
     .about-facts .flips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .hint { display: block; margin: 4px 0 0; }
     .steps { grid-template-columns: repeat(5, minmax(120px, 1fr)); overflow-x: auto; }
@@ -266,10 +265,27 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
     .schema { aspect-ratio: 1 / 1; }
     .tbl { padding: 8px 10px; font-size: 0.72rem; }
     .search { flex-direction: column; }
-    .foot { padding: 20px 16px 32px; }
 }
 
 /* artist suggestions */
 .suggest { position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + 6px); margin: 0; padding: 6px; list-style: none; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 6px 18px rgba(42, 24, 16, 0.10); }
 .suggest li { padding: 10px 14px; border-radius: 10px; cursor: pointer; }
 .suggest li:hover, .suggest li[aria-selected="true"] { background: var(--blush); color: var(--mul); }
+
+/* footer, matching my portfolio's */
+.site-foot { margin-top: 24px; background: var(--mul); color: #FFF8F6; }
+.site-foot-in { max-width: 1100px; margin: 0 auto; padding: 56px 24px 28px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 40px; }
+.foot-title { margin: 0; font-family: var(--serif); font-size: 1.7rem; font-weight: 700; }
+.foot-sub { margin: 6px 0 22px; font-family: var(--serif); font-style: italic; color: #F0C9CF; }
+.site-foot .foot-report { background: #FFF8F6; border-color: #FFF8F6; color: var(--mul); }
+.foot-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.foot-cols a { display: block; margin: 6px 0; color: #FFF8F6; text-decoration: none; font-size: 0.92rem; }
+.foot-cols a:hover { text-decoration: underline; }
+.foot-h { margin: 0 0 10px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #F0C9CF; }
+.foot-small { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid rgba(255, 248, 246, 0.25); font-size: 0.8rem; color: #F0C9CF; }
+.foot-small p { margin: 0; }
+.foot-small a { color: #F0C9CF; }
+@media (max-width: 800px) {
+    .site-foot-in { grid-template-columns: 1fr; padding: 40px 16px 24px; }
+    .foot-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

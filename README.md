@@ -157,6 +157,7 @@ My real export never goes in this repo. It includes an IP address and country fo
 - **Watch:** music video previews of my most-played songs (iTunes Search API)
 - **Play:** "Which did I play more?" and "Guess the stat," two games built from the real numbers
 - **How it works:** tap through the pipeline with the real code behind each step, and open each table of the star schema
+- **The report:** a three-page PDF of the four years (top artists and songs, month by month, year in review, listening clocks, streaks, skips), printed from `/report` and downloadable at `/report.pdf`
 - **Your turn:** type any artist to see whether I listen to them, where they rank and my most-played song of theirs
 - **Song previews:** 30-second clips from the iTunes Search API, matched by artist and title
 

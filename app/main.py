@@ -143,6 +143,12 @@ def big_days():
     return query("days", "SELECT * FROM v_most_in_a_day ORDER BY listens DESC LIMIT 5")
 
 
+@app.get("/api/top-artists")
+def top_artists():
+    """My ten most-listened artists by hours."""
+    return query("top-artists", ARTIST_TOTALS_TOP)
+
+
 @app.get("/api/top-songs")
 def top_songs():
     """My 40 most-played songs, for the "which did I play more?" game."""
@@ -157,6 +163,9 @@ ARTIST_TOTALS = """
                MIN(full_date) AS first_listen, RANK() OVER (ORDER BY SUM(minutes) DESC) AS rank
         FROM v_listen GROUP BY artist_key, artist_name
     )"""
+
+
+ARTIST_TOTALS_TOP = ARTIST_TOTALS + " SELECT artist_name, listens, hours FROM totals ORDER BY rank LIMIT 10"
 
 
 @app.get("/api/artist-names")
@@ -250,3 +259,16 @@ app.mount("/static", StaticFiles(directory=STATIC), name="static")
 @app.get("/")
 def home():
     return FileResponse(STATIC / "index.html")
+
+
+@app.get("/report")
+def report():
+    """The printable report page (the PDF is made from this)."""
+    return FileResponse(STATIC / "report.html")
+
+
+@app.get("/report.pdf")
+def report_pdf():
+    """The four-year report as a PDF download, named after me."""
+    return FileResponse(STATIC / "Tiwari_Suhani_Listening_Report.pdf", media_type="application/pdf",
+                        filename="Tiwari_Suhani_Listening_Report.pdf")
