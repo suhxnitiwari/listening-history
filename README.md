@@ -139,8 +139,25 @@ To run it on your own listening, request your **Extended streaming history** fro
 
 My real export never goes in this repo. It includes an IP address and country for every play, so `.gitignore` blocks the zip and every raw file, and the pipeline drops those fields before anything is written. Plays from private sessions are left out entirely.
 
+## The app
+
+`app/` is a small FastAPI server with one endpoint per question and an interactive page on top:
+
+- **Scrub through time:** drag through every month to see who owned it, then open its top five
+- **Listening clock:** a 24-hour dial that reshapes for each year
+- **Streak race:** the longest daily streaks, animated
+- **Year in review:** one card per year, with the song of the year
+- **Guess the stat:** a four-question game built from the real numbers
+- **Song previews:** 30-second clips from the iTunes Search API, matched by artist and title
+
+Answers are cached in memory, since the history only changes when the pipeline reloads it. The API documents itself at `/api/docs`.
+
+```bash
+pip install -r requirements.txt
+export DATABASE_URL="postgresql://..."
+uvicorn app.main:app --reload
+```
+
 ## Coming next
 
-- SQL insights: monthly eras, daily streaks, first listen to obsession, skip rate, and a listening clock by year
-- An interactive page on [suhanitiwari.com](https://suhanitiwari.com)
 - Song similarity with embeddings and `pgvector`: "what else do I listen to like this?"

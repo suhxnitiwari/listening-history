@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Listening History | Suhani Tiwari</title>
+    <meta name="description" content="Four years of my Spotify listening, run through an ETL pipeline into a PostgreSQL star schema and explored with SQL.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238A4D57'/><circle cx='50' cy='50' r='14' fill='%23FAF1EF'/></svg>">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="page">
+
+    <header class="hero">
+        <p class="eyebrow">A data project by <a href="https://suhanitiwari.com">Suhani Tiwari</a></p>
+        <h1>Four years of my listening, in data.</h1>
+        <p class="lede">Spotify let me download every song I've played since May 2022. I ran all 182,293 records through an ETL pipeline into a PostgreSQL star schema, then asked it questions in SQL. This is what it said.</p>
+        <dl class="stats" id="stats"></dl>
+    </header>
+
+    <section class="block" aria-labelledby="t-time">
+        <p class="eyebrow">Scrub through time</p>
+        <h2 id="t-time">Who owned each month</h2>
+        <p class="sub">Drag through every month since May 2022. Each bar is how many hours I listened; the dark ones were Ariana months.</p>
+        <div class="bars" id="bars" aria-hidden="true"></div>
+        <input type="range" id="monthSlider" class="slider" min="0" max="0" value="0" aria-label="Month">
+        <article class="month-card" id="monthCard" aria-live="polite"></article>
+        <button type="button" class="pill" id="openMonth">See this month's top five</button>
+        <ol class="song-list" id="monthSongs" hidden></ol>
+    </section>
+
+    <section class="block split" aria-labelledby="t-clock">
+        <div>
+            <p class="eyebrow">My listening clock</p>
+            <h2 id="t-clock">When I listen, year by year</h2>
+            <p class="sub">Each spoke is one hour of the day, sized by its share of that year's listening.</p>
+            <div class="chips" id="yearChips" role="group" aria-label="Year"></div>
+            <p class="callout" id="clockNote"></p>
+        </div>
+        <svg class="clock" id="clock" viewBox="-160 -160 320 320" role="img" aria-label="Listening by hour of day"></svg>
+    </section>
+
+    <section class="block" aria-labelledby="t-streak">
+        <p class="eyebrow">Streak race</p>
+        <h2 id="t-streak">Most days in a row with one song</h2>
+        <p class="sub">Found with the gaps and islands pattern in SQL: on consecutive days, the date minus a row number stays the same.</p>
+        <ol class="race" id="race"></ol>
+    </section>
+
+    <section class="block" aria-labelledby="t-years">
+        <p class="eyebrow">Year in review</p>
+        <h2 id="t-years">Every year in one card</h2>
+        <div class="years" id="years"></div>
+    </section>
+
+    <section class="block split two" aria-labelledby="t-obs">
+        <div>
+            <p class="eyebrow">First listen to obsession</p>
+            <h2 id="t-obs">Fastest to 25 listens</h2>
+            <ol class="song-list" id="obsessions"></ol>
+        </div>
+        <div>
+            <p class="eyebrow">Skip rate</p>
+            <h2>Who I start and don't finish</h2>
+            <div class="chips" role="group" aria-label="Skip list">
+                <button type="button" class="chip" data-skip="most" aria-pressed="true">Most skipped</button>
+                <button type="button" class="chip" data-skip="least" aria-pressed="false">Least skipped</button>
+            </div>
+            <ol class="skip-list" id="skips"></ol>
+        </div>
+    </section>
+
+    <section class="block" aria-labelledby="t-game">
+        <p class="eyebrow">Guess the stat</p>
+        <h2 id="t-game">How well do you know my listening?</h2>
+        <div class="game" id="game"></div>
+    </section>
+
+    <section class="block how" aria-labelledby="t-how">
+        <p class="eyebrow">How it's built</p>
+        <h2 id="t-how">From a zip file to this page</h2>
+        <ol class="steps">
+            <li><b>Extract</b><span>Python reads every file in Spotify's export.</span></li>
+            <li><b>Transform</b><span>Songs only, Austin time, duplicates merged, overnight loops removed, and my IP address and location dropped.</span></li>
+            <li><b>Load</b><span>A star schema in PostgreSQL on Neon: one fact table of plays, five dimensions.</span></li>
+            <li><b>Ask</b><span>SQL views with window functions, CTEs and gaps and islands.</span></li>
+            <li><b>Serve</b><span>A FastAPI server, one endpoint per question, with song previews from the iTunes Search API.</span></li>
+        </ol>
+        <p class="links"><a class="pill solid" href="/api/docs">Explore the API</a> <a class="pill" href="https://suhanitiwari.com">Back to my portfolio</a></p>
+    </section>
+
+</main>
+<audio id="player" preload="none"></audio>
+<script src="/static/app.js"></script>
+</body>
+</html>
