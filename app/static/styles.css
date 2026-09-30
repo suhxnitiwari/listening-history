@@ -548,3 +548,16 @@ html { color-scheme: dark; }
 .cmp-summary b { color: var(--mul); }
 .cmp-table td { white-space: normal; }
 @media (max-width: 800px) { .life-facts { grid-template-columns: 1fr; } .life { padding: 22px 18px; } }
+
+/* what this data can't tell me */
+.limits { margin-top: 56px; padding: 30px 32px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+.limits-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 20px; }
+.limits-k { margin: 0 0 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mul); }
+.limits ul { list-style: none; margin: 0; padding: 0; }
+.limits li { position: relative; padding: 9px 0 9px 30px; border-top: 1px solid var(--line); }
+.limits li::before { position: absolute; left: 0; top: 8px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 0.75rem; font-weight: 700; }
+.limits-yes li::before { content: "✓"; background: var(--hot); color: #FFF6F4; }
+.limits-no li::before { content: "?"; background: transparent; border: 1.5px solid var(--muted); color: var(--muted); width: 17px; height: 17px; }
+.limits-no li { color: var(--muted); }
+.limits-end { margin: 22px 0 0; padding-top: 16px; border-top: 2px solid var(--choc); font-family: var(--serif); font-style: italic; font-size: 1.1rem; }
+@media (max-width: 800px) { .limits { padding: 22px 18px; } .limits-grid { grid-template-columns: 1fr; gap: 20px; } }
