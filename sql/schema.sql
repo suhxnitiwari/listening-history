@@ -4,12 +4,12 @@
 -- which song, by whom, from which album, on what day, in which listening session.
 -- Designed for analytics: narrow facts, descriptive dimensions, integer keys, indexes on the joins.
 
-DROP TABLE IF EXISTS fact_play;
-DROP TABLE IF EXISTS dim_session;
-DROP TABLE IF EXISTS dim_track;
-DROP TABLE IF EXISTS dim_album;
-DROP TABLE IF EXISTS dim_artist;
-DROP TABLE IF EXISTS dim_date;
+DROP TABLE IF EXISTS fact_play CASCADE;
+DROP TABLE IF EXISTS dim_session CASCADE;
+DROP TABLE IF EXISTS dim_track CASCADE;
+DROP TABLE IF EXISTS dim_album CASCADE;
+DROP TABLE IF EXISTS dim_artist CASCADE;
+DROP TABLE IF EXISTS dim_date CASCADE;
 
 CREATE TABLE dim_artist (
     artist_key   INTEGER PRIMARY KEY,

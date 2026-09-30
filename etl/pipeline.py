@@ -208,6 +208,7 @@ def load_postgres(out: Path, schema: Path, url: str) -> None:
         for name in order:
             with open(out / f"{name}.csv", encoding="utf-8") as f, cur.copy(f"COPY {name} FROM STDIN WITH (FORMAT csv, HEADER true)") as copy:
                 copy.write(f.read())
+        cur.execute((schema.parent / "insights.sql").read_text())   # the views are rebuilt on every load
         conn.commit()
 
 

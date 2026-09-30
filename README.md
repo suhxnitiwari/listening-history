@@ -96,6 +96,27 @@ Design choices:
 
 The full DDL is in [`sql/schema.sql`](sql/schema.sql).
 
+## The questions, in SQL
+
+[`sql/insights.sql`](sql/insights.sql) answers each question as a PostgreSQL view:
+
+| View | Question | Technique |
+|---|---|---|
+| `v_monthly_eras` | Who owned each month of my life? | `RANK()` window per month, share of listening |
+| `v_song_streaks` | Most days in a row I played one song | Gaps and islands with `ROW_NUMBER()` |
+| `v_first_listen_to_obsession` | How fast did a song go from new to on repeat (25 listens)? | `ROW_NUMBER()` milestones with `FILTER` |
+| `v_skip_rate` | Which artists do I start and not finish? | Conditional aggregation, `HAVING` |
+| `v_listening_clock` | When do I listen, and did it change by year? | Window share of a partitioned total |
+| `v_year_in_review` | Each year in one row, with a song of the year | CTEs, `DISTINCT ON` |
+| `v_most_in_a_day` | My most intense single days with one song | Grouping by day and song |
+
+A few answers from my own data:
+
+- **Longest streak:** "intro (end of the world)" by Ariana Grande, every day for 21 days (April 1 to 21, 2024)
+- **Most in one day:** "Party In The U.S.A.", 145 times on March 21, 2023
+- **Biggest year:** 2023, with 1,639 hours of listening
+- **Peak hour:** 5 PM in 2022 and 2023, 7 PM in 2024
+
 ## Try it
 
 The repo includes a small **made-up** history in Spotify's exact format, so you can run the whole pipeline without my data:
