@@ -1,0 +1,9 @@
+# My real listening history never goes in this repo: it includes IP addresses and locations.
+*.zip
+Spotify Extended Streaming History/
+Streaming_History_*.json
+build/
+*.db
+.env
+__pycache__/
+.DS_Store
