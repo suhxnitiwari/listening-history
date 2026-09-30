@@ -387,3 +387,76 @@ api('loyalty').then(L => {
     $('#loyalSongs').innerHTML = L.songs.map(t => songRow(t, `${fmt(t.listens)} listens`)).join('');
     takeaway('tk-loyal', `Loyal, not closed off: ${fmt(L.one_listen_artists)} of my ${fmt(L.artists)} artists got exactly one listen. I try a lot of music, and I keep a little of it forever.`);
 });
+
+// ---------- chapter 01: most plays in one day ----------
+api('days').then(rows => {
+    $('#bigDays').innerHTML = rows.slice(0, 5).map(r => songRow(r, `${r.listens} plays, ${dayName(r.full_date)}`)).join('');
+});
+
+// ---------- chapter 02: the dynasty, one square per month colored by its #1 artist ----------
+api('dynasty').then(months => {
+    const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const wins = {};
+    months.forEach(m => wins[m.winner] = (wins[m.winner] || 0) + 1);
+    const order = Object.keys(wins).sort((a, b) => wins[b] - wins[a]);
+    const PALETTE = ['#D65478', '#F7E9E8', '#8C6BB1', '#C9A36B', '#6FA3A0', '#E07A5F', '#7D8FB3'];
+    const color = name => PALETTE[order.indexOf(name) % PALETTE.length];
+    const ink = name => ['#F7E9E8', '#C9A36B'].includes(color(name)) ? '#22090F' : '#FFF6F4';
+    const byKey = Object.fromEntries(months.map((m, i) => [m.month.slice(0, 7), i]));
+    const years = [...new Set(months.map(m => m.month.slice(0, 4)))];
+    const grid = $('#dynGrid');
+    grid.innerHTML = `<span></span>${MON.map(m => `<span class="dyn-m">${m[0]}</span>`).join('')}` + years.map(y =>
+        `<span class="dyn-y">${y}</span>` + MON.map((_, k) => {
+            const key = `${y}-${String(k + 1).padStart(2, '0')}`, i = byKey[key];
+            if (i === undefined) return '<span class="dyn-empty"></span>';
+            const m = months[i];
+            return `<button type="button" class="dyn-cell" data-i="${i}" style="background:${color(m.winner)}" aria-label="${monthName(m.month)}: ${esc(m.winner)}"></button>`;
+        }).join('')).join('');
+    const show = i => {
+        const m = months[i];
+        grid.querySelectorAll('.dyn-cell').forEach(c => c.setAttribute('aria-pressed', +c.dataset.i === i));
+        $('#dynCard').innerHTML = `
+            <p class="label">${monthName(m.month)}</p>
+            <h3><i style="background:${color(m.winner)}"></i>${esc(m.winner)}</h3>
+            <p class="big">${m.share_pct}%</p><p class="muted">of my listening that month</p>
+            ${m.runner_up ? `<p class="dyn-runner">Runner-up: <b>${esc(m.runner_up)}</b>, ${m.runner_up_pct}%</p>` : ''}
+            <div class="dyn-song">${playButton(m.song, m.song_artist)}<div><b>${esc(m.song)}</b><span>Song of the month, ${m.song_listens} listens</span></div></div>`;
+    };
+    grid.addEventListener('click', e => { const c = e.target.closest('.dyn-cell'); if (c) show(+c.dataset.i); });
+    $('#dynLegend').innerHTML = order.map(n => `<span><i style="background:${color(n)}"></i>${esc(n)} <b>${wins[n]}</b></span>`).join('');
+    // reigns: runs of the same #1 artist in consecutive months
+    const runs = [];
+    months.forEach((m, i) => {
+        const last = runs[runs.length - 1];
+        if (last && last.name === m.winner) { last.end = i; last.len++; }
+        else runs.push({ name: m.winner, start: i, end: i, len: 1 });
+    });
+    const span = r => r.len === 1 ? monthName(months[r.start].month) : `${monthName(months[r.start].month)} to ${monthName(months[r.end].month)}`;
+    const top = [...runs].sort((a, b) => b.len - a.len).slice(0, 4);
+    $('#reigns').innerHTML = top.map(r => `<li><i style="background:${color(r.name)}"></i><div><b>${esc(r.name)}</b><span>${span(r)}</span></div><em>${r.len} ${r.len === 1 ? 'month' : 'months'}</em></li>`).join('');
+    const king = order[0];
+    const others = runs.filter(r => r.name !== king);
+    const byArtist = {};
+    others.forEach(r => (byArtist[r.name] = byArtist[r.name] || []).push(r));
+    $('#usurpers').innerHTML = Object.entries(byArtist).sort((a, b) => wins[b[0]] - wins[a[0]]).map(([name, rs]) =>
+        `<li><i style="background:${color(name)}"></i><div><b>${esc(name)}</b><span>${rs.map(span).join('; ')}</span></div><em>${wins[name]} ${wins[name] === 1 ? 'month' : 'months'}</em></li>`).join('');
+    const longest = top[0], second = order[1];
+    const secondRuns = runs.filter(r => r.name === second);
+    takeaway('tk-dyn', `${esc(king)} ruled ${wins[king]} of ${months.length} months, including ${longest.len} in a row, from ${monthName(months[longest.start].month)} to ${monthName(months[longest.end].month)}. ${esc(second)} took the throne ${secondRuns.length} ${secondRuns.length === 1 ? 'time' : 'times'} but never held it longer than ${Math.max(...secondRuns.map(r => r.len))} ${Math.max(...secondRuns.map(r => r.len)) === 1 ? 'month' : 'months'}.`);
+    show(months.length - 1);
+});
+
+// ---------- chapter 05: discovery, how much of each year was new to me ----------
+api('discovery').then(rows => {
+    $('#disc').innerHTML = rows.map(r => `
+        <div class="disc-row">
+            <b class="disc-y">${r.year}</b>
+            <div class="disc-bar" title="${r.new_song_share}% of listens went to songs new that year"><i style="width:${r.new_song_share}%"></i><span>${r.new_song_share}% of listens to new songs</span></div>
+            <p><b>${fmt(r.new_songs)}</b> new songs</p>
+            <p><b>${fmt(r.new_artists)}</b> new artists</p>
+        </div>`).join('');
+    const later = rows.slice(2);
+    const avg = later.reduce((t, r) => t + r.new_song_share, 0) / later.length;
+    const lowArtist = rows.slice(1).reduce((a, b) => (b.new_artist_share < a.new_artist_share ? b : a));
+    takeaway('tk-disc', `After 2023, only about ${Math.round(avg)}% of my listening each year went to songs I'd never heard before. In ${lowArtist.year}, just ${lowArtist.new_artist_share}% went to brand-new artists. I explore, but mostly I return.`);
+});

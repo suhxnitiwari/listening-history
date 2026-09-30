@@ -18,7 +18,7 @@
     <meta name="twitter:image" content="https://listening-history.onrender.com/static/share-card.jpg">
     <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23D65478'/><circle cx='50' cy='50' r='14' fill='%2322090F'/></svg>">
-    <link rel="stylesheet" href="/static/styles.css?v=26">
+    <link rel="stylesheet" href="/static/styles.css?v=30">
 </head>
 <body>
 
@@ -26,11 +26,12 @@
     <div class="topnav-in">
         <a class="brand" href="#top">Listening History</a>
         <div class="topnav-links">
-            <a href="/about">About me</a>
-            <a href="#data">The data</a>
-            <a href="#watch">Watch</a>
-            <a href="#play">Play</a>
-            <a href="#method">How it works</a>
+            <a href="#ch-obsessions">Obsessions</a>
+            <a href="#eras">Eras</a>
+            <a href="#habits">Habits</a>
+            <a href="#loyalty-ch">Loyalty</a>
+            <a href="#discovery">Discovery</a>
+            <a href="#build">Build</a>
             <a class="topnav-cta" href="#your-turn">Your turn</a>
         </div>
     </div>
@@ -46,7 +47,7 @@
             <p class="lede">Spotify let me download every song I've played since May 2022. I cleaned it, modeled it into a real database and asked it questions in SQL. This is what it said about me.</p>
             <div class="hero-actions">
                 <a class="pill solid" href="#play">Test how well you know me</a>
-                <a class="pill" href="#method">See how it's built</a>
+                <a class="pill" href="#build">See how it's built</a>
             </div>
         </div>
         <figure class="hero-photo">
@@ -72,8 +73,65 @@
         </div>
     </section>
 
-    <!-- THE DATA -->
+    <!-- THE STORY, IN CHAPTERS -->
     <div id="data">
+    <header class="chapter" id="ch-obsessions">
+        <p class="chapter-n">Chapter 01</p>
+        <h2 class="chapter-t">The obsessions</h2>
+        <p class="chapter-d">How fast I fall for a song, and how hard.</p>
+    </header>
+        <section class="block" aria-labelledby="t-streak">
+            <p class="eyebrow">Streak race</p>
+            <h2 id="t-streak">Most days in a row with one song</h2>
+            <p class="sub">Found with the gaps and islands pattern in SQL: on consecutive days, the date minus a row number stays the same.</p>
+            <ol class="race" id="race"></ol>
+            <p class="takeaway" id="tk-streaks"></p>
+        </section>
+        <section class="block split two" aria-label="Obsessions">
+            <div>
+                <p class="eyebrow">First listen to obsession</p>
+                <h2 id="t-obs">Fastest to 25 listens</h2>
+                <ol class="song-list" id="obsessions"></ol>
+                <p class="takeaway" id="tk-obs"></p>
+            </div>
+            <div>
+                <p class="eyebrow">One song, one day</p>
+                <h2>Most plays in a single day</h2>
+                <ol class="song-list" id="bigDays"></ol>
+            </div>
+        </section>
+        <section class="block" id="watch" aria-labelledby="t-watch">
+            <p class="eyebrow">Watch</p>
+            <h2 id="t-watch">My most-played songs, as music videos</h2>
+            <p class="sub">Thirty-second previews from the iTunes Search API, matched to my top songs by artist and title.</p>
+            <div class="watch">
+                <div class="screen">
+                    <video id="screen" playsinline controls preload="none"></video>
+                    <p class="screen-cap" id="screenCap"></p>
+                </div>
+                <ol class="reel" id="reel"></ol>
+            </div>
+        </section>
+    <header class="chapter" id="eras">
+        <p class="chapter-n">Chapter 02</p>
+        <h2 class="chapter-t">The eras</h2>
+        <p class="chapter-d">Fifty-three months, and who ruled each one.</p>
+    </header>
+        <section class="block" id="dynasty" aria-labelledby="t-dyn">
+            <p class="eyebrow">The dynasty</p>
+            <h2 id="t-dyn">Who ruled each month</h2>
+            <p class="sub">One square per month, colored by that month's #1 artist. Tap a square to see the month.</p>
+            <div class="dyn-wrap">
+                <div class="dyn-grid" id="dynGrid" aria-label="Number one artist by month"></div>
+                <article class="dyn-card" id="dynCard" aria-live="polite"></article>
+            </div>
+            <div class="dyn-legend" id="dynLegend"></div>
+            <div class="dyn-reigns">
+                <div><p class="eyebrow">Longest reigns</p><ol class="reign-list" id="reigns"></ol></div>
+                <div><p class="eyebrow">Who took the throne</p><ol class="reign-list" id="usurpers"></ol></div>
+            </div>
+            <p class="takeaway" id="tk-dyn"></p>
+        </section>
         <section class="block" aria-labelledby="t-time">
             <p class="eyebrow">Scrub through time</p>
             <h2 id="t-time">Who owned each month</h2>
@@ -85,7 +143,17 @@
             <ol class="song-list" id="monthSongs" hidden></ol>
             <p class="takeaway" id="tk-months"></p>
         </section>
-
+        <section class="block" aria-labelledby="t-years">
+            <p class="eyebrow">Year in review</p>
+            <h2 id="t-years">Every year in one card</h2>
+            <div class="years" id="years"></div>
+            <p class="takeaway" id="tk-years"></p>
+        </section>
+    <header class="chapter" id="habits">
+        <p class="chapter-n">Chapter 03</p>
+        <h2 class="chapter-t">The habits</h2>
+        <p class="chapter-d">When I listen, and what I skip.</p>
+    </header>
         <section class="block split" aria-labelledby="t-clock">
             <div>
                 <p class="eyebrow">My listening clock</p>
@@ -97,22 +165,21 @@
             </div>
             <svg class="clock" id="clock" viewBox="-160 -160 320 320" role="img" aria-label="Listening by hour of day"></svg>
         </section>
-
-        <section class="block" aria-labelledby="t-streak">
-            <p class="eyebrow">Streak race</p>
-            <h2 id="t-streak">Most days in a row with one song</h2>
-            <p class="sub">Found with the gaps and islands pattern in SQL: on consecutive days, the date minus a row number stays the same.</p>
-            <ol class="race" id="race"></ol>
-            <p class="takeaway" id="tk-streaks"></p>
+        <section class="block" aria-label="Skip rate">
+                <p class="eyebrow">Skip rate</p>
+                <h2>Who I start and don't finish</h2>
+                <div class="chips" role="group" aria-label="Skip list">
+                    <button type="button" class="chip" data-skip="most" aria-pressed="true">Most skipped</button>
+                    <button type="button" class="chip" data-skip="least" aria-pressed="false">Least skipped</button>
+                </div>
+                <ol class="skip-list" id="skips"></ol>
+                <p class="takeaway" id="tk-skips"></p>
         </section>
-
-        <section class="block" aria-labelledby="t-years">
-            <p class="eyebrow">Year in review</p>
-            <h2 id="t-years">Every year in one card</h2>
-            <div class="years" id="years"></div>
-            <p class="takeaway" id="tk-years"></p>
-        </section>
-
+    <header class="chapter" id="loyalty-ch">
+        <p class="chapter-n">Chapter 04</p>
+        <h2 class="chapter-t">The loyalty</h2>
+        <p class="chapter-d">What stayed, year after year.</p>
+    </header>
         <section class="block" id="loyalty" aria-labelledby="t-loyal">
             <p class="eyebrow">Loyalty</p>
             <h2 id="t-loyal">I don't have phases. I have favorites.</h2>
@@ -122,40 +189,19 @@
             <ol class="song-list loyal-songs" id="loyalSongs"></ol>
             <p class="takeaway" id="tk-loyal"></p>
         </section>
-
-        <section class="block split two" aria-labelledby="t-obs">
-            <div>
-                <p class="eyebrow">First listen to obsession</p>
-                <h2 id="t-obs">Fastest to 25 listens</h2>
-                <ol class="song-list" id="obsessions"></ol>
-                <p class="takeaway" id="tk-obs"></p>
-            </div>
-            <div>
-                <p class="eyebrow">Skip rate</p>
-                <h2>Who I start and don't finish</h2>
-                <div class="chips" role="group" aria-label="Skip list">
-                    <button type="button" class="chip" data-skip="most" aria-pressed="true">Most skipped</button>
-                    <button type="button" class="chip" data-skip="least" aria-pressed="false">Least skipped</button>
-                </div>
-                <ol class="skip-list" id="skips"></ol>
-                <p class="takeaway" id="tk-skips"></p>
-            </div>
+    <header class="chapter" id="discovery">
+        <p class="chapter-n">Chapter 05</p>
+        <h2 class="chapter-t">The discovery</h2>
+        <p class="chapter-d">Do I actually find new music, or keep going back to what I know?</p>
+    </header>
+        <section class="block" aria-labelledby="t-disc">
+            <p class="eyebrow">New to me</p>
+            <h2 id="t-disc">How much of each year was brand new</h2>
+            <p class="sub">A song or artist counts as new in the year I first really listened to them. 2022 is where the history starts, so all of it is new.</p>
+            <div class="disc" id="disc"></div>
+            <p class="takeaway" id="tk-disc"></p>
         </section>
     </div>
-
-    <!-- WATCH -->
-    <section class="block" id="watch" aria-labelledby="t-watch">
-        <p class="eyebrow">Watch</p>
-        <h2 id="t-watch">My most-played songs, as music videos</h2>
-        <p class="sub">Thirty-second previews from the iTunes Search API, matched to my top songs by artist and title.</p>
-        <div class="watch">
-            <div class="screen">
-                <video id="screen" playsinline controls preload="none"></video>
-                <p class="screen-cap" id="screenCap"></p>
-            </div>
-            <ol class="reel" id="reel"></ol>
-        </div>
-    </section>
 
     <!-- PLAY -->
     <section class="block" id="play" aria-labelledby="t-game">
@@ -170,9 +216,14 @@
     </section>
 
     <!-- METHOD -->
+    <header class="chapter" id="build">
+        <p class="chapter-n">Chapter 06</p>
+        <h2 class="chapter-t">The build</h2>
+        <p class="chapter-d">182,293 records went in. Questions came out.</p>
+    </header>
     <section class="block" id="method" aria-labelledby="t-how">
         <p class="eyebrow">How it works</p>
-        <h2 id="t-how">The science of my <em>listening.</em></h2>
+        <h2 id="t-how">The data behind the <em>music.</em></h2>
         <div class="sci">
             <article>
                 <svg viewBox="0 0 300 170" aria-hidden="true">
@@ -410,6 +461,6 @@ shuffle       false</pre>
     <p class="player-legal">© 2026 Suhani Tiwari. All rights reserved. Data: my own Spotify history.</p>
 </footer>
 <audio id="player" preload="none"></audio>
-<script src="/static/app.js?v=24"></script>
+<script src="/static/app.js?v=30"></script>
 </body>
 </html>

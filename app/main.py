@@ -143,6 +143,52 @@ def big_days():
     return query("days", "SELECT * FROM v_most_in_a_day ORDER BY listens DESC LIMIT 5")
 
 
+@app.get("/api/dynasty")
+def dynasty():
+    """Every month's #1 artist, their share, the runner-up, and the month's top song."""
+    return query("dynasty", """
+        WITH per_artist AS (
+            SELECT date_trunc('month', full_date)::date AS month, artist_name, SUM(minutes) AS minutes
+            FROM v_listen GROUP BY 1, 2
+        ), ranked AS (
+            SELECT month, artist_name, ROUND(100 * minutes / SUM(minutes) OVER (PARTITION BY month), 1) AS share_pct,
+                   ROW_NUMBER() OVER (PARTITION BY month ORDER BY minutes DESC) AS place
+            FROM per_artist
+        ), song AS (
+            SELECT DISTINCT ON (month) month, track_name, artist_name, listens FROM (
+                SELECT date_trunc('month', full_date)::date AS month, track_name, artist_name, COUNT(*) AS listens
+                FROM v_listen GROUP BY 1, track_key, track_name, artist_name) s
+            ORDER BY month, listens DESC
+        )
+        SELECT w.month, w.artist_name AS winner, w.share_pct,
+               r.artist_name AS runner_up, r.share_pct AS runner_up_pct,
+               s.track_name AS song, s.artist_name AS song_artist, s.listens AS song_listens
+        FROM ranked w
+        LEFT JOIN ranked r ON r.month = w.month AND r.place = 2
+        JOIN song s ON s.month = w.month
+        WHERE w.place = 1
+        ORDER BY w.month""")
+
+
+@app.get("/api/discovery")
+def discovery():
+    """Do I actually discover new music? New artists and songs each year, and how much of my listening went to them."""
+    return query("discovery", """
+        WITH first_song AS (SELECT track_key, MIN(year) AS y FROM v_listen GROUP BY track_key),
+        first_artist AS (SELECT artist_key, MIN(year) AS y FROM v_listen GROUP BY artist_key)
+        SELECT v.year,
+               COUNT(DISTINCT v.artist_key) FILTER (WHERE fa.y = v.year) AS new_artists,
+               COUNT(DISTINCT v.artist_key) AS artists,
+               COUNT(DISTINCT v.track_key) FILTER (WHERE fs.y = v.year) AS new_songs,
+               COUNT(DISTINCT v.track_key) AS songs,
+               ROUND(100.0 * COUNT(*) FILTER (WHERE fs.y = v.year) / COUNT(*), 1) AS new_song_share,
+               ROUND(100.0 * COUNT(*) FILTER (WHERE fa.y = v.year) / COUNT(*), 1) AS new_artist_share
+        FROM v_listen v
+        JOIN first_song fs USING (track_key)
+        JOIN first_artist fa USING (artist_key)
+        GROUP BY v.year ORDER BY v.year""")
+
+
 @app.get("/api/loyalty")
 def loyalty():
     """How loyal I am: my #1 artist each year, what I played every single year, and how concentrated my listening is."""

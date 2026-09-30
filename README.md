@@ -147,7 +147,10 @@ My real export never goes in this repo. It includes an IP address and country fo
 
 ## The app
 
-`app/` is a small FastAPI server with one endpoint per question and a full website on top:
+`app/` is a small FastAPI server with one endpoint per question and a full website on top, told in six chapters (Obsessions, Eras, Habits, Loyalty, Discovery, Build):
+
+- **The dynasty:** one square per month colored by its #1 artist, the longest reigns, and who ever took the throne
+- **Discovery:** how much of each year went to songs and artists I'd never heard before
 
 - **Hello and about me:** who I am, why I built this, and flip cards that answer questions about me from the data
 - **Scrub through time:** drag through every month to see who owned it, then open its top five
