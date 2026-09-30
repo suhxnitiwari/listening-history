@@ -8,6 +8,8 @@ Four years of my Spotify listening, turned into a data warehouse.
 
 Spotify lets you download your full streaming history: every song, the second it played, and how long you listened. Mine is **182,293 records** from May 2022 to September 2026. This project runs it through an ETL pipeline into a star schema in PostgreSQL, so questions like *which artist owned each month of my life* or *what's my longest streak of playing one song every day* become SQL.
 
+**→ Live at [listening-history.onrender.com](https://listening-history.onrender.com)**
+
 Built by [Suhani Tiwari](https://suhanitiwari.com), MIS at McCombs, UT Austin.
 
 ## The pipeline
