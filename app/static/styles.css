@@ -139,11 +139,11 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
 .topnav-links .topnav-cta:hover { color: #FFF8F6; background: var(--choc); }
 
 /* hello */
-.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 56px; align-items: center; }
 .hero .stats { grid-column: 1 / -1; margin-top: 12px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
 .hero-photo { position: relative; margin: 0; }
-.hero-photo img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 38% center; border-radius: 10px; }
+.hero-photo img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: center 20%; border-radius: 10px; }
 .now-playing { position: absolute; left: 16px; bottom: 16px; right: 16px; display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px; border-radius: 999px; background: rgba(255, 248, 246, 0.95); box-shadow: 0 1px 3px rgba(42, 24, 16, 0.12); max-width: max-content; }
 .now-playing small { display: block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .now-playing b { display: block; font-size: 0.95rem; }
