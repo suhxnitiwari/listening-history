@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>91,210 Receipts | Suhani Tiwari</title>
+    <meta name="description" content="Four years of my Spotify, told as a story. Then drop in your own export and get yours: obsessions, all-nighters, second chances and who you are at 2 AM.">
+    <meta name="author" content="Suhani Tiwari">
+    <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
+    <meta property="og:title" content="What does your Spotify know about you?">
+    <meta property="og:description" content="The questions Spotify Wrapped never asks. Mine first, then yours.">
+    <meta property="og:image" content="/static/share-card.jpg">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%233A2626'/><circle cx='50' cy='50' r='18' fill='%23F4A7B9'/><circle cx='50' cy='50' r='4' fill='%233A2626'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400;1,6..96,600&family=Caveat:wght@500;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* The same paper, ink and pastels as "What's in my bag?", so my sites read as one world. */
+        :root { --bg: #FAF1EF; --paper: #FFFBF8; --ink: #3A2626; --soft: #5E4A45; --dim: #8C7770; --pink: #D65478; --pink2: #F4A7B9; --plum: #76344E;
+                --rose: #F2C6C8; --lilac: #D9C8F0; --mint: #CDE6D0; --butter: #F8E7A9; --sky: #CFE3F3; --peach: #F7D3BC; --gold: #C98F2A; --night: #2B1B3D;
+                --line: rgba(58, 38, 38, .14); --ease: cubic-bezier(.2, .8, .2, 1);
+                --serif: "Bodoni Moda", Didot, Georgia, serif; --sans: "Instrument Sans", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, Menlo, monospace; --hand: "Caveat", "Bradley Hand", cursive; }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: .45; mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .46 0 0 0 0 .3 0 0 0 0 .3 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+        a { color: var(--plum); text-underline-offset: 3px; }
+        button { font: inherit; color: inherit; cursor: pointer; }
+        img { display: block; }
+        .mono, .eyebrow, .kind, .bar a, .bar button { font-family: var(--mono); font-size: 12px; letter-spacing: .07em; text-transform: uppercase; }
+        .hand { font-family: var(--hand); }
+
+        /* top bar: [bracketed] mono links */
+        .bar { position: fixed; inset: 0 0 auto; z-index: 20; display: flex; align-items: center; gap: 18px; padding: 14px clamp(16px, 4vw, 48px); background: linear-gradient(var(--bg) 60%, transparent); }
+        .bar .brand { font-family: var(--mono); font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink); text-decoration: none; margin-right: auto; }
+        .bar .brand span { color: var(--dim); }
+        .bar a, .bar button { background: none; border: 0; padding: 0; color: var(--soft); text-decoration: none; white-space: nowrap; }
+        .bar a:hover, .bar button:hover, .bar .hot { color: var(--pink); }
+        .progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--pink); z-index: 21; width: 0; }
+
+        /* scenes */
+        .scene { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 96px clamp(16px, 5vw, 56px) 72px; position: relative; overflow: hidden; }
+        .scene > .inner { width: min(900px, 100%); position: relative; z-index: 1; }
+        .scene.center > .inner { text-align: center; }
+        .scene + .scene { border-top: 1px solid var(--line); }
+        .eyebrow { color: var(--dim); margin: 0 0 14px; }
+        .eyebrow b { color: var(--pink); font-weight: 500; }
+        .stamp { display: inline-block; margin-bottom: 16px; padding: 4px 10px; border: 1.5px solid var(--plum); color: var(--plum); border-radius: 3px; font: 500 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; transform: rotate(-2deg); background: var(--paper); }
+        h1, h2, h3 { font-family: var(--serif); margin: 0; font-weight: 400; line-height: 1.06; letter-spacing: -.01em; }
+        h1 { font-size: clamp(42px, 7.4vw, 84px); }
+        h2 { font-size: clamp(32px, 5vw, 58px); }
+        h3 { font-size: clamp(20px, 2.6vw, 28px); }
+        h1 em, h2 em { font-style: italic; color: var(--plum); }
+        .lede { font-family: var(--sans); color: var(--soft); font-size: clamp(17px, 2vw, 21px); margin: 14px auto 0; max-width: 640px; }
+        .center .lede { margin-left: auto; margin-right: auto; }
+        .giant { font-family: var(--serif); font-weight: 400; font-size: clamp(84px, 17vw, 196px); line-height: 1; margin: 8px 0 4px; color: var(--pink); letter-spacing: -.03em; }
+        .giant.gold { color: var(--gold); }
+        .muted { color: var(--dim); }
+        .kind { color: var(--dim); margin-top: 22px; }
+        .kind b { color: var(--soft); font-weight: 500; }
+        .vs { margin-top: 18px; display: inline-block; padding: 8px 14px; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); color: var(--soft); font-size: 15px; }
+        .vs b { color: var(--ink); }
+        .note { font-size: 13px; color: var(--dim); margin-top: 14px; }
+        .scribble { font-family: var(--hand); font-size: 26px; color: var(--plum); line-height: 1.1; }
+
+        /* reveal on enter */
+        .r { opacity: 0; transform: translateY(16px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+        .in .r { opacity: 1; transform: none; }
+        .in .r.d1 { transition-delay: .3s; } .in .r.d2 { transition-delay: .8s; } .in .r.d3 { transition-delay: 1.35s; } .in .r.d4 { transition-delay: 1.9s; }
+
+        /* pieces */
+        .cover { width: 120px; height: 120px; border-radius: 6px; object-fit: cover; background: var(--rose); box-shadow: 0 10px 24px rgba(58,38,38,.18); }
+        .cover.big { width: min(180px, 44vw); height: min(180px, 44vw); }
+        .cover.round { border-radius: 50%; }
+        .row { display: flex; gap: 18px; align-items: center; }
+        .grid { display: grid; gap: 12px; }
+        .card { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px; text-align: left; }
+        .card .t { font-family: var(--serif); font-size: 18px; }
+        .card .s { color: var(--dim); font: 12px var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+        .guess { display: flex; gap: 8px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+        .guess input { width: 130px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--ink); background: var(--paper); color: var(--ink); font: 400 22px var(--serif); text-align: center; }
+        .btn { border: 1.5px solid var(--ink); border-radius: 999px; padding: 11px 20px; background: var(--ink); color: var(--paper); font: 500 12px var(--mono); letter-spacing: .07em; text-transform: uppercase; text-decoration: none; display: inline-block; transition: transform .2s var(--ease); }
+        .btn:hover { transform: translateY(-2px); }
+        .btn.ghost { background: transparent; color: var(--ink); }
+        .hidden { display: none !important; }
+        svg { display: block; width: 100%; height: auto; overflow: visible; }
+        svg text { font-family: var(--sans); }
+
+        /* animated charts */
+        .strip rect { transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); transition: transform .5s var(--ease); }
+        .in .strip rect { transform: scaleY(1); }
+        .pop > * { opacity: 0; transition: opacity .35s ease; }
+        .in .pop > * { opacity: 1; }
+        .draw { stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 2.6s ease; }
+        .in .draw { stroke-dashoffset: 0; }
+        .boom { opacity: 0; transform: scale(.2); transform-box: fill-box; transform-origin: center; transition: opacity .3s, transform .4s cubic-bezier(.3,1.8,.5,1); }
+        .in .boom { opacity: 1; transform: scale(1); }
+        .funnel .f { height: 38px; border-radius: 8px; background: var(--pink2); border: 1.5px solid var(--ink); width: 0; transition: width 1s var(--ease); display: flex; align-items: center; padding: 0 12px; color: var(--ink); font: 500 14px var(--mono); white-space: nowrap; }
+        .funnel .lbl { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; margin: 8px 0; text-align: left; }
+        .funnel .lbl span { color: var(--soft); font-size: 14px; }
+        .funnel .lbl i { font-family: var(--hand); font-style: normal; font-size: 19px; color: var(--plum); }
+        .stars circle { animation: twinkle 3s ease-in-out infinite; }
+        @keyframes twinkle { 50% { opacity: .35; } }
+        .tomb { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 26px; }
+        .tomb button { padding: 26px 10px 14px; border-radius: 70px 70px 8px 8px; background: var(--paper); border: 1.5px solid var(--ink); text-align: center; font-size: 13px; transition: transform .2s var(--ease); box-shadow: 4px 4px 0 var(--rose); }
+        .tomb button:hover { transform: translateY(-4px) rotate(-1deg); }
+        .tomb b { display: block; font-family: var(--serif); font-size: 15px; font-weight: 400; margin: 4px 0; }
+        .tomb i { display: block; margin-top: 6px; font: normal 18px var(--hand); color: var(--plum); opacity: 0; transition: opacity .2s; }
+        .tomb button:hover i { opacity: 1; }
+        .faces { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; max-width: 620px; margin: 14px auto 0; }
+        .faces button { background: none; border: 0; padding: 0; transition: transform .2s var(--ease); }
+        .faces button:hover { transform: translateY(-4px) rotate(-2deg); }
+        .faces img { width: 100%; height: auto; aspect-ratio: 1; border: 2px solid var(--ink); }
+        .faces span { display: block; margin-top: 8px; font: 12px var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--soft); }
+        .slideguess { display: flex; gap: 14px; align-items: center; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+        .slideguess b { font: 400 30px var(--serif); color: var(--pink); width: 80px; }
+        input[type=range] { accent-color: var(--pink); width: min(420px, 80vw); height: 30px; }
+        .scrub { width: min(560px, 90%); }
+        .era { display: grid; grid-template-columns: 110px 1fr; gap: 18px; align-items: center; padding: 14px 10px; border-top: 1px solid var(--line); text-align: left; cursor: pointer; border-radius: 10px; transition: background .2s; }
+        .era:hover { background: var(--paper); }
+        .era .y { font: 12px var(--mono); color: var(--pink); }
+        .era h3 { font-size: clamp(22px, 3.4vw, 34px); }
+        .mirror { display: grid; grid-template-columns: 1fr 26px 1fr; gap: 10px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); text-align: left; font-size: 15px; }
+        .mirror .arrow { color: var(--pink); text-align: center; }
+        .share { margin-top: 22px; }
+        .share button { border: 0; background: none; color: var(--plum); font: 22px var(--hand); text-decoration: underline; text-underline-offset: 4px; }
+
+        /* the record crate: chapters as sleeves you drag onto the turntable */
+        .hero { padding-top: 110px; min-height: 100vh; }
+        .hero > .inner { width: min(1180px, 100%); }
+        .hero h1 { font-size: clamp(44px, 6.6vw, 88px); max-width: 15ch; }
+        .hero .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 18px; color: var(--dim); }
+        .table { position: relative; height: 640px; margin-top: 34px; border-radius: 22px; background: var(--paper); border: 1px solid var(--line); overflow: hidden; touch-action: none; }
+        .sleeve { position: absolute; width: 170px; height: 170px; cursor: grab; user-select: none; touch-action: none; transition: transform .35s var(--ease), left .5s var(--ease), top .5s var(--ease); }
+        .sleeve .jacket { position: absolute; inset: 0; z-index: 1; border: 2px solid var(--ink); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 22px rgba(58,38,38,.12); transition: box-shadow .2s; }
+        .sleeve:hover .jacket { box-shadow: 0 16px 30px rgba(58,38,38,.2); }
+        .sleeve.dragging { cursor: grabbing; transition: none; z-index: 30; }
+        .sleeve.dragging .jacket { box-shadow: 0 24px 40px rgba(58,38,38,.28); }
+        .sleeve .disc { position: absolute; right: -22px; top: 15px; width: 140px; height: 140px; border-radius: 50%; z-index: 0; background: repeating-radial-gradient(circle, #2A1C1C 0 3px, #33231F 3px 4px); box-shadow: inset 0 0 0 46px transparent; transition: right .45s var(--ease); }
+        .sleeve .disc::after { content: ""; position: absolute; inset: 50px; border-radius: 50%; background: var(--pink2); border: 2px solid #1A1010; }
+        .sleeve:hover .disc, .sleeve.dragging .disc { right: -58px; }
+        .sleeve img { width: 64px; height: 64px; border-radius: 4px; object-fit: cover; border: 1.5px solid var(--ink); }
+        .sleeve .lab { font: 500 11px/1.25 var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+        .sleeve .q { font: 400 15px/1.15 var(--serif); }
+        .deck { position: absolute; right: 34px; bottom: 34px; width: 330px; height: 300px; border: 2px solid var(--ink); border-radius: 18px; background: #E9DCD6; }
+        .deck.hover { box-shadow: 0 0 0 6px var(--pink2); }
+        .platter { position: absolute; left: 22px; top: 22px; width: 256px; height: 256px; border-radius: 50%; background: #2A1C1C; border: 2px solid var(--ink); display: grid; place-items: center; }
+        .platter::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 5px, rgba(255,255,255,.04) 6px 7px); }
+        .platter .labelart { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; background: var(--pink2); border: 2px solid #1A1010; z-index: 1; }
+        .platter.spin { animation: spin 1.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .arm { position: absolute; right: 18px; top: 18px; width: 18px; height: 210px; transform-origin: 9px 9px; transform: rotate(-28deg); transition: transform 1s var(--ease); }
+        .arm.down { transform: rotate(4deg); }
+        .arm::before { content: ""; position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--ink); }
+        .arm::after { content: ""; position: absolute; left: 7px; top: 9px; width: 4px; height: 190px; background: var(--ink); border-radius: 2px; box-shadow: -4px 186px 0 2px var(--ink); }
+        .deck .hint { position: absolute; left: -150px; bottom: 40px; width: 140px; text-align: right; }
+        .nowplaying { position: absolute; right: 34px; top: 30px; width: 330px; }
+        .nowplaying h3 { font-size: clamp(22px, 2.6vw, 32px); }
+        .index { margin-top: 40px; border-top: 1.5px solid var(--ink); }
+        .index a { display: grid; grid-template-columns: 54px 1fr auto; gap: 18px; padding: 12px 4px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); align-items: baseline; transition: background .2s, padding .2s var(--ease); }
+        .index a:hover { background: var(--paper); padding-left: 12px; }
+        .index .n { font: 12px var(--mono); color: var(--dim); }
+        .index .q { font-family: var(--serif); font-size: 21px; }
+        .index .p { font: 12px var(--mono); color: var(--dim); text-transform: uppercase; letter-spacing: .06em; }
+
+        /* chapter rail */
+        .rail { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); z-index: 15; display: grid; gap: 14px; }
+        .rail a { display: grid; grid-template-columns: auto 10px; gap: 10px; align-items: center; justify-items: end; text-decoration: none; color: var(--dim); font: 11px var(--mono); letter-spacing: .07em; text-transform: uppercase; }
+        .rail a span { opacity: 0; transition: opacity .3s; }
+        .rail:hover a span, .rail a.on span { opacity: 1; }
+        .rail a i { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--dim); }
+        .rail a.on { color: var(--ink); } .rail a.on i { background: var(--pink); border-color: var(--pink); }
+
+        /* do yours */
+        .drop { display: block; margin-top: 24px; border: 2px dashed var(--ink); border-radius: 18px; padding: 34px 20px; text-align: center; background: var(--paper); transition: background .2s, transform .2s var(--ease); cursor: pointer; }
+        .drop.over { background: var(--rose); transform: rotate(-.6deg); }
+        .drop input { display: none; }
+        .steps { text-align: left; display: grid; gap: 10px; margin-top: 20px; }
+        .steps div { padding: 12px 14px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
+        .score { font-family: var(--serif); font-size: clamp(90px, 20vw, 170px); color: var(--pink); line-height: 1; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
+        .chips span { padding: 5px 11px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); font: 12px var(--mono); text-transform: uppercase; letter-spacing: .05em; }
+        .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 12px; font-size: 14px; }
+        .start { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+
+        @media (max-width: 900px) {
+            .rail { display: none; }
+            .table { height: auto; padding: 16px; display: grid; gap: 16px; }
+            .crate { display: flex; gap: 12px; overflow-x: auto; padding: 4px 4px 16px; scroll-snap-type: x mandatory; }
+            .sleeve { position: relative !important; left: auto !important; top: auto !important; flex: 0 0 150px; height: 150px; width: 150px; scroll-snap-align: start; transform: none !important; }
+            .deck { position: relative; right: auto; bottom: auto; width: 100%; max-width: 330px; margin: 0 auto; }
+            .deck .hint { display: none; }
+            .nowplaying { position: static; }
+        }
+        @media (max-width: 640px) {
+            body { font-size: 16px; }
+            .bar { gap: 12px; } .bar .brand span, .bar a[href="/explore"] { display: none; }
+            .funnel .lbl { grid-template-columns: 100px 1fr; }
+            .era { grid-template-columns: 70px 1fr; }
+            .mirror { grid-template-columns: 1fr; } .mirror .arrow { display: none; }
+            .index a { grid-template-columns: 34px 1fr; } .index .p { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) { .r, .strip rect, .draw, .boom, .funnel .f, .pop > *, .sleeve { transition: none !important; } .stars circle, .platter.spin { animation: none; } }
+    </style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header class="bar">
+    <a class="brand" href="/">Suhani Tiwari <span>· 91,210 receipts</span></a>
+    <button id="soundBtn" aria-pressed="false">[Sound off]</button>
+    <a href="/explore">[Every chart]</a>
+    <a class="hot" href="#yours" id="doYoursBtn">[Do yours]</a>
+</header>
+
+<nav class="rail" id="rail" aria-label="Chapters"></nav>
+<main id="story"></main>
+
+<section class="scene" id="yours">
+    <div class="inner" style="text-align:center">
+        <p class="eyebrow">Your turn</p>
+        <h2 id="yoursTitle">Now do <em>yours</em>.</h2>
+        <p class="lede">Drop in your Spotify export. Every question in this story gets answered about you.</p>
+        <label class="drop" id="drop">
+            <input type="file" id="file" multiple accept=".zip,.json">
+            <h3>Drop your Spotify zip here</h3>
+            <p class="muted">or tap to choose it · my_spotify_data.zip, or the JSON files inside</p>
+            <p id="status" class="note"></p>
+        </label>
+        <p class="note">Your listening history never leaves this page: it's read and analyzed right here in your browser, and nothing is uploaded. To show covers and previews, only the song names on screen are looked up on Apple's iTunes Search.</p>
+        <div class="steps">
+            <div><b>1.</b> Go to <a href="https://www.spotify.com/account/privacy/" target="_blank" rel="noopener">spotify.com → Account → Privacy</a>.</div>
+            <div><b>2.</b> Tick <b>Extended streaming history</b> for every year, skips and all (Spotify says up to 30 days, often sooner). <b>Account data</b> arrives in about 5 days but only covers the last year.</div>
+            <div><b>3.</b> When the email comes, download the zip and drop it here. That's it.</div>
+        </div>
+        <div id="saved" class="hidden" style="margin-top:22px"></div>
+    </div>
+</section>
+
+<section class="scene" id="click">
+    <div class="inner" style="text-align:center">
+        <p class="eyebrow">Would our music click?</p>
+        <h2>Compare with a <em>friend</em>.</h2>
+        <p class="lede">Two exports, one score: how much your artists, songs and habits overlap.</p>
+        <label class="drop" id="drop2">
+            <input type="file" id="file2" multiple accept=".zip,.json">
+            <h3>Drop your friend's export</h3>
+            <p class="muted" id="clickWho">It gets compared with yours, or with mine if you haven't added yours.</p>
+            <p id="status2" class="note"></p>
+        </label>
+        <div id="clickResult"></div>
+    </div>
+</section>
+
+<footer class="scene" style="min-height:auto;padding:60px 20px 90px">
+    <div class="inner" style="text-align:center">
+        <p class="scribble">thanks for listening ♡</p>
+        <p class="mono" style="margin-top:14px"><a href="/about">[About me]</a> &nbsp; <a href="/explore">[Every chart]</a> &nbsp; <a href="/report">[The report]</a> &nbsp; <a href="https://github.com/suhxnitiwari/listening-history" target="_blank" rel="noopener">[The code]</a> &nbsp; <a href="https://suhxnitiwari.github.io/suhani-personality/" target="_blank" rel="noopener">[My personality]</a></p>
+        <p class="note">© 2026 Suhani Tiwari. All rights reserved.</p>
+    </div>
+</footer>
+
+<audio id="audio" preload="none"></audio>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="/static/engine.js"></script>
+<script src="/static/story.js"></script>
+</body>
+</html>

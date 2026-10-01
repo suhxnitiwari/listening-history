@@ -20,7 +20,7 @@ from typing import Optional
 
 import httpx
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
@@ -136,6 +136,12 @@ def skips():
     most = query("skips-most", "SELECT * FROM v_skip_rate ORDER BY skip_pct DESC LIMIT 5")
     least = query("skips-least", "SELECT * FROM v_skip_rate ORDER BY skip_pct LIMIT 5")
     return {"most": most, "least": least}
+
+
+@app.get("/api/skip-rates")
+def skip_rates():
+    """Skip rate for every artist I've played 200+ times."""
+    return query("skip-rates", "SELECT * FROM v_skip_rate ORDER BY skip_pct")
 
 
 @app.get("/api/days")
@@ -446,6 +452,391 @@ async def preview(title: str = Query(max_length=150), artist: str = Query(max_le
     return _cache[key]
 
 
+# ---------- pictures: album art for any song or artist, and the shape of every day ----------
+
+_art_gate: Optional[asyncio.Semaphore] = None        # a wall of covers loads at once; stay polite to Spotify
+WEEK = {"Cache-Control": "public, max-age=604800"}
+
+
+async def cover_for(uri: str, title: str, artist: str, big: bool) -> Optional[str]:
+    """The exact cover from Spotify's public oEmbed (by the ID I played), then iTunes as a fallback."""
+    global _art_gate
+    _art_gate = _art_gate or asyncio.Semaphore(8)       # made inside the server's event loop
+    async with _art_gate, httpx.AsyncClient(timeout=8) as client:
+        try:
+            r = await client.get("https://open.spotify.com/oembed", params={"url": uri})
+            thumb = r.json().get("thumbnail_url") if r.status_code == 200 else None
+            if thumb:
+                return thumb.replace("ab67616d00001e02", "ab67616d0000b273") if big else thumb
+        except (httpx.HTTPError, ValueError):
+            pass
+        item = await itunes(client, title, artist, "song")
+    if item and item.get("artworkUrl100"):
+        return item["artworkUrl100"].replace("100x100bb", "600x600bb" if big else "300x300bb")
+    return None
+
+
+async def art_redirect(key: str, found: list, big: bool):
+    """Send the browser straight to the image, so any <img> can point at /api/art and cache it for a week."""
+    if key not in _cache:
+        if not found:
+            raise HTTPException(404, "not in my history")
+        _cache[key] = await cover_for(found[0]["spotify_uri"], found[0]["track_name"], found[0]["artist_name"], big)
+    if not _cache[key]:
+        raise HTTPException(404, "no cover")
+    return RedirectResponse(_cache[key], status_code=302, headers=WEEK)
+
+
+@app.get("/api/art")
+async def art(title: str = Query(min_length=1, max_length=150), artist: str = Query(min_length=1, max_length=100), big: bool = False):
+    """A song's album cover (redirects to the image)."""
+    key = bounded_key("art:", title, artist, "big" if big else "")
+    found = query(key + ":uri", """
+        SELECT t.spotify_uri, t.track_name, a.artist_name FROM dim_track t JOIN dim_artist a USING (artist_key)
+        WHERE t.track_name = %s AND a.artist_name = %s LIMIT 1""", (title, artist))
+    return await art_redirect(key, found, big)
+
+
+@app.get("/api/artist-art")
+async def artist_art(name: str = Query(min_length=1, max_length=100)):
+    """An artist's picture: the cover of the song of theirs I played most."""
+    key = bounded_key("artistart:", name)
+    found = query(key + ":uri", """
+        SELECT t.spotify_uri, t.track_name, v.artist_name FROM v_listen v JOIN dim_track t USING (track_key)
+        WHERE v.artist_name = %s GROUP BY t.spotify_uri, t.track_name, v.artist_name ORDER BY COUNT(*) DESC LIMIT 1""", (name,))
+    return await art_redirect(key, found, False)
+
+
+@app.get("/api/calendar")
+def calendar():
+    """Every day in the history: minutes, listens and the song I played most (days with no music are left out)."""
+    return query("calendar", """
+        WITH per_day AS (
+            SELECT full_date, ROUND(SUM(minutes)) AS minutes, COUNT(*) AS listens FROM v_listen GROUP BY full_date
+        ), song AS (
+            SELECT DISTINCT ON (full_date) full_date, track_name, artist_name FROM (
+                SELECT full_date, track_name, artist_name, COUNT(*) AS n FROM v_listen
+                GROUP BY full_date, track_key, track_name, artist_name) s
+            ORDER BY full_date, n DESC, track_name
+        )
+        SELECT full_date AS d, minutes AS m, listens AS n, track_name AS s, artist_name AS a
+        FROM per_day JOIN song USING (full_date) ORDER BY full_date""")
+
+
+@app.get("/api/race")
+def race():
+    """My 12 most-listened artists, hours per month, for the race of who got there first."""
+    return query("race", """
+        WITH top AS (SELECT artist_key FROM v_listen GROUP BY artist_key ORDER BY SUM(minutes) DESC LIMIT 12)
+        SELECT to_char(date_trunc('month', full_date), 'YYYY-MM') AS month, artist_name, ROUND(SUM(minutes) / 60, 1) AS hours
+        FROM v_listen WHERE artist_key IN (SELECT artist_key FROM top)
+        GROUP BY 1, artist_name ORDER BY 1, artist_name""")
+
+
+@app.get("/api/report-extras")
+def report_extras():
+    """Everything else the report charts: the shape of my week, sessions, how plays start and end, and the long tail."""
+    week = query("rx-week", """
+        SELECT EXTRACT(ISODOW FROM full_date)::int AS dow, hour, ROUND(SUM(minutes) / 60, 1) AS hours
+        FROM v_listen GROUP BY 1, 2 ORDER BY 1, 2""")
+    weekdays = query("rx-weekdays", """
+        SELECT EXTRACT(ISODOW FROM d.full_date)::int AS dow, d.weekday, COUNT(DISTINCT d.date_key) AS days,
+               ROUND(COALESCE(SUM(v.minutes), 0) / 60 / COUNT(DISTINCT d.date_key), 2) AS hours_per_day
+        FROM dim_date d LEFT JOIN v_listen v ON v.full_date = d.full_date
+        GROUP BY 1, 2 ORDER BY 1""")
+    seasons = query("rx-seasons", """
+        WITH days AS (SELECT season, COUNT(*) AS n FROM dim_date GROUP BY season)
+        SELECT v.season, ROUND(SUM(v.minutes) / 60) AS hours, ROUND(SUM(v.minutes) / 60 / days.n, 2) AS hours_per_day
+        FROM v_listen v JOIN days USING (season) GROUP BY v.season, days.n ORDER BY hours DESC""")
+    totals = query("rx-totals", """
+        SELECT (SELECT COUNT(*) FROM dim_date) AS calendar_days, (SELECT COUNT(*) FROM fact_play) AS all_plays,
+               (SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY minutes) FROM dim_session) AS median_session,
+               (SELECT ROUND(AVG(play_count)) FROM dim_session) AS avg_session_plays,
+               (SELECT ROUND(MAX(minutes) / 60, 1) FROM dim_session) AS longest_session_hours""")[0]
+    sessions = query("rx-sessions", """
+        SELECT CASE WHEN minutes < 15 THEN 0 WHEN minutes < 30 THEN 1 WHEN minutes < 60 THEN 2
+                    WHEN minutes < 120 THEN 3 WHEN minutes < 240 THEN 4 ELSE 5 END AS bucket,
+               COUNT(*) AS sessions, ROUND(SUM(minutes) / 60) AS hours
+        FROM dim_session GROUP BY 1 ORDER BY 1""")
+    lengths = query("rx-lengths", """
+        SELECT LEAST(FLOOR(ms_played / 30000.0), 12)::int AS bucket, COUNT(*) AS plays
+        FROM fact_play GROUP BY 1 ORDER BY 1""")
+    endings = query("rx-endings", "SELECT reason_end AS reason, COUNT(*) AS plays FROM fact_play GROUP BY 1 ORDER BY 2 DESC")
+    starts = query("rx-starts", "SELECT reason_start AS reason, COUNT(*) AS plays FROM fact_play GROUP BY 1 ORDER BY 2 DESC")
+    by_year = query("rx-by-year", """
+        SELECT d.year, ROUND(100.0 * COUNT(*) FILTER (WHERE f.shuffle) / COUNT(*), 1) AS shuffle_pct,
+               ROUND(100.0 * COUNT(*) FILTER (WHERE f.reason_start = 'clickrow') / COUNT(*), 1) AS chosen_pct,
+               ROUND(100.0 * COUNT(*) FILTER (WHERE f.reason_end = 'backbtn') / COUNT(*), 1) AS replay_pct
+        FROM fact_play f JOIN dim_date d USING (date_key) GROUP BY d.year ORDER BY d.year""")
+    skip_hours = query("rx-skip-hours", """
+        SELECT hour, ROUND(100.0 * COUNT(*) FILTER (WHERE skipped) / COUNT(*), 1) AS skip_pct
+        FROM fact_play GROUP BY hour ORDER BY hour""")
+    tail = query("rx-tail", """
+        WITH per_song AS (SELECT track_key, COUNT(*) AS n FROM v_listen GROUP BY track_key)
+        SELECT CASE WHEN n = 1 THEN 0 WHEN n < 5 THEN 1 WHEN n < 10 THEN 2 WHEN n < 25 THEN 3
+                    WHEN n < 50 THEN 4 WHEN n < 100 THEN 5 WHEN n < 250 THEN 6 ELSE 7 END AS bucket,
+               COUNT(*) AS songs, SUM(n) AS listens
+        FROM per_song GROUP BY 1 ORDER BY 1""")
+    albums = query("rx-albums", """
+        SELECT al.album_name, ar.artist_name, COUNT(*) AS listens, ROUND(SUM(v.minutes) / 60) AS hours
+        FROM v_listen v JOIN dim_track t USING (track_key) JOIN dim_album al ON al.album_key = t.album_key
+        JOIN dim_artist ar ON ar.artist_key = al.artist_key
+        GROUP BY al.album_key, al.album_name, ar.artist_name ORDER BY hours DESC LIMIT 10""")
+    year_artists = query("rx-year-artists", """
+        SELECT year, artist_name, hours FROM (
+            SELECT year, artist_name, ROUND(SUM(minutes) / 60) AS hours,
+                   ROW_NUMBER() OVER (PARTITION BY year ORDER BY SUM(minutes) DESC) AS place
+            FROM v_listen GROUP BY year, artist_name) r
+        WHERE place <= 5 ORDER BY year, place""")
+    finds = query("rx-finds", """
+        WITH firsts AS (SELECT track_key, MIN(year) AS found FROM v_listen GROUP BY track_key)
+        SELECT found AS year, track_name, artist_name, listens FROM (
+            SELECT f.found, v.track_name, v.artist_name, COUNT(*) AS listens,
+                   ROW_NUMBER() OVER (PARTITION BY f.found ORDER BY COUNT(*) DESC) AS place
+            FROM v_listen v JOIN firsts f USING (track_key)
+            GROUP BY f.found, v.track_key, v.track_name, v.artist_name) r
+        WHERE place <= 3 ORDER BY year, place""")
+    return {**totals, "week": week, "weekdays": weekdays, "seasons": seasons, "sessions": sessions,
+            "lengths": lengths, "endings": endings, "starts": starts, "by_year": by_year,
+            "skip_hours": skip_hours, "tail": tail, "finds": finds, "albums": albums, "year_artists": year_artists}
+
+
+MOOD_SCORE = """CASE t.mood WHEN 'heartbreak' THEN -2 WHEN 'bittersweet' THEN -1 WHEN 'dark' THEN -1
+                 WHEN 'love' THEN 1 WHEN 'confident' THEN 1 WHEN 'party' THEN 2 END"""
+MOODED = f"SELECT v.*, t.mood, {MOOD_SCORE} AS score FROM v_listen v JOIN dim_track t USING (track_key) WHERE t.mood IS NOT NULL"
+
+
+@app.get("/api/moods")
+def moods():
+    """How my listening felt: my own mood labels on my most-played songs, by year, month, day, hour and artist."""
+    by_year = query("mood-year", f"""
+        SELECT year, mood, COUNT(*) AS listens,
+               ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY year), 1) AS share
+        FROM ({MOODED}) m GROUP BY year, mood ORDER BY year, mood""")
+    overall = query("mood-all", f"""
+        SELECT mood, COUNT(*) AS listens, ROUND(SUM(minutes) / 60) AS hours FROM ({MOODED}) m GROUP BY mood ORDER BY listens DESC""")
+    months = query("mood-months", f"""
+        WITH m AS ({MOODED}),
+        per AS (SELECT date_trunc('month', full_date)::date AS month, ROUND(AVG(score), 2) AS score, COUNT(*) AS listens
+                FROM m GROUP BY 1),
+        top AS (SELECT DISTINCT ON (month) month, track_name, artist_name, mood FROM (
+                    SELECT date_trunc('month', full_date)::date AS month, track_name, artist_name, mood, COUNT(*) AS n
+                    FROM m GROUP BY 1, track_key, track_name, artist_name, mood) x ORDER BY month, n DESC)
+        SELECT per.*, top.track_name, top.artist_name, top.mood FROM per JOIN top USING (month) ORDER BY month""")
+    days = query("mood-days", f"""
+        WITH m AS ({MOODED}),
+        per AS (SELECT full_date, ROUND(AVG(score), 2) AS score, COUNT(*) AS listens FROM m GROUP BY full_date HAVING COUNT(*) >= 40),
+        top AS (SELECT DISTINCT ON (full_date) full_date, track_name, artist_name, mood, n FROM (
+                    SELECT full_date, track_name, artist_name, mood, COUNT(*) AS n FROM m GROUP BY 1, track_key, track_name, artist_name, mood) x
+                ORDER BY full_date, n DESC)
+        SELECT per.*, top.track_name, top.artist_name, top.mood, top.n FROM per JOIN top USING (full_date)""")
+    ranked = sorted(days, key=lambda d: d["score"])
+    hours = query("mood-hours", f"SELECT hour, ROUND(AVG(score), 2) AS score FROM ({MOODED}) m GROUP BY hour ORDER BY hour")
+    songs = query("mood-songs", f"""
+        SELECT mood, track_name, artist_name, listens FROM (
+            SELECT mood, track_name, artist_name, COUNT(*) AS listens,
+                   ROW_NUMBER() OVER (PARTITION BY mood ORDER BY COUNT(*) DESC) AS place
+            FROM ({MOODED}) m GROUP BY mood, track_key, track_name, artist_name) x
+        WHERE place <= 3 ORDER BY mood, place""")
+    artists = query("mood-artists", f"""
+        WITH top AS (SELECT artist_key FROM v_listen GROUP BY artist_key ORDER BY SUM(minutes) DESC LIMIT 8)
+        SELECT artist_name, mood, COUNT(*) AS listens,
+               ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY artist_name), 1) AS share
+        FROM ({MOODED}) m WHERE artist_key IN (SELECT artist_key FROM top) GROUP BY artist_name, mood""")
+    coverage = query("mood-coverage", """
+        SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE t.mood IS NOT NULL) / COUNT(*), 1) AS pct,
+               COUNT(DISTINCT t.track_key) FILTER (WHERE t.mood IS NOT NULL) AS songs
+        FROM v_listen v JOIN dim_track t USING (track_key)""")[0]
+    return {"coverage": coverage, "overall": overall, "by_year": by_year, "months": months, "hours": hours,
+            "saddest_days": ranked[:5], "happiest_days": ranked[::-1][:5], "songs": songs, "artists": artists}
+
+
+@app.get("/api/nights")
+def nights():
+    """When the music stops at night, all-nighters (music every hour from midnight to 6 AM), and my most loyal song."""
+    stops = query("night-stops", """
+        WITH p AS (SELECT played_at - make_interval(secs => ms_played / 1000.0) AS started, played_at AS ended FROM fact_play),
+        gaps AS (SELECT ended AS quiet_from, LEAD(started) OVER (ORDER BY started) AS quiet_to FROM p),
+        longest AS (
+            SELECT DISTINCT ON ((quiet_from - INTERVAL '14 hours')::date) quiet_from, quiet_to
+            FROM gaps WHERE quiet_to - quiet_from BETWEEN INTERVAL '3 hours' AND INTERVAL '20 hours'
+            ORDER BY (quiet_from - INTERVAL '14 hours')::date, quiet_to - quiet_from DESC)
+        SELECT EXTRACT(HOUR FROM quiet_from)::int AS hour, COUNT(*) AS nights FROM longest GROUP BY 1 ORDER BY 1""")
+    allnighters = query("night-all", """
+        SELECT full_date, COUNT(*) AS listens FROM v_listen WHERE hour BETWEEN 0 AND 5
+        GROUP BY full_date HAVING COUNT(DISTINCT hour) = 6 ORDER BY full_date""")
+    night_songs = query("night-songs", """
+        SELECT track_name, artist_name, COUNT(*) AS listens FROM v_listen WHERE hour BETWEEN 0 AND 4
+        GROUP BY track_key, track_name, artist_name ORDER BY listens DESC LIMIT 5""")
+    contender = query("night-contender", """
+        WITH ranked AS (
+            SELECT year, track_key, track_name, artist_name, COUNT(*) AS listens,
+                   RANK() OVER (PARTITION BY year ORDER BY COUNT(*) DESC) AS place
+            FROM v_listen GROUP BY year, track_key, track_name, artist_name)
+        SELECT track_name, artist_name, MAX(place) AS worst_place, SUM(listens) AS listens,
+               array_agg(place ORDER BY year) AS places, array_agg(year ORDER BY year) AS years
+        FROM ranked GROUP BY track_key, track_name, artist_name
+        HAVING COUNT(*) = (SELECT COUNT(DISTINCT year) FROM v_listen)
+        ORDER BY MAX(place), SUM(listens) DESC LIMIT 5""")
+    return {"stops": stops, "allnighters": allnighters, "night_songs": night_songs, "contenders": contender}
+
+
+# My life's turning points, used to split the history into eras (dates are the boundaries, not causes).
+GRADUATED = "2024-06-01"        # finished high school in May 2024
+MOVED_TO_AUSTIN = "2024-08-15"  # moved to Austin in August 2024
+ERA = f"""CASE WHEN full_date < '{GRADUATED}' THEN 'High school' WHEN full_date < '{MOVED_TO_AUSTIN}' THEN 'The summer between'
+               ELSE 'Austin' END"""
+PERIOD = """CASE WHEN hour BETWEEN 6 AND 11 THEN 'morning' WHEN hour BETWEEN 12 AND 17 THEN 'afternoon'
+                  WHEN hour BETWEEN 18 AND 23 THEN 'evening' ELSE 'late night' END"""
+
+
+@app.get("/api/story")
+def story():
+    """The questions the report asks about me: obsessions, Ariana's share, resurrections, sleep, eras, desi music, love vs. skip."""
+    # obsession curves: listens per day for the first 45 days of my biggest binges and fastest obsessions
+    picks = query("st-picks", """
+        (SELECT track_key FROM v_most_in_a_day v JOIN dim_track t USING (track_name)
+         JOIN dim_artist a ON a.artist_key = t.artist_key AND a.artist_name = v.artist_name ORDER BY listens DESC LIMIT 4)
+        UNION
+        (SELECT t.track_key FROM v_first_listen_to_obsession o JOIN dim_track t USING (track_name)
+         JOIN dim_artist a ON a.artist_key = t.artist_key AND a.artist_name = o.artist_name
+         WHERE o.track_name !~* 'instrumental' ORDER BY days_to_obsession, first_listen LIMIT 3)""")
+    curves = query("st-curves", """
+        WITH firsts AS (SELECT track_key, MIN(full_date) AS f FROM v_listen WHERE track_key = ANY(%s) GROUP BY track_key)
+        SELECT v.track_key, v.track_name, v.artist_name, v.full_date - firsts.f AS day, COUNT(*) AS listens
+        FROM v_listen v JOIN firsts USING (track_key) WHERE v.full_date - firsts.f < 45
+        GROUP BY 1, 2, 3, 4 ORDER BY 1, 4""", ([p["track_key"] for p in picks],))
+    ariana = query("st-ariana", """
+        SELECT date_trunc('month', full_date)::date AS month,
+               ROUND(100.0 * COUNT(*) FILTER (WHERE artist_key = (SELECT artist_key FROM v_listen GROUP BY artist_key ORDER BY SUM(minutes) DESC LIMIT 1)) / COUNT(*), 1) AS share
+        FROM v_listen GROUP BY 1 ORDER BY 1""")
+    comebacks = query("st-comebacks", """
+        WITH d AS (SELECT track_key, track_name, artist_name, full_date, COUNT(*) AS n FROM v_listen GROUP BY 1, 2, 3, 4),
+        g AS (SELECT *, full_date - LAG(full_date) OVER w AS gap,
+                     SUM(n) OVER (w ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS before,
+                     SUM(n) OVER (w RANGE BETWEEN CURRENT ROW AND INTERVAL '59 days' FOLLOWING) AS after   -- the 60 calendar days after
+              FROM d WINDOW w AS (PARTITION BY track_key ORDER BY full_date))
+        SELECT DISTINCT ON (track_key) track_name, artist_name, full_date - gap AS last_heard, full_date AS returned, gap, before, after
+        FROM g WHERE gap >= 180 AND before >= 40 AND after >= 25 ORDER BY track_key, gap * after DESC""")
+    comebacks = sorted(comebacks, key=lambda r: -r["gap"] * r["after"])[:6]
+    awake = query("st-awake", """
+        SELECT full_date - (SELECT MIN(full_date) FROM dim_date) AS d, hour AS h, ROUND(SUM(minutes)) AS m
+        FROM v_listen GROUP BY 1, 2""")
+    long_nights = query("st-long-nights", """
+        SELECT started_at, ended_at, ROUND(minutes / 60, 1) AS hours, play_count FROM dim_session
+        WHERE started_at::date < ended_at::date OR started_at::time < '03:00'
+        ORDER BY CASE WHEN ended_at::time >= '05:00' THEN ended_at - date_trunc('day', ended_at) ELSE INTERVAL '0' END DESC LIMIT 3""")
+    weather = query("st-weather", f"""
+        SELECT v.full_date AS d, ROUND(AVG({MOOD_SCORE}), 2) AS score, ROUND(STDDEV({MOOD_SCORE}), 2) AS spread, COUNT(*) AS n
+        FROM v_listen v JOIN dim_track t USING (track_key) WHERE t.mood IS NOT NULL GROUP BY 1 HAVING COUNT(*) >= 10""")
+    by_period = query("st-periods", f"""
+        WITH p AS (SELECT artist_name, {PERIOD} AS period FROM v_listen),
+        artists AS (SELECT artist_name, COUNT(*) AS n FROM p GROUP BY 1 HAVING COUNT(*) >= 150),
+        periods AS (SELECT period, COUNT(*) AS n FROM p GROUP BY 1),
+        lifts AS (SELECT p.period, p.artist_name, COUNT(*) AS listens,
+                         ROUND((COUNT(*)::numeric / periods.n) / (artists.n::numeric / (SELECT COUNT(*) FROM p)), 2) AS lift
+                  FROM p JOIN artists USING (artist_name) JOIN periods USING (period)
+                  GROUP BY p.period, p.artist_name, periods.n, artists.n HAVING COUNT(*) >= 30)
+        SELECT * FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY period ORDER BY lift DESC) AS place FROM lifts) r
+        WHERE place <= 4 ORDER BY period, place""")
+    desi_hours = query("st-desi-hours", "SELECT hour, ROUND(100.0 * AVG(a.desi::int), 1) AS share FROM v_listen v JOIN dim_artist a USING (artist_key) GROUP BY 1 ORDER BY 1")
+    desi_months = query("st-desi-months", """
+        SELECT date_trunc('month', full_date)::date AS month, ROUND(100.0 * AVG(a.desi::int), 1) AS share
+        FROM v_listen v JOIN dim_artist a USING (artist_key) GROUP BY 1 ORDER BY 1""")
+    desi_songs = query("st-desi-songs", """
+        SELECT track_name, v.artist_name, COUNT(*) AS listens FROM v_listen v JOIN dim_artist a USING (artist_key)
+        WHERE a.desi GROUP BY track_key, track_name, v.artist_name ORDER BY listens DESC LIMIT 6""")
+    eras = query("st-eras", f"""
+        WITH e AS (SELECT v.*, a.desi, {ERA} AS era FROM v_listen v JOIN dim_artist a USING (artist_key)),
+        days AS (SELECT {ERA} AS era, COUNT(*) AS n, MIN(full_date) AS first, MAX(full_date) AS last FROM dim_date GROUP BY 1)
+        SELECT e.era, days.first, days.last, ROUND(SUM(minutes) / 60 / days.n, 2) AS hours_per_day,
+               ROUND(100.0 * COUNT(*) FILTER (WHERE hour < 5) / COUNT(*), 1) AS late_share,
+               ROUND(100.0 * COUNT(*) FILTER (WHERE artist_name = 'Ariana Grande') / COUNT(*), 1) AS ariana_share,
+               ROUND(100.0 * AVG(desi::int), 1) AS desi_share
+        FROM e JOIN days USING (era) GROUP BY e.era, days.n, days.first, days.last ORDER BY days.first""")
+    skips = {r["era"]: r["skip_pct"] for r in query("st-era-skips", f"""
+        SELECT {ERA} AS era, ROUND(100.0 * AVG(f.skipped::int), 1) AS skip_pct FROM fact_play f JOIN dim_date d USING (date_key) GROUP BY 1""")}
+    eras = [{**e, "skip_pct": skips.get(e["era"])} for e in eras]
+    era_songs = query("st-era-songs", f"""
+        SELECT DISTINCT ON (era) era, track_name, artist_name, listens FROM (
+            SELECT {ERA} AS era, track_name, artist_name, COUNT(*) AS listens FROM v_listen
+            GROUP BY 1, track_key, track_name, artist_name) s ORDER BY era, listens DESC""")
+    love = query("st-love", """
+        SELECT t.track_name, a.artist_name, COUNT(*) FILTER (WHERE f.counted) AS listens,
+               ROUND(100.0 * AVG((f.skipped OR NOT f.counted)::int), 1) AS skip_pct
+        FROM fact_play f JOIN dim_track t USING (track_key) JOIN dim_artist a ON a.artist_key = t.artist_key
+        GROUP BY t.track_key, t.track_name, a.artist_name HAVING COUNT(*) FILTER (WHERE f.counted) >= 120""")
+    desi_years = query("st-desi-years", "SELECT year, ROUND(100.0 * AVG(a.desi::int), 1) AS share FROM v_listen v JOIN dim_artist a USING (artist_key) GROUP BY 1 ORDER BY 1")
+    day_songs = query("st-day-songs", """
+        SELECT track_name, artist_name, COUNT(*) AS listens FROM v_listen WHERE hour BETWEEN 12 AND 17
+        GROUP BY track_key, track_name, artist_name ORDER BY listens DESC LIMIT 5""")
+    season_artists = query("st-season-artists", """
+        WITH artists AS (SELECT artist_name, COUNT(*) AS n FROM v_listen GROUP BY 1 HAVING COUNT(*) >= 150),
+        seasons AS (SELECT season, COUNT(*) AS n FROM v_listen GROUP BY 1),
+        lifts AS (SELECT v.season, v.artist_name, COUNT(*) AS listens,
+                         ROUND((COUNT(*)::numeric / seasons.n) / (artists.n::numeric / (SELECT COUNT(*) FROM v_listen)), 2) AS lift
+                  FROM v_listen v JOIN artists USING (artist_name) JOIN seasons USING (season)
+                  GROUP BY v.season, v.artist_name, seasons.n, artists.n HAVING COUNT(*) >= 40)
+        SELECT * FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY season ORDER BY lift DESC) AS place FROM lifts) r
+        WHERE place <= 3 ORDER BY season, place""")
+    era_artists = query("st-era-artists", f"""
+        SELECT era, artist_name, hours FROM (
+            SELECT {ERA} AS era, artist_name, ROUND(SUM(minutes) / 60) AS hours,
+                   ROW_NUMBER() OVER (PARTITION BY {ERA} ORDER BY SUM(minutes) DESC) AS place
+            FROM v_listen GROUP BY 1, artist_name) r WHERE place <= 4 ORDER BY era, place""")
+    desi_artists = query("st-desi-artists", """
+        SELECT v.artist_name, COUNT(*) AS listens FROM v_listen v JOIN dim_artist a USING (artist_key)
+        WHERE a.desi GROUP BY v.artist_name ORDER BY listens DESC LIMIT 8""")
+    in_a_row = query("st-in-a-row", """
+        WITH p AS (SELECT track_key, played_at,
+                          ROW_NUMBER() OVER (ORDER BY played_at, play_key) - ROW_NUMBER() OVER (PARTITION BY track_key ORDER BY played_at, play_key) AS run
+                   FROM fact_play WHERE counted)
+        SELECT t.track_name, a.artist_name, COUNT(*) AS plays, MIN(p.played_at) AS started, MAX(p.played_at) AS ended
+        FROM p JOIN dim_track t USING (track_key) JOIN dim_artist a ON a.artist_key = t.artist_key
+        GROUP BY p.track_key, p.run, t.track_name, a.artist_name ORDER BY plays DESC LIMIT 5""")
+    habits = query("st-habits", """
+        WITH p AS (SELECT track_key, LAG(track_key) OVER (ORDER BY played_at, play_key) AS previous FROM fact_play WHERE counted),
+        songs AS (SELECT track_key, COUNT(*) AS n FROM v_listen GROUP BY track_key)
+        SELECT (SELECT COUNT(*) FILTER (WHERE track_key = previous) FROM p) AS replays,
+               (SELECT COUNT(*) FROM p) AS listens,
+               (SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY ms_played / 1000.0) FROM fact_play WHERE skipped OR NOT counted) AS skip_seconds,
+               (SELECT COUNT(*) FILTER (WHERE n = 1) FROM songs) AS one_listen_songs,
+               (SELECT COUNT(*) FILTER (WHERE n >= 10) FROM songs) AS ten_listen_songs,
+               (SELECT COUNT(*) FROM songs) AS songs""")[0]
+    skip_seconds = query("st-skip-seconds", """
+        SELECT a.artist_name, percentile_cont(0.5) WITHIN GROUP (ORDER BY f.ms_played / 1000.0) AS seconds
+        FROM fact_play f JOIN dim_track t USING (track_key) JOIN dim_artist a ON a.artist_key = t.artist_key
+        WHERE (f.skipped OR NOT f.counted) AND a.artist_name IN (SELECT artist_name FROM v_skip_rate ORDER BY skip_pct DESC LIMIT 5)
+        GROUP BY a.artist_name""")
+    shifts = query("st-shifts", f"""
+        WITH days AS (SELECT {ERA} AS era, COUNT(*) AS n FROM dim_date GROUP BY 1),
+        per AS (SELECT artist_name, {ERA} AS era, SUM(minutes) / 60 AS hours FROM v_listen GROUP BY 1, 2),
+        m AS (SELECT artist_name, COALESCE(MAX(hours * 30 / days.n) FILTER (WHERE per.era = 'High school'), 0) AS before,
+                     COALESCE(MAX(hours * 30 / days.n) FILTER (WHERE per.era = 'Austin'), 0) AS after
+              FROM per JOIN days USING (era) GROUP BY artist_name)
+        (SELECT 'left' AS way, artist_name, ROUND(before::numeric, 1) AS before, ROUND(after::numeric, 1) AS after FROM m WHERE before > 1.5 ORDER BY after / before LIMIT 3)
+        UNION ALL
+        (SELECT 'arrived', artist_name, ROUND(before::numeric, 1), ROUND(after::numeric, 1) FROM m WHERE after > 1.5 ORDER BY after / GREATEST(before, 0.05) DESC LIMIT 3)""")
+    sunday = query("st-sunday", """
+        WITH a AS (SELECT artist_name, COUNT(*) AS n FROM v_listen GROUP BY 1 HAVING COUNT(*) >= 150),
+        s AS (SELECT COUNT(*) AS n FROM v_listen WHERE weekday = 'Sunday'), t AS (SELECT COUNT(*) AS n FROM v_listen)
+        SELECT v.artist_name, COUNT(*) AS listens, ROUND((COUNT(*)::numeric / s.n) / (a.n::numeric / t.n), 2) AS lift
+        FROM v_listen v JOIN a USING (artist_name) CROSS JOIN s CROSS JOIN t WHERE v.weekday = 'Sunday'
+        GROUP BY v.artist_name, s.n, a.n, t.n HAVING COUNT(*) >= 30 ORDER BY lift DESC LIMIT 3""")
+    graveyard = query("st-graveyard", """
+        WITH top AS (SELECT artist_key FROM v_listen GROUP BY artist_key ORDER BY SUM(minutes) DESC LIMIT 6),
+        once AS (SELECT track_key, track_name, artist_name, artist_key, MIN(full_date) AS heard FROM v_listen GROUP BY 1, 2, 3, 4 HAVING COUNT(*) = 1)
+        SELECT DISTINCT ON (artist_name) track_name, artist_name, heard FROM once WHERE artist_key IN (SELECT artist_key FROM top)
+        ORDER BY artist_name, heard""")
+    night_years = query("st-night-years", "SELECT year, ROUND(100.0 * COUNT(*) FILTER (WHERE hour < 5) / COUNT(*), 1) AS late_share FROM v_listen GROUP BY 1 ORDER BY 1")
+    return {"curves": curves, "ariana": ariana, "comebacks": comebacks, "awake": awake, "long_nights": long_nights,
+            "weather": weather, "by_period": by_period, "desi_hours": desi_hours, "desi_months": desi_months,
+            "desi_songs": desi_songs, "desi_years": desi_years, "eras": eras, "era_songs": era_songs, "love": love, "night_years": night_years,
+            "day_songs": day_songs, "in_a_row": in_a_row, "habits": habits, "skip_seconds": skip_seconds,
+            "shifts": shifts, "sunday": sunday, "graveyard": graveyard, "season_artists": season_artists,
+            "era_artists": era_artists, "desi_artists": desi_artists, "graduated": GRADUATED, "moved": MOVED_TO_AUSTIN}
+
+
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 
@@ -455,6 +846,13 @@ FRESH = {"Cache-Control": "no-cache"}
 
 @app.get("/")
 def home():
+    """The front door: my four years told as a story, then yours (story.html)."""
+    return FileResponse(STATIC / "story.html", headers=FRESH)
+
+
+@app.get("/explore")
+def explore():
+    """Every chart, for anyone who wants the numbers behind the story."""
     return FileResponse(STATIC / "index.html", headers=FRESH)
 
 

@@ -13,7 +13,8 @@ DROP TABLE IF EXISTS dim_date CASCADE;
 
 CREATE TABLE dim_artist (
     artist_key   INTEGER PRIMARY KEY,
-    artist_name  TEXT NOT NULL UNIQUE
+    artist_name  TEXT NOT NULL UNIQUE,
+    desi         BOOLEAN NOT NULL DEFAULT FALSE   -- South Asian music (Hindi, Punjabi, Urdu); my list in etl/desi_artists.txt
 );
 
 CREATE TABLE dim_album (
@@ -31,7 +32,9 @@ CREATE TABLE dim_track (
     artist_key   INTEGER NOT NULL REFERENCES dim_artist (artist_key),
     album_key    INTEGER NOT NULL REFERENCES dim_album (album_key),
     spotify_uri  TEXT NOT NULL,          -- the ID I played it under most often
-    first_played DATE NOT NULL
+    first_played DATE NOT NULL,
+    mood         TEXT                    -- my own label for my most-played songs (etl/song_moods.csv); empty for the rest
+                 CHECK (mood IN ('heartbreak', 'bittersweet', 'dark', 'love', 'confident', 'party'))
 );
 
 -- A calendar row for every day in the history, so any question can be asked by day, month, season or year.

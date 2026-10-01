@@ -19,7 +19,7 @@ Built by [Suhani Tiwari](https://suhanitiwari.com), MIS at McCombs, UT Austin.
 | Step | What happens |
 |---|---|
 | **Extract** | Reads every `Streaming_History_Audio_*.json` straight out of Spotify's zip |
-| **Transform** | Keeps songs only (no podcasts), drops private-session plays, removes the fields that aren't mine to publish (IP address, country, device), converts times to Austin time, removes duplicate records and known overnight loops (a song left on repeat while I slept), merges the different IDs Spotify gives one song (single, album, deluxe), and groups plays into listening sessions |
+| **Transform** | Keeps songs only (no podcasts), drops private-session plays, removes the fields that aren't mine to publish (IP address, country, device), converts times to Austin time, removes duplicate records, known overnight loops (a song left on repeat while I slept) and plays I made by accident, merges the different IDs Spotify gives one song (single, album, deluxe), and groups plays into listening sessions |
 | **Load** | Runs integrity checks, writes one CSV per table, and bulk-loads them into PostgreSQL with `COPY` |
 
 On my real export it processes all 182,293 records in about two seconds:
@@ -116,6 +116,8 @@ The full DDL is in [`sql/schema.sql`](sql/schema.sql).
 | `v_year_in_review` | Each year in one row, with a song of the year | CTEs, `DISTINCT ON` |
 | `v_most_in_a_day` | My most intense single days with one song | Grouping by day and song |
 
+The report adds questions answered in `app/main.py` (`/api/moods`, `/api/nights`, `/api/story`): comebacks after 180+ silent days (`LAG`), the quiet window each night, all-nighters, which artists over-index at 2 AM (lift), and how listening changed across my eras (high school, the summer after graduating, Austin). Two hand-made lists feed them: `etl/song_moods.csv` (my mood label for my ~400 most-played songs) and `etl/desi_artists.txt` (South Asian artists).
+
 A few answers from my own data:
 
 - **Longest streak:** "intro (end of the world)" by Ariana Grande, every day for 21 days (April 1 to 21, 2024)
@@ -145,11 +147,19 @@ To run it on your own listening, request your **Extended streaming history** fro
 
 My real export never goes in this repo. It includes an IP address and country for every play, so `.gitignore` blocks the zip and every raw file, and the pipeline drops those fields before anything is written. Plays from private sessions are left out entirely.
 
+## The story (the front door)
+
+`/` is **91,210 Receipts**: my four years told as a scroll-driven story, one question per screen, with sound (each chapter plays its song), guesses before every reveal ("guess who owned 43 months", "how many times in a row?"), a "Remove Ariana" switch that recolors 53 months, a 24-hour dial, a retention scrubber, and a 1.8-second skip test.
+
+Then **Now do yours**: a visitor drops in their own Spotify export and every chapter reruns about them, with "you vs. Suhani" lines, a **Would our music click?** score (also for any two friends), share cards sized for stories, and a saved result that lives only on their device.
+
+- `app/static/engine.js` turns any Spotify export (extended history or the one-year account data) into the story's answers. It runs in the visitor's browser, so their history is never uploaded; only the song names on screen are looked up on Apple's iTunes Search for covers and previews.
+- My own answers come from the same engine, so the comparison is like for like: `TZ=America/Chicago node etl/profile.js build/ app/static/data/suhani.json` after the pipeline runs. Checked against the SQL: identical hours, listens, songs, artists, 43/53, 119, 122, 21, 1,802, 30 and 1.81 s.
+
 ## The app
 
-`app/` is a small FastAPI server with one endpoint per question and a full website on top, told in six chapters (Obsessions, Eras, Habits, Loyalty, Discovery, Build):
+`app/` is a small FastAPI server with one endpoint per question; every chart lives at `/explore`, told in six chapters (Obsessions, Eras, Habits, Loyalty, Discovery, Build):
 
-- **The dynasty:** one square per month colored by its #1 artist, the longest reigns, and who ever took the throne
 - **Discovery:** how much of each year went to songs and artists I'd never heard before
 - **The life of a song:** tap any song title for its first listen, 25th listen, biggest day, longest streak, longest silence and a month-by-month chart
 - **How I changed:** every year next to the one before (hours, variety, repetition, top-10 concentration, skips, busiest hour)
@@ -164,9 +174,14 @@ My real export never goes in this repo. It includes an IP address and country fo
 - **Watch:** music video previews of my most-played songs (iTunes Search API)
 - **Play:** "Which did I play more?" and "Guess the stat," two games built from the real numbers
 - **How it works:** tap through the pipeline with the real code behind each step, and open each table of the star schema
-- **The report:** a three-page PDF of the four years (top artists and songs, month by month, year in review, listening clocks, streaks, skips), printed from `/report` and downloadable at `/report.pdf`
+- **The report:** *91,210 Little Receipts*, a 20-page PDF told as a story: a premise page of questions Spotify Wrapped never asks, then four parts (how I love, how it felt, how my days go, how I've changed). Each chapter asks a question about me ("So… when does Suhani sleep?", "Daylight me vs. 2 AM me") and answers it with obsession curves, a 53-month ribbon, an emotional-weather calendar, a were-you-awake map, a love-vs.-skip quadrant and listening fingerprints, with album art throughout. Printed from `/report`, downloadable at `/report.pdf`
 - **Your turn:** type any artist to see whether I listen to them, where they rank and my most-played song of theirs
 - **Song previews:** 30-second clips from the iTunes Search API, matched by artist and title
+- **Album art everywhere:** every song shows its real cover, taken from Spotify's public oEmbed by the exact track ID I played (iTunes as a fallback); `/api/art` redirects straight to the image so pages cache it
+- **The wall:** my 40 most-played songs as a mosaic of covers, filterable, with a "shuffle my history" button that opens and plays a random one
+- **The race:** an animated bar chart race of my top 12 artists adding up hours month by month, with play, pause and a scrubber
+- **Every day:** a calendar heatmap of every day since May 2022; hover or tap a day for its hours and most-played song
+- **Now playing:** a dock that follows whatever preview is playing, with progress and a link to the song's story
 
 The app connects as a **read-only database user** (`listening_reader`): it can read every table and view and change nothing, so even a bug in the app can't alter the data. Answers are cached in memory, since the history only changes when the pipeline reloads it. The API documents itself at `/api/docs`.
 

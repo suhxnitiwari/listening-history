@@ -35,6 +35,14 @@ UNATTENDED_LOOPS = [
     (date(2023, 3, 21), "Party In The U.S.A.", "left on repeat overnight"),
     (date(2025, 1, 22), "Hate Me (with Juice WRLD)", "left on repeat overnight"),
 ]
+# Songs removed entirely, in every version: every play of them was an accident.
+ACCIDENTAL_SONGS = [
+    "How Far I'll Go",      # April 2023, 176 plays across three versions I never meant to make
+]
+
+# My own mood label for my ~400 most-played songs: Spotify's export has no mood data.
+MOODS_FILE = Path(__file__).resolve().parent / "song_moods.csv"
+DESI_FILE = Path(__file__).resolve().parent / "desi_artists.txt"     # my list of South Asian artists
 
 SEASONS = {12: "Winter", 1: "Winter", 2: "Winter", 3: "Spring", 4: "Spring", 5: "Spring",
            6: "Summer", 7: "Summer", 8: "Summer", 9: "Fall", 10: "Fall", 11: "Fall"}
@@ -99,9 +107,20 @@ def to_plays(records: list) -> list:
     # drop the known overnight loops (see UNATTENDED_LOOPS)
     loops = {(d, clean_key(title)) for d, title, _ in UNATTENDED_LOOPS}
     plays = [p for p in plays if (p.played_at.date(), clean_key(p.track_name)) not in loops]
+    # drop songs that were never really mine (see ACCIDENTAL_SONGS)
+    accidents = [clean_key(title) for title in ACCIDENTAL_SONGS]
+    plays = [p for p in plays if not any(clean_key(p.track_name).startswith(a) for a in accidents)]
     # the same play can appear twice across export files; keep one
     unique = {(p.played_at, p.uri, p.ms_played): p for p in plays}
     return sorted(unique.values(), key=lambda p: p.played_at)
+
+
+def load_moods() -> dict:
+    """(clean title, artist) -> mood, from etl/song_moods.csv. Songs not in the file get no mood."""
+    if not MOODS_FILE.exists():
+        return {}
+    with open(MOODS_FILE, encoding="utf-8") as f:
+        return {(clean_key(r["track_name"]), r["artist_name"]): r["mood"] for r in csv.DictReader(f)}
 
 
 def build_tables(plays: list) -> dict:
@@ -123,6 +142,7 @@ def build_tables(plays: list) -> dict:
     albums = sorted({(album_counts[s].most_common(1)[0][0], s[1]) for s in uri_counts}, key=lambda a: (a[1].lower(), a[0].lower()))
     album_key = {a: i + 1 for i, a in enumerate(albums)}
 
+    moods = load_moods()
     songs = sorted(uri_counts, key=lambda s: (s[1].lower(), s[0]))
     track_key = {s: i + 1 for i, s in enumerate(songs)}
     dim_track = [{
@@ -132,6 +152,7 @@ def build_tables(plays: list) -> dict:
         "album_key": album_key[(album_counts[s].most_common(1)[0][0], s[1])],
         "spotify_uri": uri_counts[s].most_common(1)[0][0],
         "first_played": first_day[s].isoformat(),
+        "mood": moods.get(s, ""),
     } for s in songs]
 
     # sessions: a new one starts after a gap of more than 30 minutes
@@ -180,7 +201,9 @@ def build_tables(plays: list) -> dict:
         "reason_end": p.reason_end,
     } for i, p in enumerate(plays)]
 
-    dim_artist = [{"artist_key": artist_key[a], "artist_name": a} for a in artists]
+    desi = {line.strip() for line in DESI_FILE.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.startswith("#")} if DESI_FILE.exists() else set()
+    dim_artist = [{"artist_key": artist_key[a], "artist_name": a, "desi": a in desi} for a in artists]
     dim_album = [{"album_key": album_key[a], "album_name": a[0], "artist_key": artist_key[a[1]]} for a in albums]
     return {"dim_artist": dim_artist, "dim_album": dim_album, "dim_track": dim_track,
             "dim_date": dim_date, "dim_session": dim_session, "fact_play": fact_play}

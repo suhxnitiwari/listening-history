@@ -3,190 +3,977 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Listening Report | Suhani Tiwari</title>
+    <title>91,000 Little Receipts | Suhani Tiwari</title>
     <meta name="author" content="Suhani Tiwari">
     <meta name="copyright" content="© 2026 Suhani Tiwari. All rights reserved.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23D65478'/><circle cx='50' cy='50' r='14' fill='%2322090F'/></svg>">
     <style>
+        /* Rule for this report: no chapter exists because a column exists. Each one asks a question about me;
+           the charts are the evidence and the numbers are the receipts. */
         :root { --bg: #FFFBFB; --card: #FFF4F6; --line: #F0D6DC; --mul: #B8325B; --mul-soft: #F3A6B8; --blush: #FBE8EC; --choc: #22090F; --muted: #6E3F4A; --sage: #681F34;
+                /* chart colors: one fixed order, checked for colorblind separation on this paper color */
+                --c1: #C93D6C; --c2: #0F8BAA; --c3: #D9952A; --c4: #8255C9; --c5: #4F9A45; --c-other: #D9C6CB;
+                /* moods, saddest to happiest; also checked */
+                --m-heartbreak: #2B5DA8; --m-bittersweet: #0F9AB0; --m-dark: #8255C9; --m-love: #C93D6C; --m-confident: #E3A12F; --m-party: #139E8C;
+                /* emotional weather, rain to sun, plus chaos */
+                --w-storm: #2B5DA8; --w-rain: #7FA6D6; --w-cloud: #D5CDD0; --w-part: #F2CD7A; --w-sun: #E3A12F; --w-chaos: #8255C9;
+                --night: #1A0F2E;
                 --serif: Georgia, "Times New Roman", serif; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
         @page { size: Letter; margin: 0; }
         * { box-sizing: border-box; }
-        html, body { margin: 0; background: #22090F; color: var(--choc); font-family: var(--sans); font-size: 10.5pt; line-height: 1.45;
+        html, body { margin: 0; background: #22090F; color: var(--choc); font-family: var(--sans); font-size: 10pt; line-height: 1.45;
                      -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .sheet { width: 8.5in; height: 11in; margin: 24px auto; padding: 0.6in 0.65in 0.5in; background: var(--bg); position: relative; overflow: hidden; }
+        .sheet { width: 8.5in; height: 11in; margin: 24px auto; padding: 0.55in 0.65in 0.5in; background: var(--bg); position: relative; overflow: hidden; }
         @media print { html, body { background: var(--bg); } .sheet { margin: 0; break-after: page; } .sheet:last-child { break-after: auto; } }
-        .eyebrow { margin: 0 0 4px; font-size: 7.5pt; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mul); }
+        .eyebrow { margin: 0 0 3px; font-size: 7.5pt; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mul); }
         h1, h2, h3 { margin: 0; font-family: var(--serif); color: var(--choc); }
-        h1 { font-size: 30pt; line-height: 1.05; }
-        h2 { font-size: 16pt; margin-bottom: 8px; }
-        h3 { font-size: 11.5pt; }
+        h3 { font-size: 11pt; margin-bottom: 4px; }
         p { margin: 0; }
         .muted { color: var(--muted); }
         .folio { position: absolute; left: 0.65in; right: 0.65in; bottom: 0.3in; display: flex; justify-content: space-between; font-size: 7.5pt; color: var(--muted); border-top: 1px solid var(--line); padding-top: 6px; }
-        .cover-band { margin: -0.6in -0.65in 0.28in; padding: 0.5in 0.65in 0.32in; background: #22090F; color: #F7E9E8; }
-        .cover-band .eyebrow { color: #F3A6B8; }
-        .cover-band h1 { color: #F7E9E8; }
-        .cover-band p { margin-top: 10px; font-size: 11pt; color: #D89AA8; max-width: 5.6in; }
-        .stats { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 2px solid var(--choc); margin-bottom: 0.24in; }
-        .stats div { padding-top: 8px; }
-        .stats dt { font-size: 7pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-        .stats dd { margin: 2px 0 0; font-family: var(--serif); font-size: 18pt; font-weight: 700; color: var(--mul); }
-        .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35in; }
+
+        /* chapter opener: the question, then a one-line lede in my voice */
+        .chapter { padding-bottom: 10px; margin-bottom: 0.17in; border-bottom: 2px solid var(--choc); }
+        .chapter .kicker { display: flex; gap: 10px; align-items: baseline; font-size: 7.5pt; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mul); }
+        .chapter .kicker span:last-child { color: var(--muted); }
+        .chapter h2 { font-size: 23pt; line-height: 1.08; margin: 4px 0 4px; }
+        .chapter p.lede { font-family: var(--serif); font-style: italic; font-size: 11pt; color: var(--muted); }
+
+        .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3in; }
+        .section { margin-bottom: 0.17in; }
+        .art { width: 28px; height: 28px; margin: 0 auto; border-radius: 4px; object-fit: cover; background: var(--blush); display: block; }
+        .art.round { border-radius: 50%; }
         .rank { list-style: none; margin: 0; padding: 0; counter-reset: n; }
-        .rank li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 3px 0; border-top: 1px solid var(--line); counter-increment: n; }
+        .rank li { display: grid; grid-template-columns: 16px 28px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 2px 0; border-top: 1px solid var(--line); counter-increment: n; }
         .rank li::before { content: counter(n); font-family: var(--serif); font-weight: 700; color: var(--mul); }
         .rank b { display: block; font-size: 9pt; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .rank span { font-size: 7.5pt; line-height: 1.3; color: var(--muted); }
+        .rank span { display: block; font-size: 7.5pt; line-height: 1.3; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .rank em { font-style: normal; font-weight: 700; font-size: 9pt; color: var(--sage); white-space: nowrap; }
-        .bar { height: 4px; margin-top: 3px; border-radius: 2px; background: var(--mul-soft); }
-        .finding { margin-top: 0.14in; padding: 14px 18px; border-left: 3px solid var(--mul); background: var(--card); }
-        .finding b { font-family: var(--serif); font-size: 12pt; }
-        table { width: 100%; border-collapse: collapse; font-size: 9pt; }
-        th { text-align: left; font-size: 7pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 0 6px 6px 0; border-bottom: 2px solid var(--choc); }
-        td { padding: 5px 6px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-        td.num { font-family: var(--serif); font-weight: 700; color: var(--mul); }
-        .chart { width: 100%; height: 118px; display: block; }
-        .legend { display: flex; gap: 16px; margin-top: 6px; font-size: 8pt; color: var(--muted); }
+        .finding { padding: 11px 15px; border-left: 3px solid var(--mul); background: var(--card); font-size: 9pt; }
+        .finding b.head { display: block; font-family: var(--serif); font-size: 11.5pt; margin-bottom: 2px; }
+        .finding p + p { margin-top: 5px; }
+        .analysis { columns: 2; column-gap: 0.3in; font-size: 9pt; }
+        .analysis p { break-inside: avoid; margin-bottom: 6px; }
+        .analysis b { color: var(--sage); }
+        svg { display: block; width: 100%; height: auto; overflow: visible; }
+        svg text { font-family: var(--sans); fill: var(--muted); }
+        .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; font-size: 7.5pt; color: var(--muted); }
         .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
-        .clocks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-        .clocks figure { margin: 0; text-align: center; }
-        .clocks figcaption { font-size: 8pt; color: var(--muted); }
-        .clocks figcaption b { display: block; font-family: var(--serif); font-size: 10pt; color: var(--choc); }
-        .section { margin-bottom: 0.24in; }
-        .box { padding: 14px 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
-        .box ul { margin: 6px 0 0; padding-left: 16px; }
+        .caption { margin-top: 4px; font-size: 7.5pt; color: var(--muted); }
+        .cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .cards > div { min-width: 0; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); font-size: 7.5pt; }
+        .cards img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; background: var(--blush); display: block; margin-bottom: 5px; }
+        .cards b.y { display: block; font-family: var(--serif); font-size: 12pt; color: var(--mul); }
+        .cards .t { display: block; font-weight: 700; color: var(--choc); font-size: 8pt; line-height: 1.25; }
+        .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 0.16in; }
+        .kpis div { padding: 8px 12px; border-radius: 6px; background: var(--card); border: 1px solid var(--line); }
+        .kpis b { display: block; font-family: var(--serif); font-size: 16pt; color: var(--mul); line-height: 1.1; }
+        .kpis span { font-size: 7.5pt; color: var(--muted); }
+        .hero { display: grid; grid-template-columns: 1.45in 1fr; gap: 18px; align-items: center; padding: 14px; border-radius: 10px; background: #22090F; color: #F7E9E8; }
+        .hero img { width: 1.45in; height: 1.45in; border-radius: 8px; object-fit: cover; background: #3A1520; }
+        .hero .eyebrow { color: #F3A6B8; }
+        .hero h3 { color: #F7E9E8; font-size: 17pt; margin: 2px 0 4px; }
+        .hero p { color: #E8C4CC; font-size: 9pt; }
+        .hero .big { font-family: var(--serif); font-size: 40pt; font-weight: 700; color: #F3A6B8; line-height: 1; }
+        .daycard { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: center; padding: 5px 0; border-top: 1px solid var(--line); }
+        .daycard img { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; background: var(--blush); }
+        .daycard b { display: block; font-family: var(--serif); font-size: 10pt; }
+        .daycard span { display: block; font-size: 7.8pt; color: var(--muted); }
+        .daycard span.tag, .tag { display: inline-block; margin-top: 2px; padding: 1px 6px; border-radius: 999px; color: #fff; font-size: 7pt; font-weight: 700; }
+        .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; text-align: center; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .versus .n { font-family: var(--serif); font-size: 44pt; font-weight: 700; line-height: 1; color: var(--mul); }
+        .versus .n.small { color: var(--muted); }
+        .versus .l { font-size: 8pt; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+        .versus .vs { font-family: var(--serif); font-style: italic; font-size: 14pt; color: var(--muted); }
+        .strip { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+        .strip img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 3px; background: var(--blush); display: block; }
+        .periods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .periods > div { padding: 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); }
+        .periods > div.dark { background: var(--night); border-color: var(--night); color: #E9E2F5; }
+        .periods > div.dark h3, .periods > div.dark b { color: #FFFFFF; }
+        .periods > div.dark span, .periods > div.dark .muted { color: #B9AED0; }
+        .periods .who { display: grid; grid-template-columns: 26px 1fr; gap: 6px; align-items: center; margin-top: 6px; font-size: 7.8pt; }
+        .periods .who img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: var(--blush); }
+        .periods .who b { display: block; font-size: 8pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .eras { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .eras > div { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); font-size: 8.3pt; }
+        .eras h3 { font-size: 12pt; }
+        .eras dl { margin: 6px 0 0; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; }
+        .eras dt { color: var(--muted); }
+        .eras dd { margin: 0; font-weight: 700; text-align: right; }
+        .eras .song { display: grid; grid-template-columns: 34px 1fr; gap: 8px; align-items: center; margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--line); }
+        .eras .song img { width: 34px; height: 34px; border-radius: 4px; object-fit: cover; }
+        .night { background: var(--night); border-radius: 10px; padding: 12px; color: #E9E2F5; }
+        .night svg text { fill: #B9AED0; }
+        .numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 20px; margin: 0.1in 0 0.2in; }
+        .numbers b { display: block; font-family: var(--serif); font-size: 34pt; line-height: 1; color: var(--mul); }
+        .numbers span { font-size: 8pt; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+        .qgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .qgrid > div { padding: 12px 14px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); min-height: 1.85in; display: flex; flex-direction: column; }
+        .qgrid .q { font-family: var(--serif); font-size: 11pt; line-height: 1.25; color: var(--choc); }
+        .qgrid .a { margin-top: 8px; font-family: var(--serif); font-size: 22pt; font-weight: 700; line-height: 1; color: var(--mul); }
+        .qgrid .d { margin-top: 5px; font-size: 8.3pt; color: var(--muted); flex: 1; }
+        .qgrid .go { margin-top: 6px; font-size: 7pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); }
+        .giant { font-family: var(--serif); font-size: 58pt; font-weight: 700; line-height: 0.95; color: var(--mul); }
+        .closing p { font-family: var(--serif); font-size: 11.5pt; line-height: 1.55; margin-bottom: 9px; }
+        .wall { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
+        .wall img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 3px; background: var(--blush); display: block; }
+        .box { padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); font-size: 9pt; }
+        .box ul { margin: 4px 0 0; padding-left: 16px; }
         .box li { margin: 2px 0; }
-        .box .cols { columns: 2; column-gap: 0.3in; }
-        .box .cols li { break-inside: avoid; }
+        table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+        td { padding: 3px 6px 3px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+
+        /* cover */
+        .cover { background: var(--choc); color: #F7E9E8; }
+        .cover .folio { color: #B98995; border-color: #4A2430; }
+        .cover h1 { color: #F7E9E8; font-size: 40pt; line-height: 1.02; margin: 6px 0 10px; }
+        .cover .eyebrow { color: #F3A6B8; }
+        .cover .intro { font-family: var(--serif); font-size: 13pt; line-height: 1.5; color: #E8C4CC; max-width: 4.6in; }
+        .cover .collage { position: absolute; right: 0.5in; top: 0.5in; width: 2.6in; height: 2.9in; }
+        .cover .collage img { position: absolute; width: 1.35in; height: 1.35in; border-radius: 6px; object-fit: cover; box-shadow: 0 8px 22px rgba(0,0,0,.5); background: #3A1520; }
+        .cover .collage img:nth-child(1) { left: 0; top: 0.2in; transform: rotate(-8deg); }
+        .cover .collage img:nth-child(2) { left: 1.15in; top: 0; transform: rotate(6deg); }
+        .cover .collage img:nth-child(3) { left: 0.35in; top: 1.35in; transform: rotate(4deg); z-index: 2; }
+        .cover .collage img:nth-child(4) { left: 1.3in; top: 1.45in; transform: rotate(-5deg); }
+        .cover .toc { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 0.35in; }
+        .cover .toc li { break-inside: avoid; }
+        .cover .toc .part { padding: 8px 0 3px; font-size: 7pt; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #F3A6B8; }
+        .cover .toc .ch { display: grid; grid-template-columns: 22px 1fr auto; gap: 6px; padding: 4px 0; border-top: 1px solid #4A2430; font-size: 9.8pt; }
+        .cover .toc .ch .n { font-family: var(--serif); font-weight: 700; color: #F3A6B8; }
+        .cover .toc .ch b { font-family: var(--serif); font-weight: 400; color: #F7E9E8; }
+        .cover .toc .ch .pg { color: #B98995; font-family: var(--serif); }
         .toolbar { width: 8.5in; margin: 24px auto 0; display: flex; justify-content: space-between; align-items: center; font-family: var(--sans); }
         .toolbar a { padding: 9px 18px; border-radius: 999px; background: var(--mul); color: #FFF8F6; text-decoration: none; font-weight: 600; font-size: 10pt; }
         .toolbar a.ghost { background: transparent; color: var(--mul); border: 1.5px solid var(--mul-soft); }
         @media print { .toolbar { display: none; } }
-        @media screen and (max-width: 860px) { .sheet, .toolbar { width: auto; height: auto; margin: 12px; } .folio { position: static; margin-top: 20px; } .two, .clocks { grid-template-columns: 1fr; } }
+        @media screen and (max-width: 860px) {
+            .sheet, .toolbar { width: auto; height: auto; margin: 12px; padding: 20px 16px; }
+            .folio { position: static; margin-top: 20px; }
+            .cover .collage { position: static; height: 2.6in; margin-top: 16px; }
+            .cover .toc { columns: 1; }
+            .two, .cards, .kpis, .periods, .eras, .numbers { grid-template-columns: 1fr 1fr; }
+            .analysis { columns: 1; }
+        }
     </style>
 </head>
 <body>
 <div class="toolbar"><a class="ghost" href="/">← Back to the site</a><a href="/report.pdf">Download the PDF</a></div>
 
-<!-- PAGE 1: the big picture -->
-<section class="sheet">
-    <div class="cover-band">
-        <p class="eyebrow">Listening report</p>
-        <h1>Four years of<br>my listening</h1>
-        <p id="coverLine">Every Spotify play I made, cleaned in Python, modeled in PostgreSQL and summarized with SQL.</p>
-    </div>
-    <dl class="stats" id="stats"></dl>
-    <div class="two">
-        <div><p class="eyebrow">By hours</p><h2>Top 10 artists</h2><ol class="rank" id="artists"></ol></div>
-        <div><p class="eyebrow">By listens</p><h2>Top 10 songs</h2><ol class="rank" id="songs"></ol></div>
-    </div>
-    <div class="finding" id="finding"></div>
-    <div class="folio"><span>Suhani Tiwari, Listening History</span><span>1</span></div>
+<!-- PROLOGUE -->
+<section class="sheet cover">
+    <div class="collage" id="collage"></div>
+    <p class="eyebrow" style="margin-top:0.2in">A listening report · Suhani Tiwari</p>
+    <h1 style="font-size:34pt">I've spent<br><span id="coverHours" style="color:#F3A6B8">4,000</span> hours<br>listening to music.</h1>
+    <p class="intro" id="intro">That's more than half a year of my life.</p>
+    <div style="margin-top:0.3in"><p class="eyebrow">Inside</p><ol class="toc" id="toc"></ol></div>
+    <div style="margin-top:0.22in"><div class="wall" id="coverWall"></div><p class="caption" style="color:#B98995">The receipts: my 20 most-played songs after the four above.</p></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
 </section>
 
-<!-- PAGE 2: over time -->
-<section class="sheet">
-    <div class="section">
-        <p class="eyebrow">Month by month</p>
-        <h2>How much I listened, and who owned each month</h2>
-        <svg class="chart" id="months" preserveAspectRatio="none"></svg>
-        <div class="legend"><span><i style="background:#D65478"></i>Ariana Grande owned the month</span><span><i style="background:#681F34"></i>Someone else did</span></div>
-    </div>
-    <div class="section">
-        <p class="eyebrow">Year in review</p>
-        <h2>Every year in one table</h2>
-        <table><thead><tr><th>Year</th><th>Hours</th><th>Listens</th><th>Songs</th><th>Artists</th><th>New songs</th><th>Song of the year</th></tr></thead><tbody id="years"></tbody></table>
-    </div>
-    <div class="section">
-        <p class="eyebrow">Listening clock</p>
-        <h2>When I listen, year by year</h2>
-        <div class="clocks" id="clocks"></div>
-    </div>
-    <div class="box">
-        <h3>How this was made</h3>
-        <ul class="cols">
-            <li><b>Extract:</b> Python reads Spotify's extended streaming history export.</li>
-            <li><b>Transform:</b> songs only, Austin time, duplicates and overnight loops removed, one song under many IDs merged.</li>
-            <li><b>Load:</b> a star schema in PostgreSQL, one fact table of plays and five dimensions.</li>
-            <li><b>Ask:</b> SQL views with CTEs and window functions, served by FastAPI.</li>
-        </ul>
-    </div>
-    <div class="folio"><span>Suhani Tiwari, Listening History</span><span>2</span></div>
+<!-- THE PREMISE -->
+<section class="sheet" data-part="Prologue" data-title="The questions Spotify Wrapped never asks" data-lede="Spotify has spent four years collecting enough data to answer very personal questions about how I listen. Nobody asks them. So I did.">
+    <div class="qgrid" id="questions"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
 </section>
 
-<!-- PAGE 3: habits, and how it was made -->
-<section class="sheet">
+<!-- PART ONE: HOW I LOVE -->
+
+
+<section class="sheet" data-part="Part one · How I love" data-title="The soundtrack has a main character" data-lede="When I love something, I stay. Ariana Grande has basically been my roommate.">
+    <div class="section" style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center"><div class="giant" id="giant43">43 / 53</div><div style="font-family:var(--serif);font-size:14pt;line-height:1.35" id="giantLine"></div></div>
+    <div class="section"><p class="eyebrow">53 months · one strip per month, colored by who won it</p><h3 id="ribbonHead" style="display:none"></h3><div id="ribbon"></div><div class="legend" id="ribbonLegend"></div></div>
+    <div class="versus section" id="versus"></div>
+    <div class="section"><p class="eyebrow">The Ariana tide · her share of each month</p><h3>How much of my life is Ariana?</h3><div id="tide"></div></div>
+    <div class="section"><p class="eyebrow" id="stripHead">My ten most-played songs</p><div class="strip" id="topTen"></div></div>
+    <div class="section"><p class="eyebrow">The royal succession · the only months she lost</p><div id="dethroned" style="display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;text-align:center;font-size:7.5pt"></div></div>
+    <div class="analysis" id="arianaNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part one · How I love" data-title="Apparently, I don't casually discover songs" data-lede="How long does it take me to become obsessed? Sometimes less than 24 hours.">
+    <div class="section"><p class="eyebrow">The obsession fuse · from the first play to the 25th</p><h3>How fast the fuse burns</h3><div id="fuse"></div></div>
+    <div class="section"><p class="eyebrow">Obsession curves · total listens in the first 45 days</p><h3>What happens after the explosion</h3><div id="curves"></div><div class="legend" id="curveLegend"></div></div>
+    <div class="analysis" id="obsNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part one · How I love" data-title="Some songs I didn't listen to. I moved into them." data-lede="At some point this stopped being a song and became interior decoration.">
+    <div class="hero section" id="obsHero"></div>
+    <div class="section"><p class="eyebrow" id="dotsHead">One dot per play</p><div id="dots"></div></div>
     <div class="two section">
-        <div><p class="eyebrow">Gaps and islands</p><h2>Longest daily streaks</h2><ol class="rank" id="streaks"></ol></div>
-        <div><p class="eyebrow">First listen to obsession</p><h2>Fastest to 25 listens</h2><ol class="rank" id="obsessions"></ol></div>
+        <div><p class="eyebrow">One song, one day</p><h3>The runners-up</h3><ol class="rank" id="days"></ol></div>
+        <div><p class="eyebrow">Back to back, nothing in between</p><h3>My records for "again"</h3><ol class="rank" id="inARow"></ol></div>
     </div>
+    <div class="analysis" id="movedNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part one · How I love" data-title="The songs that refused to leave" data-lede="An obsession lasts a weekend. Some songs moved in for weeks, and one never left.">
+    <div class="section"><p class="eyebrow">Calendar strips · one square for every day in a row</p><h3>The longest I played one song every single day</h3><div id="garden"></div></div>
+    <div class="hero section" id="undying"></div>
+    <div class="section"><p class="eyebrow">Resurrections · gone for months, then back</p><h3>Songs that came back from the dead</h3><div id="heartbeat"></div><p class="caption">Pink: played at least 40 times. Dashed: total silence. Spike: the comeback, with listens in the 60 days after it.</p></div>
+    <div class="analysis" id="eraNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part one · How I love" data-title="The Eras Tour, unfortunately starring me" data-lede="Every year had a song, an artist and a mood. Let the music speak for itself.">
+    <div class="section" id="erasTour"></div>
+    <div class="section"><p class="eyebrow">Streamgraph · hours per month of my top artists</p><h3>Who replaced whom</h3><div id="stream"></div><div class="legend" id="streamLegend"></div></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part one · How I love" data-title="But I'm not as loyal as that makes me sound" data-lede="Some years I explored. Some years I came home.">
     <div class="two section">
-        <div><p class="eyebrow">Skip rate</p><h2>Most skipped artists</h2><ol class="rank" id="skipsMost"></ol></div>
-        <div><p class="eyebrow">Skip rate</p><h2>Least skipped artists</h2><ol class="rank" id="skipsLeast"></ol></div>
+        <div><p class="eyebrow">Stacked columns · share of listens</p><h3>New songs vs. songs I already knew</h3><div id="newShare"></div><div class="legend"><span><i style="background:var(--c1)"></i>New that year</span><span><i style="background:var(--c-other)"></i>From earlier years</span></div></div>
+        <div><p class="eyebrow">Column chart</p><h3>New artists I found each year</h3><div id="newArtists"></div></div>
     </div>
+    <div class="section"><p class="eyebrow">The graveyard · songs that got exactly one listen</p><h3 id="graveHead">Not every song gets a second chance</h3><div id="graveyard"></div></div>
+    <div class="section"><p class="eyebrow">Best finds</p><h3>The other great find of each year</h3><div class="cards" id="finds"></div></div>
+    <div class="analysis" id="discNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<!-- PART TWO: HOW IT FELT -->
+<section class="sheet" data-part="Part two · How it felt" data-title="Four years of emotional weather" data-lede="Spotify can't tell me how I felt. It can tell me what my music sounded like.">
+    <div class="section"><p class="eyebrow">Weather calendar · one square per day</p><h3>The forecast for every day I listened</h3><div id="weatherCal"></div><div class="legend" id="weatherLegend"></div></div>
+    <div class="kpis" id="weatherKpis"></div>
     <div class="two section">
-        <div><p class="eyebrow">One song, one day</p><h2>My biggest single days</h2><ol class="rank" id="days"></ol></div>
+        <div><p class="eyebrow">100% stacked columns</p><h3>The mood of each year</h3><div id="moodYears"></div><div class="legend" id="moodLegend"></div></div>
+        <div><p class="eyebrow">Diverging bars · by hour</p><h3>Is late-night me sadder?</h3><div id="moodHours"></div></div>
+    </div>
+    <p class="caption" id="moodCaption"></p>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part two · How it felt" data-title="My saddest-sounding night was also an all-nighter" data-lede="The highs, the lows, and the day my music couldn't decide.">
+    <div class="two section">
+        <div><p class="eyebrow">🌧 The lows</p><h3>Saddest-sounding days</h3><div id="sadDays"></div></div>
+        <div><p class="eyebrow">☀️ The highs</p><h3>Happiest-sounding days</h3><div id="happyDays"></div></div>
+    </div>
+    <div class="finding section" id="chaos"></div>
+    <div class="section"><p class="eyebrow">The soundtrack of each feeling</p><h3>My most-played song in every mood</h3><div class="cards" id="moodSongs" style="grid-template-columns: repeat(6, 1fr)"></div></div>
+    <div class="section"><p class="eyebrow">100% stacked bars</p><h3>What my top artists sound like to me</h3><div id="moodArtists"></div></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<!-- PART THREE: HOW MY DAYS GO -->
+<section class="sheet" data-part="Part three · How my days go" data-title="So… when does Suhani sleep?" data-lede="Spotify can't tell me when I'm asleep. It can tell me when I finally stop pressing play.">
+    <div class="two section" style="align-items:center">
+        <div><p class="eyebrow">Radial clock · share of all my listening by hour</p><div id="sleepClock"></div></div>
+        <div><p class="eyebrow">The quiet window, by year</p><h3>When Spotify goes dark</h3><div id="moons"></div></div>
+    </div>
+    <div class="section"><p class="eyebrow">Were you awake? · every day (left to right) × every hour (top to bottom)</p><h3>1,592 days of my rhythm</h3><div class="night" id="awakeWrap"><canvas id="awake" width="1592" height="240" style="width:100%;height:1.7in;display:block"></canvas><div id="awakeAxis"></div></div>
+        <p class="caption">Each pixel is one hour of one day; brighter means more music. The dark band is the hours I'm almost never listening. The bright lines cutting through it are all-nighters.</p></div>
+    <div class="analysis" id="sleepNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part three · How my days go" data-title="The all-nighters" data-lede="Nights my music never stopped. Probable overnight listening, not confirmed wakefulness.">
+    <div class="night section"><p class="eyebrow" style="color:#F3A6B8">Night sky · one star per all-nighter</p><div id="sky"></div></div>
+    <div class="kpis" id="nightKpis"></div>
+    <div class="two section">
+        <div><p class="eyebrow">The longest nights</p><h3>Sessions that ran past sunrise</h3><div id="longNights"></div></div>
+        <div><p class="eyebrow">Midnight to 5 AM</p><h3>My 3 AM songs</h3><ol class="rank" id="nightSongs"></ol></div>
+    </div>
+    <div class="section"><p class="eyebrow">Every one of them</p><div id="allDates" style="display:flex;flex-wrap:wrap;gap:4px"></div></div>
+    <div class="analysis" id="nightNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part three · How my days go" data-title="Daylight me vs. 2 AM me" data-lede="Apparently daytime Suhani and nighttime Suhani don't get the same aux privileges.">
+    <div class="section"><p class="eyebrow">Who's over-represented when · compared with my whole day</p><h3>The artists who own each part of my day</h3><div class="periods" id="periods"></div></div>
+    <div class="section"><p class="eyebrow">Column chart · desi share of my listening by hour</p><h3>The later it gets, the more desi it gets</h3><div id="desiHours"></div></div>
+    <div class="two section">
+        <div><p class="eyebrow">Noon to 5 PM</p><h3>Afternoon me plays</h3><ol class="rank" id="daySongs"></ol></div>
+        <div><p class="eyebrow">Midnight to 5 AM</p><h3>2 AM me plays</h3><ol class="rank" id="lateSongs"></ol></div>
+    </div>
+    <div class="analysis" id="periodNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part three · How my days go" data-title="Somewhere around 5 PM, I need music" data-lede="Different years. Suspiciously similar appointment.">
+    <div class="section"><p class="eyebrow">Heatmap · hours by weekday and hour</p><h3>My listening week</h3><div id="weekHeat"></div></div>
+    <div class="section"><p class="eyebrow">Listening clocks · the peak hour each year</p><h3>The appointment</h3><div id="clocks" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px"></div></div>
+    <div class="two section">
+        <div><p class="eyebrow">Column chart</p><h3>Average hours by weekday</h3><div id="weekdays"></div></div>
+        <div><p class="eyebrow">Column chart</p><h3>Average hours per day by season</h3><div id="seasons"></div></div>
+    </div>
+    <div class="section"><p class="eyebrow">Seasonal artists · who shows up far more in one season</p><h3>Which artists only exist in my life when it's cold?</h3><div class="periods" id="seasonArtists"></div></div>
+    <div class="analysis" id="whenNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<!-- PART FOUR: HOW I'VE CHANGED -->
+<section class="sheet" data-part="Part four · How I've changed" data-title="Then I graduated and moved to Austin" data-lede="Here's what changed in my listening around the same time. Not because of it, necessarily. Around it.">
+    <div class="section"><p class="eyebrow">Hours per month, with my life's turning points</p><h3>Four years, three eras</h3><div id="eraMonths"></div></div>
+    <div class="eras section" id="eras"></div>
+    <div class="section"><p class="eyebrow">Slope chart · each line is one habit, across the three eras</p><h3>What moved, and which way</h3><div id="slopes"></div></div>
+    <div class="two section"><div><p class="eyebrow">The artists I listened to less · hours a month, high school → Austin</p><ol class="rank" id="leftArtists"></ol></div><div><p class="eyebrow">The artists who moved in · hours a month, high school → Austin</p><ol class="rank" id="arrivedArtists"></ol></div></div>
+    <div class="analysis" id="lifeNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part four · How I've changed" data-title="How desi is my Spotify?" data-lede="Not a footnote: one in eight of my listens.">
+    <div class="kpis" id="desiKpis"></div>
+    <div class="section"><p class="eyebrow">Area chart · desi share of each month</p><h3>When the desi music comes out</h3><div id="desiMonths"></div></div>
+    <div class="section"><p class="eyebrow">My most-played desi artists</p><div id="desiArtists" style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;text-align:center;font-size:7.5pt"></div></div>
+    <div class="section"><p class="eyebrow">My most-played desi songs</p><div class="cards" id="desiSongs" style="grid-template-columns: repeat(6, 1fr)"></div></div>
+    <div class="analysis" id="desiNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part four · How I've changed" data-title="Who gets two seconds to impress me?" data-lede="My Spotify isn't only what I chose. It's also what I rejected, usually very fast.">
+    <div class="section" style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center"><div class="giant" id="skipGiant">1.8s</div><div style="font-family:var(--serif);font-size:13pt;line-height:1.35" id="skipGiantLine"></div></div>
+    <div class="section"><p class="eyebrow">The trapdoor · skip rate of artists I've played 200+ times</p><h3>Who survives the skip button, and who falls through</h3><div id="trapdoor"></div></div>
+    <div class="section"><p class="eyebrow">Scatter · songs with 120+ listens</p><h3>Do I actually finish the songs I claim to love?</h3><div id="quadrant"></div></div>
+    <div class="analysis" id="skipNotes"></div>
+    <p class="caption">A skip isn't always a verdict: autoplay, a playlist I didn't make, or a song that came on at the wrong time all count. Read these as habits, not reviews.</p>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<section class="sheet" data-part="Part four · How I've changed" data-title="Am I the same listener I was in 2022?" data-lede="My taste didn't just change. The way I listen did.">
+    <div class="section"><p class="eyebrow">Listening fingerprints · each year scaled against my other years (axes labeled on the big chart)</p><div id="prints" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px"></div></div>
+    <div class="two section" style="align-items:center"><div id="overlay"></div><div><p class="eyebrow">Then vs. now</p><h3 id="overlayHead"></h3><table id="printTable"></table></div></div>
+    <div class="two section">
+        <div><p class="eyebrow" id="thenHead"></p><ol class="rank" id="thenArtists"></ol></div>
+        <div><p class="eyebrow" id="nowHead"></p><ol class="rank" id="nowArtists"></ol></div>
+    </div>
+    <div class="analysis" id="printNotes"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<!-- EPILOGUE -->
+<section class="sheet" data-part="Epilogue" data-title="So what did all these listens tell me?" data-lede="I thought I was analyzing what I listened to. I ended up analyzing how I listen.">
+    <div class="closing section" id="closing"></div>
+    <p class="eyebrow">Four years later, this is what it all added up to</p>
+    <div class="numbers" id="numbers"></div>
+    <div class="wall" id="wall"></div>
+    <div class="folio"><span>Suhani Tiwari, Listening History</span><span class="pg"></span></div>
+</section>
+
+<!-- APPENDIX -->
+<section class="sheet" data-part="Appendix" data-title="Okay, but can you trust any of this?" data-lede="Here's how I found all of it, and where it stops being evidence.">
+    <div class="two section">
+        <div class="box">
+            <h3>How the receipts were made</h3>
+            <ul>
+                <li><b>Extract:</b> Python reads Spotify's extended streaming history, every play since May 2022.</li>
+                <li><b>Clean:</b> songs only, Austin time, duplicates removed, one song released under many IDs merged into one, plays grouped into sessions.</li>
+                <li><b>Model:</b> a star schema in PostgreSQL: one fact table of plays and five dimensions (song, artist, album, day, session).</li>
+                <li><b>Ask:</b> SQL with CTEs and window functions (gaps and islands for streaks, LAG for comebacks and silences, lift for 2 AM me), served by FastAPI.</li>
+            </ul>
+        </div>
         <div class="box">
             <h3>What I left out on purpose</h3>
             <ul>
-                <li>IP address, country and device: dropped.</li>
-                <li>Private sessions: excluded.</li>
+                <li>IP address, country and device: dropped before anything is saved. Private sessions: excluded.</li>
+                <li>Plays I didn't really make: "Party In The U.S.A." looping overnight (March 21, 2023), "Hate Me" doing the same (January 22, 2025), and every play of "How Far I'll Go" (April 2023), an accident.</li>
                 <li>Raw export files: never on GitHub.</li>
-                <li>A play counts at 30 seconds, Spotify's own threshold.</li>
             </ul>
         </div>
     </div>
-    <div class="folio"><span>listening-history.onrender.com &nbsp; © 2026 Suhani Tiwari. All rights reserved.</span><span>3</span></div>
+    <div class="box section">
+        <h3>The judgment calls</h3>
+        <ul>
+            <li><b>Moods</b> are my own labels for my <span id="moodN">389</span> most-played songs (<span id="moodPct">61.5</span>% of my listens): heartbreak (−2), bittersweet and dark (−1), love and confident (+1), party (+2). A day's weather is the average of its labeled listens (10 or more); "saddest-sounding" needs 40.</li>
+            <li><b>Desi</b> means South Asian music, Hindi, Punjabi or Urdu, from my own list of 87 artists in my top 300.</li>
+            <li><b>Eras</b> split at my graduation (June 1, 2024) and my move to Austin (August 15, 2024).</li>
+            <li><b>2 AM me</b> uses lift: how much more likely an artist is in that part of the day than across my whole day (artists with 150+ listens).</li>
+        </ul>
+    </div>
+    <div class="section">
+        <h3>Definitions</h3>
+        <table><tbody>
+            <tr><td><b>Listen</b></td><td>A play of 30 seconds or more, Spotify's own rule for a stream. Charts count listens unless they say plays.</td></tr>
+            <tr><td><b>Skip</b></td><td>A play I moved past with the forward button or quit before 30 seconds.</td></tr>
+            <tr><td><b>Streak</b></td><td>Days in a row with at least one listen of the same song.</td></tr>
+            <tr><td><b>All-nighter</b></td><td>A night with music in every hour from midnight to 6 AM.</td></tr>
+            <tr><td><b>Comeback</b></td><td>A song with 40+ listens, then 180+ days of silence, then 25+ listens within 60 days.</td></tr>
+        </tbody></table>
+    </div>
+    <div class="box">
+        <h3>Where it stops being evidence</h3>
+        <ul>
+            <li>A play means the song was on, not that I was listening, awake or feeling it. A sad song isn't proof of a sad day.</li>
+            <li>Spotify only: no YouTube, radio or someone else's aux. 2022 starts in late May and 2026 stops in September.</li>
+        </ul>
+    </div>
+    <div class="folio"><span>listening-history.onrender.com &nbsp; © 2026 Suhani Tiwari. All rights reserved.</span><span class="pg"></span></div>
 </section>
 
 <script>
     const $ = s => document.querySelector(s);
     const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fmt = n => Number(n).toLocaleString('en-US');
-    const day = iso => new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const day = iso => new Date(iso.slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const longDay = iso => new Date(iso.slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    const monthName = iso => new Date(iso.slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const clockTime = iso => new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
     const hour = h => `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
+    const pct = (a, b) => Math.round(a / b * 100);
     const api = p => fetch(`/api/${p}`).then(r => r.json());
-    const row = (name, sub, right, share) => `<li><div><b>${esc(name)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}${share !== undefined ? `<div class="bar" style="width:${share}%"></div>` : ''}</div><em>${right}</em></li>`;
+    const best = (arr, f) => arr.reduce((a, b) => f(b) > f(a) ? b : a);
+    const C = ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--c4)', 'var(--c5)'], OTHER = 'var(--c-other)';
+    const MOODS = ['heartbreak', 'bittersweet', 'dark', 'love', 'confident', 'party'];
+    const MOOD_NAME = { heartbreak: 'Heartbreak', bittersweet: 'Bittersweet', dark: 'Dark', love: 'Love', confident: 'Confident', party: 'Party' };
+    const mc = m => `var(--m-${m})`;
+    const art = (t, a, big) => `/api/art?title=${encodeURIComponent(t)}&artist=${encodeURIComponent(a)}${big ? '&big=true' : ''}`;
+    const face = n => `/api/artist-art?name=${encodeURIComponent(n)}`;
+    const img = (src, cls = 'art') => `<img class="${cls}" src="${src}" alt="" onerror="this.style.visibility='hidden'">`;
+    const row = (name, sub, right, pic) => `<li>${pic}<div><b>${esc(name)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}</div><em>${right}</em></li>`;
+    const notes = items => items.map(([head, text]) => `<p><b>${head}</b> ${text}</p>`).join('');
+    const short = (t, n = 30) => t.length > n ? t.slice(0, n - 1) + '…' : t;
 
-    Promise.all(['summary', 'top-artists', 'top-songs', 'months', 'years', 'clock', 'streaks', 'obsessions', 'skips', 'days'].map(api))
-    .then(([s, artists, songs, months, years, clock, streaks, obs, skips, days]) => {
-        $('#coverLine').textContent = `Every Spotify play from ${day(s.first_day)} to ${day(s.last_day)}, cleaned in Python, modeled in PostgreSQL and summarized with SQL.`;
-        $('#stats').innerHTML = [['Hours', s.hours], ['Listens', s.listens], ['Songs', s.songs], ['Artists', s.artists], ['Sessions', s.sessions]]
-            .map(([k, v]) => `<div><dt>${k}</dt><dd>${fmt(v)}</dd></div>`).join('');
-        const topH = artists[0].hours;
-        $('#artists').innerHTML = artists.map(a => row(a.artist_name, `${fmt(a.listens)} listens`, `${fmt(Math.round(a.hours))} h`, a.hours / topH * 100)).join('');
-        $('#songs').innerHTML = songs.slice(0, 10).map(t => row(t.track_name, t.artist_name, fmt(t.listens))).join('');
-        const share = Math.round(artists[0].hours / s.hours * 100);
+    // Number the pages and build the contents from the chapter questions, grouped by part.
+    const sheets = [...document.querySelectorAll('.sheet')];
+    sheets.forEach((s, i) => { s.querySelector('.pg').textContent = i + 1; });
+    let lastPart = '', toc = '', n = 0;
+    sheets.filter(s => s.dataset.title).forEach(s => {
+        const numbered = !['Prologue', 'Epilogue', 'Appendix'].includes(s.dataset.part);
+        if (numbered) n++;
+        const num = numbered ? String(n).padStart(2, '0') : '';
+        s.insertAdjacentHTML('afterbegin', `<header class="chapter"><div class="kicker"><span>${num ? 'Chapter ' + num : esc(s.dataset.part)}</span>${num ? `<span>${esc(s.dataset.part)}</span>` : ''}</div><h2>${esc(s.dataset.title)}</h2><p class="lede">${esc(s.dataset.lede)}</p></header>`);
+        if (s.dataset.part !== lastPart) { toc += `<li class="part">${esc(s.dataset.part)}</li>`; lastPart = s.dataset.part; }
+        toc += `<li class="ch"><span class="n">${num}</span><b>${esc(s.dataset.title)}</b><span class="pg">${sheets.indexOf(s) + 1}</span></li>`;
+    });
+    $('#toc').innerHTML = toc;
+
+    // ---------- chart helpers (plain SVG, so the PDF stays sharp) ----------
+    function columns(items, { h = 80, w = 340, valueFmt = fmt, showValues = true, max } = {}) {
+        const top = max || Math.max(...items.map(d => d.value)), slot = w / items.length, bw = Math.max(2, slot * 0.68);
+        return `<svg viewBox="0 -14 ${w} ${h + 34}"><line x1="0" x2="${w}" y1="${h}" y2="${h}" stroke="#F0D6DC"/>` + items.map((d, i) => {
+            const bh = Math.max(1.5, d.value / top * h), x = i * slot + (slot - bw) / 2;
+            return `<rect x="${x}" y="${h - bh}" width="${bw}" height="${bh}" rx="${Math.min(4, bw / 2)}" fill="${d.color || 'var(--c1)'}"><title>${esc(d.tip || `${d.label}: ${valueFmt(d.value)}`)}</title></rect>`
+                + (showValues ? `<text x="${x + bw / 2}" y="${h - bh - 4}" font-size="10" text-anchor="middle" fill="#22090F" font-weight="600">${valueFmt(d.value)}</text>` : '')
+                + (d.label !== '' ? `<text x="${x + bw / 2}" y="${h + 14}" font-size="10" text-anchor="middle">${esc(d.label)}</text>` : '');
+        }).join('') + '</svg>';
+    }
+    const ramp = t => {
+        const stops = [[251, 232, 236], [243, 166, 184], [201, 61, 108], [104, 31, 52]];
+        if (t <= 0) return '#F7EFF1';
+        const x = Math.min(1, t) * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(x)), f = x - i;
+        return `rgb(${stops[i].map((v, k) => Math.round(v + (stops[i + 1][k] - v) * f)).join(',')})`;
+    };
+    // time axis helper: maps an ISO date onto [x0, x1] across the whole history
+    let T0, T1;
+    const tx = (iso, x0, x1) => x0 + (new Date(iso.slice(0, 10) + 'T12:00:00') - T0) / (T1 - T0) * (x1 - x0);
+    const yearTicks = (x0, x1, y, color = '#6E3F4A') => [2023, 2024, 2025, 2026].map(yr => { const x = tx(`${yr}-01-01`, x0, x1); return `<line x1="${x}" x2="${x}" y1="0" y2="${y}" stroke="${color}" stroke-opacity=".25" stroke-dasharray="2 3"/><text x="${x + 3}" y="${y + 11}" font-size="9" style="fill:${color}">${yr}</text>`; }).join('');
+
+    Promise.all(['summary', 'top-artists', 'top-songs', 'months', 'years', 'clock', 'streaks', 'obsessions', 'skip-rates', 'days',
+                 'dynasty', 'discovery', 'loyalty', 'change', 'report-extras', 'moods', 'nights', 'story', 'race'].map(p => api(p).catch(() => null)))
+    .then(([s, artists, songs, months, years, clock, streaks, obs, skipRates, days, dynasty, disc, loyal, change, x, mood, night, st, race]) => {
+        T0 = new Date(s.first_day + 'T12:00:00'); T1 = new Date(s.last_day + 'T12:00:00');
+        const top = artists[0];
+        const dows = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const contender = night.contenders[0];
+        const moodYear = {};
+        mood.by_year.forEach(r => { (moodYear[r.year] = moodYear[r.year] || {})[r.mood] = r.share; });
+        const yearsList = Object.keys(moodYear).map(Number), y0 = yearsList[0], yN = yearsList[yearsList.length - 1];
+        const sadShare = y => ['heartbreak', 'bittersweet', 'dark'].reduce((t, m) => t + (moodYear[y][m] || 0), 0);
+        const upShare = y => ['confident', 'party'].reduce((t, m) => t + (moodYear[y][m] || 0), 0);
+        const owned = dynasty.filter(d => d.winner === top.artist_name).length;
+        const allN = night.allnighters;
+
+        // ---------- prologue ----------
+        $('#coverHours').textContent = fmt(s.hours);
+        $('#coverWall').innerHTML = songs.slice(4, 24).map(t => img(art(t.track_name, t.artist_name), '')).join('');
+        $('#collage').innerHTML = songs.slice(0, 4).map(t => img(art(t.track_name, t.artist_name, true), '')).join('');
+        $('#intro').innerHTML = `That's ${Math.round(s.hours / 24)} days, more than half a year of my life. So I gave Python every Spotify play I've made since ${monthName(s.first_day)}, because I wanted to know something Wrapped never tells me: what do ${fmt(s.listens)} listens actually say about the person doing the listening?`;
+
+        // ---------- 1. obsession ----------
+        const big = days[0];
+        $('#obsHero').innerHTML = `${img(art(big.track_name, big.artist_name, true), '')}<div><p class="eyebrow">${longDay(big.full_date)}</p>
+            <p><span class="big">${big.listens}×</span></p><h3>${esc(big.track_name)}</h3><p>${esc(big.artist_name)}. In one day. That's about ${Math.round(big.listens * 3 / 60)} hours of the same song, if you were wondering whether I listen casually.</p></div>`;
+        const curveSongs = [...new Set(st.curves.map(c => c.track_key))];
+        const series = curveSongs.map(k => { const pts = st.curves.filter(c => c.track_key === k); let cum = 0; const byDay = {}; pts.forEach(p => byDay[p.day] = p.listens);
+            return { name: pts[0].track_name, artist: pts[0].artist_name, pts: [...Array(45).keys()].map(d => (cum += byDay[d] || 0)) }; })
+            .sort((a, b) => b.pts[44] - a.pts[44]).slice(0, 5);
+        const cMax = Math.max(...series.map(s2 => s2.pts[44])), CW = 680, CH = 230;
+        $('#curves').innerHTML = `<svg viewBox="-30 -8 ${CW + 150} ${CH + 26}">`
+            + [0, 0.5, 1].map(f => `<line x1="0" x2="${CW}" y1="${CH - f * CH}" y2="${CH - f * CH}" stroke="#F0D6DC"/><text x="-6" y="${CH - f * CH + 3}" font-size="9" text-anchor="end">${Math.round(f * cMax)}</text>`).join('')
+            + [0, 7, 14, 21, 28, 35, 44].map(d => `<text x="${d / 44 * CW}" y="${CH + 14}" font-size="9" text-anchor="middle">${d === 0 ? 'day 1' : 'day ' + (d + 1)}</text>`).join('')
+            + series.map((sr, i) => `<polyline fill="none" stroke="${C[i]}" stroke-width="2.2" stroke-linejoin="round" points="${sr.pts.map((v, d) => `${d / 44 * CW},${CH - v / cMax * CH}`).join(' ')}"/>`).join('')
+            + (() => { let lastY = -99; return series.map((sr, i) => ({ sr, i, y: CH - sr.pts[44] / cMax * CH + 3 })).sort((a, b) => a.y - b.y)
+                .map(l => { const y = Math.max(l.y, lastY + 11); lastY = y; return `<text x="${CW + 6}" y="${y}" font-size="9.5" style="fill:${C[l.i]}" font-weight="700">${esc(short(l.sr.name, 26))}</text>`; }).join(''); })() + '</svg>';
+        $('#curveLegend').innerHTML = series.map((sr, i) => `<span><i style="background:${C[i]}"></i>${esc(sr.name)} · ${esc(sr.artist)}</span>`).join('');
+        $('#days').innerHTML = days.slice(1, 6).map(r => row(r.track_name, `${r.artist_name}, ${day(r.full_date)}`, `${r.listens}×`, img(art(r.track_name, r.artist_name)))).join('');
+        // 119 dots: one per play that day, darkening as the day goes on
+        const perRow = 17, dotR = 13;
+        $('#dotsHead').textContent = `${big.listens} plays of "${big.track_name}" on ${day(big.full_date)}, one dot each`;
+        $('#dots').innerHTML = `<svg viewBox="0 0 ${perRow * 40} ${Math.ceil(big.listens / perRow) * 34}">` + [...Array(big.listens).keys()].map(i => {
+            const t = i / (big.listens - 1);
+            return `<circle cx="${(i % perRow) * 40 + 20}" cy="${Math.floor(i / perRow) * 34 + 17}" r="${dotR}" fill="${ramp(0.25 + t * 0.75)}"/>` + ((i + 1) % 10 === 0 ? `<text x="${(i % perRow) * 40 + 20}" y="${Math.floor(i / perRow) * 34 + 21}" font-size="10" text-anchor="middle" style="fill:#FFFFFF" font-weight="700">${i + 1}</text>` : '');
+        }).join('') + '</svg>';
+        $('#inARow').innerHTML = st.in_a_row.map(r => row(r.track_name, `${r.artist_name}, ${day(r.started)}`, `${r.plays} in a row`, img(art(r.track_name, r.artist_name)))).join('');
+        const row1 = st.in_a_row[0], hb = st.habits;
+        $('#movedNotes').innerHTML = notes([
+            [`${row1.plays} times in a row.`, `"${esc(row1.track_name)}" started at ${clockTime(row1.started)} on ${day(row1.started)} and didn't let another song play until ${clockTime(row1.ended)} on ${day(row1.ended)}. On ${day(big.full_date)}, it was the only song I played all day.`],
+            ['Repeat is a lifestyle.', `${pct(hb.replays, hb.listens)}% of all my listens (${fmt(hb.replays)}) are the same song I'd just finished, played again.`],
+        ]);
+        // the obsession fuse: first play to 25th play
+        const fz = obs.slice(0, 6), fzMax = Math.max(...fz.map(r => r.days_to_obsession)) + 1, FL = 230, FW = 380;
+        $('#fuse').innerHTML = `<svg viewBox="0 0 680 ${fz.length * 46 + 22}">` + fz.map((r, i) => {
+            const y = i * 46 + 22, len = (r.days_to_obsession + 1) / fzMax * FW, x2 = FL + len;
+            return `<image href="${art(r.track_name, r.artist_name)}" x="0" y="${y - 15}" width="30" height="30" preserveAspectRatio="xMidYMid slice"/>
+                <text x="38" y="${y - 2}" font-size="10" font-weight="700" style="fill:#22090F">${esc(short(r.track_name, 28))}</text><text x="38" y="${y + 10}" font-size="8.5">${esc(r.artist_name)} · first play ${day(r.first_listen)}</text>
+                <circle cx="${FL}" cy="${y}" r="4" fill="#22090F"/><path d="M${FL},${y} ${[...Array(Math.ceil(len / 10)).keys()].map(k => `Q${FL + k * 10 + 5},${y + (k % 2 ? 4 : -4)} ${Math.min(x2, FL + (k + 1) * 10)},${y}`).join(' ')}" fill="none" stroke="#B5761A" stroke-width="2.4"/>
+                <text x="${x2 + 2}" y="${y + 6}" font-size="17">💥</text><text x="${x2 + 24}" y="${y + 4}" font-size="10" font-weight="700" style="fill:var(--mul)">${r.days_to_obsession === 0 ? 'same day' : r.days_to_obsession === 1 ? '1 day' : r.days_to_obsession + ' days'}</text>`;
+        }).join('') + `<text x="${FL}" y="${fz.length * 46 + 16}" font-size="9">first play</text><text x="${FL + FW}" y="${fz.length * 46 + 16}" font-size="9" text-anchor="end">25th play, ${fzMax} days later →</text></svg>`;
+        const steep = best(series, sr => sr.pts[6]);
+        $('#obsNotes').innerHTML = notes([
+            ['Sometimes I know immediately.', `"${esc(obs[0].track_name)}" went from first listen to 25 listens ${obs[0].days_to_obsession === 0 ? 'the same day' : obs[0].days_to_obsession === 1 ? 'by the next day' : `in ${obs[0].days_to_obsession} days`}. None of my fastest obsessions took even a week.`],
+            ['An obsession is a cliff, not a slope.', `"${esc(steep.name)}" hit ${steep.pts[6]} listens in its first week, then flattened. Most of the first month happens in a few wild days.`],
+        ]);
+
+        // ---------- 2. Ariana ----------
+        const winners = [...new Set(dynasty.map(d => d.winner))].map(w => [w, dynasty.filter(d => d.winner === w).length]).sort((a, b) => b[1] - a[1]);
+        const named = winners.slice(0, 3).map(w => w[0]), wColor = w => named.includes(w) ? C[named.indexOf(w)] : OTHER;
+        const RW = 680, sw = RW / dynasty.length;
+        $('#giant43').textContent = `${owned} / ${dynasty.length}`;
+        $('#giantLine').innerHTML = `months had the same #1 artist: <b>${esc(top.artist_name)}</b>. She's ${pct(top.hours, s.hours)}% of everything I've listened to since ${s.first_day.slice(0, 4)}.`;
+        $('#ribbon').innerHTML = `<svg viewBox="0 0 ${RW} 74">` + dynasty.map((d, i) => `<rect x="${i * sw + 0.6}" y="0" width="${sw - 1.2}" height="56" rx="2" fill="${wColor(d.winner)}"><title>${d.month.slice(0, 7)}: ${esc(d.winner)} (${d.share_pct}%)</title></rect>`
+            + (d.month.endsWith('-01-01') ? `<text x="${i * sw}" y="70" font-size="9.5">${d.month.slice(0, 4)}</text>` : '')).join('') + '</svg>';
+        $('#ribbonLegend').innerHTML = winners.slice(0, 3).map(([w, c], i) => `<span><i style="background:${C[i]}"></i>${esc(w)}: ${c}</span>`).join('') + (winners.length > 3 ? `<span><i style="background:${OTHER}"></i>${winners.slice(3).map(w => esc(w[0])).join(', ')}: 1 each</span>` : '');
         const nextFour = artists.slice(1, 5).reduce((t, a) => t + a.hours, 0);
-        const owned = months.filter(m => m.era_artist === artists[0].artist_name).length;
-        $('#finding').innerHTML = `<b>${esc(artists[0].artist_name)} owned ${owned} of my ${months.length} months.</b><p class="muted">She is ${share}% of everything I listened to: ${fmt(Math.round(artists[0].hours))} hours${nextFour < artists[0].hours ? ', more than my next four artists combined' : ''}.</p>`;
+        $('#versus').innerHTML = `<div><div class="n">${fmt(Math.round(top.hours))}</div><div class="l">hours of ${esc(top.artist_name)}</div></div><div class="vs">vs.</div>
+            <div><div class="n small">${fmt(Math.round(nextFour))}</div><div class="l">hours of my next four artists, combined</div></div>`;
+        const TW = 680, TH = 90, peak = best(st.ariana, a => a.share), pts = st.ariana.map((a, i) => [i / (st.ariana.length - 1) * TW, TH - a.share / 70 * TH]);
+        const px = st.ariana.indexOf(peak) / (st.ariana.length - 1) * TW;
+        const gx = tx(st.graduated, 0, TW), mx = tx(st.moved, 0, TW);
+        $('#tide').innerHTML = `<svg viewBox="0 -12 ${TW} ${TH + 26}"><path d="M0,${TH} ${pts.map(p => 'L' + p.join(',')).join(' ')} L${TW},${TH} Z" fill="var(--c1)" fill-opacity=".85"/>
+            ${[25, 50].map(v => `<line x1="0" x2="${TW}" y1="${TH - v / 70 * TH}" y2="${TH - v / 70 * TH}" stroke="#FFFFFF" stroke-opacity=".7" stroke-dasharray="3 3"/><text x="4" y="${TH - v / 70 * TH - 3}" font-size="9">${v}%</text>`).join('')}
+            <circle cx="${px}" cy="${TH - peak.share / 70 * TH}" r="4" fill="#22090F"/><text x="${px + 7}" y="${TH - peak.share / 70 * TH + 1}" font-size="10" style="fill:#22090F" font-weight="700">Peak Ariana: ${monthName(peak.month)}, ${peak.share}%</text>
+            <line x1="${gx}" x2="${gx}" y1="0" y2="${TH}" stroke="#22090F" stroke-dasharray="2 2"/><text x="${gx - 3}" y="${TH + 12}" font-size="9" text-anchor="end" style="fill:#22090F">graduated</text>
+            <line x1="${mx}" x2="${mx}" y1="0" y2="${TH}" stroke="#22090F" stroke-dasharray="2 2"/><text x="${mx + 3}" y="${TH + 12}" font-size="9" style="fill:#22090F">moved to Austin</text></svg>`;
+        const allAriana = songs.slice(0, 10).every(t => t.artist_name === top.artist_name);
+        $('#stripHead').textContent = allAriana ? `My ten most-played songs: 1 through 10, all ${top.artist_name}` : 'My ten most-played songs';
+        $('#topTen').innerHTML = songs.slice(0, 10).map(t => img(art(t.track_name, t.artist_name), '')).join('');
+        const lost = dynasty.filter(d => d.winner !== top.artist_name);
+        $('#dethroned').innerHTML = lost.map(d => `<div>${img(face(d.winner), 'art round')}<b style="display:block;margin-top:3px;font-size:7.5pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.winner)}</b><span class="muted">${new Date(d.month + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span></div>`).join('');
+        $('#arianaNotes').innerHTML = notes([
+            ['She isn\'t my favorite artist. She\'s the background of my life:', `${pct(top.hours, s.hours)}% of everything I've played, and on ${pct(loyal.top_artist_days, loyal.listening_days)}% of the days I listened to anything, she was in it.`],
+            ['Peak Ariana', `was ${monthName(peak.month)}: ${peak.share}% of everything I played, the spring before I graduated. Only ${lost.length} months ever got away from her, ${lost.filter(d => d.winner === 'Taylor Swift').length} of them to Taylor Swift.`],
+        ]);
 
-        // month bars
-        const svg = $('#months'), W = 1000, H = 150, n = months.length, bw = W / n, most = Math.max(...months.map(m => m.hours));
-        svg.setAttribute('viewBox', `0 0 ${W} ${H + 16}`);
-        svg.innerHTML = months.map((m, i) => {
-            const h = Math.max(2, m.hours / most * H);
-            return `<rect x="${i * bw + 1}" y="${H - h}" width="${bw - 2}" height="${h}" rx="1.5" fill="${m.era_artist === 'Ariana Grande' ? '#D65478' : '#681F34'}"/>`;
-        }).join('') + months.map((m, i) => m.month.endsWith('-01-01') ? `<text x="${i * bw}" y="${H + 13}" font-size="11" fill="#6E3F4A" font-family="sans-serif">${m.month.slice(0, 4)}</text>` : '').join('');
+        // ---------- 3. eras ----------
+        // streak garden: each streak grows one dot per day, ending in a flower
+        const gL = 190, dotW = 21;
+        $('#garden').innerHTML = `<svg viewBox="0 0 680 ${streaks.length * 26 + 4}">` + streaks.map((r, i) => {
+            const y = i * 26 + 13, col = r.artist_name === top.artist_name ? 'var(--c1)' : 'var(--c2)', end = gL + (r.days_in_a_row - 1) * dotW;
+            return `<image href="${art(r.track_name, r.artist_name)}" x="0" y="${y - 11}" width="22" height="22" preserveAspectRatio="xMidYMid slice"/>
+                <text x="28" y="${y - 1}" font-size="9.5" style="fill:#22090F" font-weight="600">${esc(short(r.track_name, 28))}</text><text x="28" y="${y + 9}" font-size="8.5">${day(r.started)} → ${day(r.ended).replace(/, \d{4}/, '')}</text>
+                
+                ${[...Array(r.days_in_a_row).keys()].map(d => `<rect x="${gL + d * dotW - 8}" y="${y - 8}" width="${d === r.days_in_a_row - 1 ? 0 : 16}" height="16" rx="2.5" fill="${col}"/>`).join('')}
+                <text x="${end}" y="${y + 5}" font-size="15" text-anchor="middle" style="fill:${col}">✿</text>
+                <text x="${end + 12}" y="${y + 3.5}" font-size="10" font-weight="700" style="fill:#22090F">${r.days_in_a_row}</text>`;
+        }).join('') + '</svg>';
+        $('#undying').innerHTML = `${img(art(contender.track_name, contender.artist_name, true), '')}<div><p class="eyebrow">The song that refuses to die</p><h3>${esc(contender.track_name)}</h3>
+            <p>${esc(contender.artist_name)} · ${fmt(contender.listens)} listens. The only song in my top ${contender.worst_place} in every year from ${contender.years[0]} to ${contender.years[contender.years.length - 1]}.</p>
+            <p style="margin-top:8px">${contender.years.map((y, i) => `<b style="color:#F3A6B8">${y}</b> #${contender.places[i]}`).join(' &nbsp;·&nbsp; ')}</p></div>`;
+        const HW = 520, hL = 160, cb = st.comebacks;
+        $('#heartbeat').innerHTML = `<svg viewBox="0 0 ${hL + HW + 60} ${cb.length * 30 + 16}">` + yearTicks(hL, hL + HW, cb.length * 30) + cb.map((r, i) => {
+            const y = i * 30 + 16, xa = tx(r.last_heard, hL, hL + HW), xb = tx(r.returned, hL, hL + HW), sp = Math.min(13, r.after / 6);
+            return `<image href="${art(r.track_name, r.artist_name)}" x="0" y="${y - 11}" width="20" height="20" preserveAspectRatio="xMidYMid slice"/>
+                <text x="26" y="${y - 1}" font-size="9.5" style="fill:#22090F" font-weight="600">${esc(short(r.track_name, 24))}</text><text x="26" y="${y + 9}" font-size="8.5">${fmt(r.gap)} days of silence</text>
+                <line x1="${Math.max(hL, xa - 40)}" x2="${xa}" y1="${y}" y2="${y}" stroke="var(--c1)" stroke-width="3" stroke-linecap="round"/>
+                <line x1="${xa}" x2="${xb}" y1="${y}" y2="${y}" stroke="#B9A3A9" stroke-dasharray="3 3"/>
+                <polyline fill="none" stroke="var(--c1)" stroke-width="2" stroke-linejoin="round" points="${xb - 6},${y} ${xb - 2},${y - sp} ${xb + 2},${y + sp * 0.6} ${xb + 6},${y} ${xb + 16},${y}"/>
+                <text x="${xb + 20}" y="${y + 3}" font-size="9" style="fill:#22090F" font-weight="600">+${fmt(r.after)}</text>`;
+        }).join('') + '</svg>';
+        const jan25 = cb.filter(r => r.returned.startsWith('2025-01')).length;
+        $('#eraNotes').innerHTML = notes([
+            ['My longest era:', `"${esc(streaks[0].track_name)}", every day for ${streaks[0].days_in_a_row} days starting ${day(streaks[0].started)}.`],
+            ['January 2025 was a séance.', `${jan25} of my ${cb.length} biggest comebacks happened that month, my first winter break home from college, including "${esc(cb[0].track_name)}" after ${fmt(cb[0].gap)} days away.`],
+        ]);
 
-        $('#years').innerHTML = years.map(y => `<tr><td class="num">${y.year}</td><td>${fmt(y.hours)}</td><td>${fmt(y.listens)}</td><td>${fmt(y.songs)}</td><td>${fmt(y.artists)}</td><td>${fmt(y.new_songs)}</td>
-            <td><b>${esc(y.song_of_the_year)}</b><br><span class="muted">${esc(y.song_of_the_year_artist)}, ${y.song_listens} listens</span></td></tr>`).join('');
+        // ---------- 4. curiosity ----------
+        $('#newShare').innerHTML = (() => {
+            const h = 90, w = 340, slot = w / disc.length, bw = slot * 0.6;
+            return `<svg viewBox="0 -4 ${w} ${h + 24}">` + disc.map((d, i) => {
+                const nh = d.new_song_share / 100 * h, x0 = i * slot + (slot - bw) / 2;
+                return (h - nh - 1 > 0 ? `<rect x="${x0}" y="0" width="${bw}" height="${h - nh - 1}" rx="3" fill="${OTHER}"/>` : '')
+                    + `<rect x="${x0}" y="${h - nh + 1}" width="${bw}" height="${Math.max(0, nh - 1)}" rx="3" fill="${C[0]}"/>
+                    <text x="${x0 + bw / 2}" y="${h - nh + 13}" font-size="10" text-anchor="middle" style="fill:#FFFFFF" font-weight="700">${Math.round(d.new_song_share)}%</text>
+                    <text x="${x0 + bw / 2}" y="${h + 14}" font-size="10" text-anchor="middle">${d.year}</text>`;
+            }).join('') + '</svg>';
+        })();
+        $('#newArtists').innerHTML = columns(disc.map(d => ({ label: d.year, value: d.new_artists, color: C[4] })), { h: 80 });
+        const topOfYear = Object.fromEntries(x.year_artists.filter((r, i, a) => a.findIndex(q => q.year === r.year) === i).map(r => [r.year, r]));
+        const eraLine = { 2022: 'The opening act. Mostly songs I would carry for years.', 2023: 'Everything, all at once. The year I listened and discovered the most.', 2024: 'Graduation, then a quiet summer. Back to what was safe.', 2025: 'First full year in Austin. I left home musically, too.', 2026: 'A Bollywood soundtrack takes the crown.' };
+        $('#erasTour').innerHTML = years.map(y => { const c = change.find(q => q.period === y.year), tp = topOfYear[y.year];
+            return `<div style="display:grid;grid-template-columns:62px 1fr 150px;gap:14px;align-items:center;padding:7px 0;border-top:1px solid var(--line)">${img(art(y.song_of_the_year, y.song_of_the_year_artist), '').replace('<img ', '<img style="width:62px;height:62px;border-radius:6px;object-fit:cover" ')}
+                <div><span style="font-family:var(--serif);font-weight:700;color:var(--mul);font-size:10pt">${y.year}</span> <span style="font-family:var(--serif);font-size:17pt;font-weight:700;line-height:1.05">${esc(y.song_of_the_year)}</span><br><span class="muted" style="font-size:8.5pt">${esc(y.song_of_the_year_artist)} · ${y.song_listens} listens. <i>${eraLine[y.year] || ''}</i></span></div>
+                <div style="font-size:8pt;color:var(--muted);text-align:right"><b style="color:var(--choc);font-size:10pt">${fmt(c.hours)} h</b> · ${c.hours_per_day} a day<br>${fmt(y.new_songs)} new songs<br>#1: ${esc(tp ? tp.artist_name : '')}</div></div>`; }).join('');
+        // streamgraph of top artists, centered, with "everyone else in my top 12" as the gray band
+        const rc = race, rMonths = [...new Set(rc.map(r => r.month))].sort(), rTotals = {};
+        rc.forEach(r => rTotals[r.artist_name] = (rTotals[r.artist_name] || 0) + r.hours);
+        const rTop = Object.entries(rTotals).sort((a, b) => b[1] - a[1]).slice(0, 5).map(e => e[0]);
+        const layers = [...rTop, 'Rest of my top 12'], grid = rMonths.map(m => layers.map(a => a === 'Rest of my top 12' ? rc.filter(r => r.month === m && !rTop.includes(r.artist_name)).reduce((t, r) => t + r.hours, 0) : (rc.find(r => r.month === m && r.artist_name === a) || { hours: 0 }).hours));
+        const colTot = grid.map(g => g.reduce((t, v) => t + v, 0)), gMax = Math.max(...colTot), GW2 = 680, GH = 250, sgx = i => i / (rMonths.length - 1) * GW2, gs = v => v / gMax * GH;
+        const lColor = [C[0], C[1], C[2], C[3], C[4], OTHER];
+        let streamSvg = `<svg viewBox="0 0 ${GW2} ${GH + 18}">`;
+        layers.forEach((a, li) => {
+            const lower = grid.map((g, i) => GH / 2 - gs(colTot[i]) / 2 + gs(g.slice(0, li).reduce((t, v) => t + v, 0)));
+            const upper = grid.map((g, i) => lower[i] + gs(g[li]));
+            streamSvg += `<path d="M${upper.map((y, i) => `${sgx(i)},${y}`).join(' L')} L${lower.map((y, i) => `${sgx(i)},${y}`).reverse().join(' L')} Z" fill="${lColor[li]}" stroke="#FFFBFB" stroke-width=".6"><title>${esc(a)}</title></path>`;
+            const k = grid.reduce((bi, g, i) => g[li] > grid[bi][li] ? i : bi, 0);
+            if (grid[k][li] > gMax * 0.12) streamSvg += `<text x="${sgx(k)}" y="${(lower[k] + upper[k]) / 2 + 3.5}" font-size="9.5" text-anchor="middle" style="fill:#FFFFFF" font-weight="700">${esc(a)}</text>`;
+        });
+        streamSvg += rMonths.map((m, i) => m.endsWith('-01') ? `<text x="${sgx(i)}" y="${GH + 14}" font-size="9.5">${m.slice(0, 4)}</text>` : '').join('') + '</svg>';
+        $('#stream').innerHTML = streamSvg;
+        $('#streamLegend').innerHTML = layers.map((a, i) => `<span><i style="background:${lColor[i]}"></i>${esc(a)}</span>`).join('');
+        // graveyard: songs played exactly once
+        $('#graveHead').textContent = `${fmt(st.habits.one_listen_songs)} songs, ${pct(st.habits.one_listen_songs, st.habits.songs)}% of every song I've tried, never got a second listen`;
+        $('#graveyard').innerHTML = `<svg viewBox="0 0 680 118">` + st.graveyard.map((g, i) => { const x0 = i * 113 + 4;
+            return `<path d="M${x0},112 L${x0},34 Q${x0},4 ${x0 + 50},4 Q${x0 + 100},4 ${x0 + 100},34 L${x0 + 100},112 Z" fill="#E9E1E3" stroke="#B9A3A9"/>
+                <text x="${x0 + 50}" y="26" font-size="9" text-anchor="middle" font-weight="700">RIP</text>
+                <text x="${x0 + 50}" y="48" font-size="8.5" text-anchor="middle" style="fill:#22090F" font-weight="700">${esc(short(g.track_name, 18))}</text>
+                <text x="${x0 + 50}" y="62" font-size="8" text-anchor="middle">${esc(short(g.artist_name, 18))}</text>
+                <text x="${x0 + 50}" y="82" font-size="8" text-anchor="middle">heard once,</text><text x="${x0 + 50}" y="94" font-size="8" text-anchor="middle">${day(g.heard)}</text>`; }).join('') + '</svg><p class="caption">Even my favorite artists have songs in here: one from each of my top six.</p>';
+        const byYearSong = Object.fromEntries(years.map(y => [y.year, y.song_of_the_year]));
+        const findsTop = {};
+        x.finds.forEach(r => { if (!findsTop[r.year] && !(byYearSong[r.year] === r.track_name)) findsTop[r.year] = r; });
+        $('#finds').innerHTML = Object.values(findsTop).map(r => `<div>${img(art(r.track_name, r.artist_name), '')}<b class="y">${r.year}</b><span class="t">${esc(r.track_name)}</span><span class="muted">${esc(r.artist_name)}, ${fmt(r.listens)}</span></div>`).join('');
+        const byY = Object.fromEntries(years.map(y => [y.year, y]));
+        $('#discNotes').innerHTML = notes([
+            ['2023: I went exploring.', `${fmt(byY[2023].new_songs)} new songs and ${fmt(disc.find(d => d.year === 2023).new_artists)} new artists.`],
+            ['2024: I came home.', `Only ${fmt(byY[2024].new_songs)} new songs, the fewest of any full year, my senior spring and the summer before college.`],
+            ['2025: I left again.', `${fmt(byY[2025].new_songs)} new songs, my first full year in Austin.`],
+            ['The soundtrack moved too:', years.map(y => `"${esc(y.song_of_the_year)}"`).join(' → ') + '.'],
+        ]);
 
-        // one small 24-hour dial per year
-        const ys = [...new Set(clock.map(c => c.year))], max = Math.max(...clock.map(c => c.share_pct));
-        $('#clocks').innerHTML = ys.map(y => {
-            const d = clock.filter(c => c.year === y), peak = d.reduce((a, b) => b.share_pct > a.share_pct ? b : a);
-            const spokes = d.map(c => `<rect x="-2.2" y="${-12 - (4 + c.share_pct / max * 44)}" width="4.4" height="${4 + c.share_pct / max * 44}" rx="2" fill="${c.hour === peak.hour ? '#22090F' : '#D65478'}" transform="rotate(${c.hour * 15})"/>`).join('');
-            return `<figure><svg viewBox="-62 -62 124 124" width="94" height="94"><circle r="12" fill="none" stroke="#F0D6DC"/>${spokes}</svg><figcaption><b>${y}</b>peak at ${hour(peak.hour)}</figcaption></figure>`;
-        }).join('');
+        // ---------- 5. weather ----------
+        const W = { storm: ['🌩', 'Stormy', 'var(--w-storm)'], rain: ['🌧', 'Rainy', 'var(--w-rain)'], cloud: ['☁️', 'Cloudy', 'var(--w-cloud)'], part: ['🌤', 'Partly sunny', 'var(--w-part)'], sun: ['☀️', 'Sunny', 'var(--w-sun)'], chaos: ['🌪', 'Chaotic', 'var(--w-chaos)'] };
+        const weatherOf = d => d.spread >= 1.55 ? 'chaos' : d.score >= 1 ? 'sun' : d.score >= 0.4 ? 'part' : d.score >= -0.2 ? 'cloud' : d.score >= -0.8 ? 'rain' : 'storm';
+        const wByDay = Object.fromEntries(st.weather.map(d => [d.d, weatherOf(d)]));
+        const cell = 10.5, calYears = [];
+        for (let y = T0.getFullYear(); y <= T1.getFullYear(); y++) calYears.push(y);
+        const rowH = 7 * cell + 11;
+        let wSvg = '';
+        calYears.forEach((y, yi) => {
+            wSvg += `<text x="-6" y="${yi * rowH + 3.5 * cell + 4}" font-size="10" text-anchor="end" font-weight="600">${y}</text>`;
+            const jan1 = new Date(y, 0, 1, 12), offset = (jan1.getDay() + 6) % 7;
+            for (let d = new Date(jan1); d.getFullYear() === y; d.setDate(d.getDate() + 1)) {
+                if (d < T0 || d > T1) continue;
+                const iso = `${y}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, idx = Math.round((d - jan1) / 864e5) + offset, wk = wByDay[iso];
+                wSvg += `<rect x="${Math.floor(idx / 7) * cell}" y="${yi * rowH + (idx % 7) * cell}" width="${cell - 1.5}" height="${cell - 1.5}" rx="${wk === 'sun' ? 5 : 1.5}" fill="${wk ? W[wk][2] : '#F7EFF1'}"><title>${iso}: ${wk ? W[wk][1] : 'not enough music'}</title></rect>`;
+            }
+            if (yi === 0) ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].forEach((m, i) => { wSvg += `<text x="${Math.floor((Math.round((new Date(y, i, 1, 12) - jan1) / 864e5) + offset) / 7) * cell}" y="-3" font-size="8.5">${m}</text>`; });
+        });
+        $('#weatherCal').innerHTML = `<svg style="max-height:3.55in" viewBox="-34 -12 ${53 * cell + 40} ${calYears.length * rowH + 12}">${wSvg}</svg>`;
+        $('#weatherLegend').innerHTML = ['storm', 'rain', 'cloud', 'part', 'sun', 'chaos'].map(k => `<span><i style="background:${W[k][2]}"></i>${W[k][0]} ${W[k][1]}</span>`).join('') + '<span><i style="background:#F7EFF1"></i>Too little music to tell</span>';
+        const wc = {}; Object.values(wByDay).forEach(k => wc[k] = (wc[k] || 0) + 1);
+        const byMonth = {}; Object.entries(wByDay).forEach(([d, k]) => { const m = d.slice(0, 7); byMonth[m] = byMonth[m] || { rain: 0, sun: 0, n: 0 }; byMonth[m].n++; if (k === 'rain' || k === 'storm') byMonth[m].rain++; if (k === 'sun' || k === 'part') byMonth[m].sun++; });
+        const mList = Object.entries(byMonth).filter(([, v]) => v.n >= 15);
+        const rainiest = best(mList, ([, v]) => v.rain / v.n), sunniest = best(mList, ([, v]) => v.sun / v.n);
+        let run = 0, bestRun = 0, runEnd = '';
+        Object.keys(wByDay).sort().forEach(d => { if (['sun', 'part'].includes(wByDay[d])) { run++; if (run > bestRun) { bestRun = run; runEnd = d; } } else run = 0; });
+        $('#weatherKpis').innerHTML = [
+            [`${W.sun[0]} ${fmt((wc.sun || 0) + (wc.part || 0))}`, 'sunny or partly sunny days'],
+            [`${W.rain[0]} ${fmt((wc.rain || 0) + (wc.storm || 0))}`, 'rainy or stormy days'],
+            [monthName(rainiest[0] + '-01').replace(' ', ' ’').replace('’20', '’'), `rainiest month: ${pct(rainiest[1].rain, rainiest[1].n)}% of days rainy`],
+            [monthName(sunniest[0] + '-01').replace(' ', ' ’').replace('’20', '’'), `sunniest month; longest sunny streak: ${bestRun} days`],
+        ].map(([v, l]) => `<div><b style="font-size:13pt">${v}</b><span>${l}</span></div>`).join('');
+        $('#moodYears').innerHTML = (() => {
+            const h = 140, w = 340, slot = w / yearsList.length, bw = slot * 0.66;
+            return `<svg viewBox="0 0 ${w} ${h + 18}">` + yearsList.map((y, i) => {
+                let acc = 0; const x0 = i * slot + (slot - bw) / 2;
+                return MOODS.map(m => { const v = moodYear[y][m] || 0, bh = v / 100 * h, yy = h - acc - bh; acc += bh;
+                    return `<rect x="${x0}" y="${yy + 1}" width="${bw}" height="${Math.max(0, bh - 2)}" rx="2" fill="${mc(m)}"><title>${y} ${MOOD_NAME[m]}: ${v}%</title></rect>` + (v >= 8 ? `<text x="${x0 + bw / 2}" y="${yy + bh / 2 + 3.5}" font-size="9" text-anchor="middle" style="fill:#FFFFFF" font-weight="700">${Math.round(v)}%</text>` : ''); }).join('')
+                    + `<text x="${x0 + bw / 2}" y="${h + 14}" font-size="10" text-anchor="middle">${y}</text>`;
+            }).join('') + '</svg>';
+        })();
+        $('#moodLegend').innerHTML = MOODS.map(m => `<span><i style="background:${mc(m)}"></i>${MOOD_NAME[m]}</span>`).join('');
+        $('#moodHours').innerHTML = (() => {
+            const h = 50, w = 340, maxV = Math.max(...mood.hours.map(r => Math.abs(r.score))), slot = w / 24, bw = slot * 0.7;
+            return `<svg viewBox="0 0 ${w} ${2 * h + 22}"><text x="0" y="9" font-size="8.5">happier</text><text x="0" y="${2 * h - 2}" font-size="8.5">sadder</text>` + mood.hours.map((r, i) => {
+                const bh = Math.max(1, Math.abs(r.score) / maxV * h), up = r.score >= 0;
+                return `<rect x="${i * slot + (slot - bw) / 2}" y="${up ? h - bh : h}" width="${bw}" height="${bh}" rx="2" fill="${up ? 'var(--m-love)' : 'var(--m-heartbreak)'}"><title>${hour(r.hour)}: ${r.score}</title></rect>` + (r.hour % 6 === 0 ? `<text x="${i * slot + slot / 2}" y="${2 * h + 14}" font-size="9" text-anchor="middle">${hour(r.hour)}</text>` : '');
+            }).join('') + `<line x1="0" x2="${w}" y1="${h}" y2="${h}" stroke="#B9A3A9"/></svg>`;
+        })();
+        $('#moodCaption').textContent = `Moods are my own labels for my ${mood.coverage.songs} most-played songs (${mood.coverage.pct}% of my listens), not Spotify data. ${y0} was my rainiest year: ${Math.round(sadShare(y0))}% of labeled listens were heartbreak, bittersweet or dark, vs. ${Math.round(sadShare(yN))}% in ${yN}. The sad hours are 5 to 8 AM, the ones I'm usually still up for, not up early for.`;
+        $('#moodN').textContent = mood.coverage.songs; $('#moodPct').textContent = mood.coverage.pct;
 
-        $('#streaks').innerHTML = streaks.slice(0, 5).map(r => row(r.track_name, `${r.artist_name}, ${day(r.started)} to ${day(r.ended)}`, `${r.days_in_a_row} days`)).join('');
-        $('#obsessions').innerHTML = obs.slice(0, 5).map(r => row(r.track_name, r.artist_name, r.days_to_obsession === 0 ? 'same day' : r.days_to_obsession === 1 ? '1 day' : `${r.days_to_obsession} days`)).join('');
-        $('#skipsMost').innerHTML = skips.most.map(r => row(r.artist_name, `${fmt(r.plays)} plays`, `${r.skip_pct}%`)).join('');
-        $('#skipsLeast').innerHTML = skips.least.map(r => row(r.artist_name, `${fmt(r.plays)} plays`, `${r.skip_pct}%`)).join('');
-        $('#days').innerHTML = days.slice(0, 5).map(r => row(r.track_name, `${r.artist_name}, ${day(r.full_date)}`, `${r.listens} plays`)).join('');
-        document.body.dataset.ready = '1';
+        // ---------- 6. highs and lows ----------
+        const longNightOf = d => st.long_nights.find(l => l.started_at.slice(0, 10) === d || l.ended_at.slice(0, 10) === d);
+        const isAll = d => allN.some(a => a.full_date === d);
+        const dayCard = d => `<div class="daycard">${img(art(d.track_name, d.artist_name))}<div><b>${longDay(d.full_date)}</b><span>"${esc(d.track_name)}" ${d.n}× · ${esc(d.artist_name)}</span>
+            <span class="tag" style="background:${mc(d.mood)}">score ${d.score > 0 ? '+' : ''}${d.score}${isAll(d.full_date) ? ' · all-nighter' : ''}</span></div></div>`;
+        $('#sadDays').innerHTML = mood.saddest_days.slice(0, 3).map(dayCard).join('');
+        $('#happyDays').innerHTML = mood.happiest_days.slice(0, 3).map(dayCard).join('');
+        const chaos = best(st.weather.filter(d => d.n >= 40), d => d.spread), sad1 = mood.saddest_days[0];
+        $('#chaos').innerHTML = `<b class="head">🌪 My most emotionally chaotic day: ${longDay(chaos.d)}</b><p>${chaos.n} labeled listens that swung between every mood, the widest spread of any day (${chaos.spread} on a scale where the moods run from −2 to +2).</p>
+            <p>And the saddest-sounding day, ${longDay(sad1.full_date)}, ${isAll(sad1.full_date) ? `was an all-nighter: music from just after midnight until morning, with "${esc(sad1.track_name)}" on repeat ${sad1.n} times.` : `had "${esc(sad1.track_name)}" on repeat ${sad1.n} times.`}</p>`;
+        const firstByMood = {};
+        mood.songs.forEach(r => { if (!firstByMood[r.mood]) firstByMood[r.mood] = r; });
+        $('#moodSongs').innerHTML = MOODS.filter(m => firstByMood[m]).map(m => { const r = firstByMood[m];
+            return `<div style="border-top:3px solid ${mc(m)}">${img(art(r.track_name, r.artist_name), '')}<b class="y" style="font-size:10pt">${MOOD_NAME[m]}</b><span class="t">${esc(r.track_name)}</span><span class="muted">${esc(r.artist_name)}, ${fmt(r.listens)}</span></div>`; }).join('');
+        const artistMood = {};
+        mood.artists.forEach(r => { (artistMood[r.artist_name] = artistMood[r.artist_name] || {})[r.mood] = r.share; });
+        const aNames = artists.slice(0, 5).map(a => a.artist_name).filter(nm => artistMood[nm]);
+        $('#moodArtists').innerHTML = `<svg viewBox="0 0 680 ${aNames.length * 20}">` + aNames.map((nm, i) => { let acc = 0;
+            return `<image href="${face(nm)}" x="0" y="${i * 20}" width="16" height="16" preserveAspectRatio="xMidYMid slice"/><text x="118" y="${i * 20 + 12}" font-size="9.5" text-anchor="end" style="fill:#22090F">${esc(short(nm, 18))}</text>`
+                + MOODS.map(m => { const v = artistMood[nm][m] || 0, w = v / 100 * 556, x0 = 124 + acc; acc += w;
+                    return w > 0 ? `<rect x="${x0}" y="${i * 20 + 1}" width="${Math.max(0, w - 1.5)}" height="15" rx="2" fill="${mc(m)}"><title>${esc(nm)} ${MOOD_NAME[m]}: ${v}%</title></rect>${v >= 12 ? `<text x="${x0 + w / 2}" y="${i * 20 + 12}" font-size="8.5" text-anchor="middle" style="fill:#FFFFFF" font-weight="700">${MOOD_NAME[m]} ${Math.round(v)}%</text>` : ''}` : ''; }).join(''); }).join('') + '</svg>';
+
+        // ---------- 7. sleep ----------
+        const hourShare = [...Array(24).keys()].map(h => clock.filter(c => c.hour === h).reduce((t, c) => t + c.share_pct, 0) / yearsList.length);
+        const quietOf = shares => { const st0 = [...Array(24).keys()].reduce((b, s0) => { const sum = [0, 1, 2, 3, 4, 5].reduce((t, i) => t + shares[(s0 + i) % 24], 0); return sum < b[1] ? [s0, sum] : b; }, [0, 1e9]); return st0[0]; };
+        const qAll = quietOf(hourShare), maxHS = Math.max(...hourShare);
+        const R0 = 34, R1 = 112;
+        const wedge = (h, r) => { const a1 = (h / 24) * 2 * Math.PI - Math.PI / 2, a2 = ((h + 1) / 24) * 2 * Math.PI - Math.PI / 2, p = (a, rr) => `${(Math.cos(a) * rr).toFixed(1)},${(Math.sin(a) * rr).toFixed(1)}`;
+            return `M${p(a1, R0)} L${p(a1, r)} A${r},${r} 0 0 1 ${p(a2, r)} L${p(a2, R0)} A${R0},${R0} 0 0 0 ${p(a1, R0)} Z`; };
+        const qa1 = qAll / 24 * 2 * Math.PI - Math.PI / 2, qa2 = (qAll + 6) / 24 * 2 * Math.PI - Math.PI / 2;
+        $('#sleepClock').innerHTML = `<svg viewBox="-130 -130 260 260">
+            <path d="M0,0 L${Math.cos(qa1) * 108},${Math.sin(qa1) * 108} A108,108 0 0 1 ${Math.cos(qa2) * 108},${Math.sin(qa2) * 108} Z" fill="var(--night)" opacity=".88"/>
+            <text x="${Math.cos((qa1 + qa2) / 2) * 78}" y="${Math.sin((qa1 + qa2) / 2) * 78 + 4}" font-size="11" text-anchor="middle" style="fill:#FFF4D6" font-weight="700">asleep?</text>
+            ${hourShare.map((v, h) => `<path d="${wedge(h, R0 + v / maxHS * (R1 - R0))}" fill="${h >= qAll && h < qAll + 6 ? '#B9AED0' : 'var(--c1)'}" stroke="#FFFBFB" stroke-width="1"><title>${hour(h)}: ${v.toFixed(1)}% of my listening</title></path>`).join('')}
+            ${[0, 6, 12, 18].map(h => { const a = h / 24 * 2 * Math.PI - Math.PI / 2; return `<text x="${Math.cos(a) * 120}" y="${Math.sin(a) * 120 + 3}" font-size="10" text-anchor="middle" font-weight="700" style="fill:#22090F">${h === 0 ? '12 AM' : h === 12 ? '12 PM' : hour(h)}</text>`; }).join('')}
+            <text y="6" font-size="16" text-anchor="middle">🌙</text></svg>`;
+        const yearQuiet = yearsList.map(y => { const sh = [...Array(24).keys()].map(h => (clock.find(c => c.year === y && c.hour === h) || { share_pct: 0 }).share_pct); return [y, quietOf(sh)]; });
+        $('#moons').innerHTML = `<div>${yearQuiet.map(([y, q]) => `<div style="display:grid;grid-template-columns:48px 1fr;gap:8px;align-items:center;padding:5px 0;border-top:1px solid var(--line)"><b style="font-family:var(--serif);font-size:13pt;color:var(--mul)">${y}</b><div><b style="font-size:10pt">🌙 ${hour(q)} → ${hour((q + 6) % 24)}</b><span style="display:block;font-size:7.5pt;color:var(--muted)">${y >= 2025 ? 'Austin' : y === 2024 ? 'graduated in May, moved in August' : 'high school'}</span></div></div>`).join('')}</div>
+            <p class="caption">The six hours each year when I'm least likely to be listening.</p>`;
+        // were-you-awake map: x = day, y = hour from noon (top) through midnight (middle) to 11 AM (bottom)
+        const cv = $('#awake'), ctx = cv.getContext('2d'), totalDays = Math.round((T1 - T0) / 864e5) + 1;
+        cv.width = totalDays; ctx.fillStyle = '#1A0F2E'; ctx.fillRect(0, 0, cv.width, cv.height);
+        st.awake.forEach(c => { const rowY = ((c.h + 12) % 24) * 10, a = Math.min(1, c.m / 45); ctx.fillStyle = `rgba(243,166,184,${0.15 + a * 0.85})`; ctx.fillRect(c.d, rowY, 1, 10); });
+        const ax = (iso) => (new Date(iso + 'T12:00:00') - T0) / (T1 - T0) * 100;
+        $('#awakeAxis').innerHTML = `<div style="position:relative;height:14px;font-size:7.5pt;color:#B9AED0">${[2023, 2024, 2025, 2026].map(y => `<span style="position:absolute;left:${ax(y + '-01-01')}%">│${y}</span>`).join('')}</div>
+            <div style="display:flex;justify-content:space-between;font-size:7.5pt;color:#B9AED0"><span>Rows, top to bottom: noon → 6 PM → <b style="color:#fff">midnight</b> → 6 AM → 11 AM</span><span>│ graduated ${day(st.graduated)} &nbsp; │ Austin ${day(st.moved)}</span></div>`;
+        ctx.fillStyle = '#FFFFFF'; [st.graduated, st.moved].forEach(d => ctx.fillRect(Math.round((new Date(d + 'T12:00:00') - T0) / 864e5), 0, 2, cv.height));
+        const stopPeak = best(night.stops, r => r.nights);
+        $('#sleepNotes').innerHTML = notes([
+            ['My best guess:', `the music usually stops around ${hour(stopPeak.hour)} and Spotify stays dark until mid-morning. The quiet window across all four years runs ${hour(qAll)} to ${hour((qAll + 6) % 24)}.`],
+            ['Did college destroy my bedtime?', `A little. After midnight went from ${st.eras[0].late_share}% of my listening in high school to ${st.eras[st.eras.length - 1].late_share}% in Austin, and the quiet window has started an hour later since 2025.`],
+        ]);
+
+        // ---------- 8. all-nighters ----------
+        const SW = 680, SH = 150;
+        $('#sky').innerHTML = `<svg viewBox="0 0 ${SW} ${SH + 18}">${yearTicks(0, SW, SH, '#B9AED0')}`
+            + [st.graduated, st.moved].map((d, i) => `<line x1="${tx(d, 0, SW)}" x2="${tx(d, 0, SW)}" y1="0" y2="${SH}" stroke="#F3A6B8" stroke-opacity=".6"/><text x="${tx(d, 0, SW) + (i ? 3 : -3)}" y="10" font-size="8.5" text-anchor="${i ? 'start' : 'end'}" style="fill:#F3A6B8">${i ? 'moved to Austin' : 'graduated'}</text>`).join('')
+            + allN.map((a, i) => { const xx = tx(a.full_date, 0, SW), yy = 26 + ((i * 37) % 110), r = 2 + Math.min(5, a.listens / 40);
+                return `<circle cx="${xx}" cy="${yy}" r="${r + 3}" fill="#F3A6B8" opacity=".18"/><circle cx="${xx}" cy="${yy}" r="${r}" fill="#FFF4D6"><title>${a.full_date}: ${a.listens} listens between midnight and 6 AM</title></circle>`; }).join('') + '</svg>';
+        const allByYear = {}; allN.forEach(a => { const y = a.full_date.slice(0, 4); allByYear[y] = (allByYear[y] || 0) + 1; });
+        const examN = allN.filter(a => /-(04|05|12)-/.test(a.full_date)).length;
+        $('#nightKpis').innerHTML = [
+            [allN.length, 'all-nighters: music in every hour from midnight to 6 AM'],
+            [Object.entries(allByYear).map(([y, c]) => `${c}`).join(' · '), Object.keys(allByYear).join(' · ')],
+            [`${examN}`, 'of them in April, May or December, a.k.a. finals'],
+            [day(allN[allN.length - 1].full_date).replace(/, \d{4}$/, ''), `the most recent one (${allN[allN.length - 1].full_date.slice(0, 4)})`],
+        ].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join('');
+        $('#longNights').innerHTML = st.long_nights.map(l => `<div class="daycard" style="grid-template-columns:48px 1fr"><div style="width:48px;height:48px;border-radius:50%;background:var(--night);color:#FFF4D6;display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:12pt">${l.hours}h</div>
+            <div><b>${longDay(l.started_at)}</b><span>${clockTime(l.started_at)} → ${clockTime(l.ended_at)}${l.ended_at.slice(0, 10) !== l.started_at.slice(0, 10) ? ' the next day' : ''}</span><span>${fmt(l.play_count)} songs started, no break longer than 30 minutes. girl???</span></div></div>`).join('');
+        $('#nightSongs').innerHTML = night.night_songs.map(t => row(t.track_name, t.artist_name, fmt(t.listens), img(art(t.track_name, t.artist_name)))).join('');
+        $('#allDates').innerHTML = allN.map(a => `<span style="padding:2px 7px;border-radius:999px;background:var(--night);color:#FFF4D6;font-size:7.5pt">${day(a.full_date)}</span>`).join('');
+        const ln = st.long_nights[0];
+        $('#nightNotes').innerHTML = notes([
+            ['The record:', `${longDay(ln.started_at)}, from ${clockTime(ln.started_at)} straight through to ${clockTime(ln.ended_at)} the next day: ${ln.hours} hours of music with no real break.`],
+            ['They come in clusters,', `around exams and big weeks: back-to-back nights on April 23 and 24, 2024, a month before graduation, and a run of them in spring 2025.`],
+        ]);
+
+        // ---------- 9. 2 AM me ----------
+        const P = [['morning', 'Morning me', '6–11 AM'], ['afternoon', 'Afternoon me', '12–5 PM'], ['evening', 'Evening me', '6–11 PM'], ['late night', '2 AM me', 'midnight–5 AM']];
+        $('#periods').innerHTML = P.map(([k, label, range]) => `<div class="${k === 'late night' ? 'dark' : ''}"><h3>${label}</h3><span class="muted" style="font-size:7.5pt">${range}</span>`
+            + st.by_period.filter(r => r.period === k).slice(0, 4).map(r => `<div class="who">${img(face(r.artist_name), '')}<div><b>${esc(r.artist_name)}</b><span style="font-size:7.3pt">${r.lift}× as likely · ${fmt(r.listens)}</span></div></div>`).join('') + '</div>').join('');
+        $('#desiHours').innerHTML = columns(st.desi_hours.map(r => ({ label: r.hour % 3 === 0 ? hour(r.hour) : '', value: r.share, color: r.hour < 6 ? 'var(--night)' : C[2] })), { h: 90, w: 680, valueFmt: v => Math.round(v) });
+        $('#daySongs').innerHTML = st.day_songs.map(t => row(t.track_name, t.artist_name, fmt(t.listens), img(art(t.track_name, t.artist_name)))).join('');
+        $('#lateSongs').innerHTML = night.night_songs.map(t => row(t.track_name, t.artist_name, fmt(t.listens), img(art(t.track_name, t.artist_name)))).join('');
+        const lateTop = st.by_period.filter(r => r.period === 'late night');
+        const dMax = best(st.desi_hours, r => r.share), dMin = best(st.desi_hours, r => -r.share);
+        const sun = st.sunday[0];
+        $('#periodNotes').innerHTML = notes([
+            ['And Sunday me?', `${esc(sun.artist_name)}, ${sun.lift}× as likely on a Sunday as any other day.`],
+            ['2 AM me is desi.', `All four artists most over-represented after midnight are South Asian: ${lateTop.map(r => esc(r.artist_name)).join(', ')}. ${esc(lateTop[0].artist_name)} is ${lateTop[0].lift}× as likely to be playing then as at any other time.`],
+            ['Morning me belongs to Ariana,', `and the desi share bottoms out at ${dMin.share}% around ${hour(dMin.hour)}, then climbs to ${dMax.share}% at ${hour(dMax.hour)}.`],
+            ['So the sun setting does change something:', 'not how much I listen, but which language I listen in.'],
+        ]);
+
+        // ---------- 10. 5 PM ----------
+        const maxCell = Math.max(...x.week.map(c => c.hours)), cw = 24, ch = 16;
+        $('#weekHeat').innerHTML = `<svg viewBox="-40 -4 ${24 * cw + 44} ${7 * ch + 22}">` + x.week.map(c => `<rect x="${c.hour * cw + 1}" y="${(c.dow - 1) * ch + 1}" width="${cw - 2}" height="${ch - 2}" rx="2" fill="${ramp(c.hours / maxCell)}"><title>${dows[c.dow]} ${hour(c.hour)}: ${c.hours} h</title></rect>`).join('')
+            + dows.slice(1).map((d, i) => `<text x="-6" y="${i * ch + ch / 2 + 3.5}" font-size="10" text-anchor="end">${d.slice(0, 3)}</text>`).join('') + [0, 3, 6, 9, 12, 15, 18, 21].map(h => `<text x="${h * cw + cw / 2}" y="${7 * ch + 13}" font-size="9.5" text-anchor="middle">${hour(h)}</text>`).join('') + '</svg>';
+        const maxC = Math.max(...clock.map(c => c.share_pct)), peakOf = y => best(clock.filter(c => c.year === y), c => c.share_pct).hour;
+        $('#clocks').innerHTML = yearsList.map(y => { const pk = peakOf(y);
+            return `<figure style="margin:0;text-align:center"><svg viewBox="-62 -62 124 124" style="width:82px;margin:0 auto"><circle r="12" fill="none" stroke="#F0D6DC"/><text y="-52" font-size="9" text-anchor="middle">12a</text><text y="58" font-size="9" text-anchor="middle">12p</text>${clock.filter(c => c.year === y).map(c => `<rect x="-2.2" y="${-12 - (4 + c.share_pct / maxC * 44)}" width="4.4" height="${4 + c.share_pct / maxC * 44}" rx="2" fill="${c.hour === pk ? '#22090F' : '#D65478'}" transform="rotate(${c.hour * 15})"/>`).join('')}</svg>
+                <figcaption style="font-size:8pt;color:var(--muted)"><b style="display:block;font-family:var(--serif);font-size:10pt;color:var(--choc)">${y}</b>peak ${hour(pk)}</figcaption></figure>`; }).join('');
+        $('#weekdays').innerHTML = columns(x.weekdays.map(w => ({ label: w.weekday.slice(0, 3), value: w.hours_per_day, color: w.dow >= 6 ? OTHER : C[0] })), { h: 75, valueFmt: v => v.toFixed(1) });
+        const seasonColor = { Winter: C[1], Spring: C[4], Summer: C[2], Fall: C[0] };
+        const seasons = ['Winter', 'Spring', 'Summer', 'Fall'].map(nm => x.seasons.find(z => z.season === nm)).filter(Boolean);
+        $('#seasons').innerHTML = columns(seasons.map(z => ({ label: z.season, value: z.hours_per_day, color: seasonColor[z.season] })), { h: 75, valueFmt: v => v.toFixed(1) });
+        const SE = [['Winter', '❄️'], ['Spring', '🌷'], ['Summer', '☀️'], ['Fall', '🍂']];
+        $('#seasonArtists').innerHTML = SE.map(([sn, e]) => `<div><h3>${e} ${sn}</h3>` + st.season_artists.filter(r => r.season === sn).map(r => `<div class="who">${img(face(r.artist_name), '')}<div><b>${esc(r.artist_name)}</b><span style="font-size:7.3pt">${r.lift}× as likely</span></div></div>`).join('') + '</div>').join('');
+        const peakAll = best(x.week, c => c.hours);
+        $('#whenNotes').innerHTML = notes([
+            ['The appointment:', `${yearsList.map(y => hour(peakOf(y))).join(' → ')}. Every year, my music peaks in the late afternoon, right when the school day (and later, the class day) lets out.`],
+            [`Busiest hour of the whole week: ${dows[peakAll.dow]} at ${hour(peakAll.hour)}.`, 'Mondays are my biggest day; weekends are my quietest. Music is how I get through the week, not how I spend the weekend.'],
+        ]);
+
+        // ---------- 11. life ----------
+        const EW = 680, EH = 85, maxMH = Math.max(...months.map(m => m.hours)), mw = EW / months.length;
+        const eraColor = { 'High school': C[1], 'The summer between': C[2], 'Austin': C[0] };
+        const eraOfMonth = m => m < st.graduated.slice(0, 7) ? 'High school' : m < st.moved.slice(0, 7) ? 'The summer between' : 'Austin';
+        $('#eraMonths').innerHTML = `<svg viewBox="0 -14 ${EW} ${EH + 30}">` + months.map((m, i) => { const bh = m.hours / maxMH * EH;
+            return `<rect x="${i * mw + 1}" y="${EH - bh}" width="${mw - 2}" height="${bh}" rx="2" fill="${eraColor[eraOfMonth(m.month.slice(0, 7))]}"><title>${m.month.slice(0, 7)}: ${m.hours} h</title></rect>` + (m.month.endsWith('-01-01') ? `<text x="${i * mw}" y="${EH + 13}" font-size="9.5">${m.month.slice(0, 4)}</text>` : ''); }).join('')
+            + [[st.graduated, '🎓 graduated'], [st.moved, '📦 moved to Austin']].map(([d, l], i) => { const xx = months.findIndex(m => m.month.slice(0, 7) === d.slice(0, 7)) * mw; return `<line x1="${xx}" x2="${xx}" y1="-6" y2="${EH}" stroke="#22090F" stroke-dasharray="2 2"/><text x="${xx + (i ? 4 : -4)}" y="-2" font-size="9.5" text-anchor="${i ? 'start' : 'end'}" style="fill:#22090F" font-weight="700">${l}</text>`; }).join('') + '</svg>'
+            + `<div class="legend">${Object.entries(eraColor).map(([k, c]) => `<span><i style="background:${c}"></i>${k}</span>`).join('')}</div>`;
+        const songOfEra = Object.fromEntries(st.era_songs.map(r => [r.era, r]));
+        const metric = (k, label, unit) => [k, label, unit];
+        const M = [metric('hours_per_day', 'Hours a day', ' h'), metric('late_share', 'After midnight', '%'), metric('ariana_share', 'Ariana', '%'), metric('desi_share', 'Desi', '%'), metric('skip_pct', 'Skipped', '%')];
+        $('#eras').innerHTML = st.eras.map(e => { const sg = songOfEra[e.era];
+            return `<div style="border-top:4px solid ${eraColor[e.era]}"><h3>${e.era}</h3><span class="muted" style="font-size:7.5pt">${day(e.first)} – ${day(e.last)}</span>
+                <dl><dt>Hours a day</dt><dd>${e.hours_per_day} h</dd></dl>
+                <div style="display:flex;gap:4px;margin-top:8px">${st.era_artists.filter(a => a.era === e.era).map(a => `<img class="art round" title="${esc(a.artist_name)}" src="${face(a.artist_name)}" alt="" style="width:30px;height:30px;margin:0">`).join('')}</div>
+                ${sg ? `<div class="song">${img(art(sg.track_name, sg.artist_name), '')}<div><b style="font-size:8pt">${esc(sg.track_name)}</b><br><span class="muted" style="font-size:7.5pt">the song of the era, ${sg.listens}×</span></div></div>` : ''}</div>`; }).join('');
+        const [hs, sm, au] = st.eras;
+        const SL = [['late_share', 'After midnight', '%', C[3]], ['ariana_share', 'Ariana', '%', C[0]], ['desi_share', 'Desi', '%', C[2]], ['skip_pct', 'Skipped', '%', C[1]]];
+        const slV = (e, k) => k === 'hours_per_day' ? e[k] * 10 : e[k], slMax = Math.max(...SL.flatMap(([k]) => st.eras.map(e => slV(e, k))));
+        const sx = [150, 360, 570], sy = v => 104 - v / slMax * 98;
+        const spread = side => { let last = -99; return SL.map(([k], j) => ({ j, y: sy(slV(st.eras[side], k)) + 3 })).sort((a, b) => a.y - b.y).reduce((o, l) => { const y = Math.max(l.y, last + 11); last = y; o[l.j] = y; return o; }, {}); };
+        const lyL = spread(0), lyR = spread(2);
+        $('#slopes').innerHTML = `<svg viewBox="0 0 680 122">${st.eras.map((e, i) => `<line x1="${sx[i]}" x2="${sx[i]}" y1="4" y2="106" stroke="#F0D6DC"/><text x="${sx[i]}" y="119" font-size="10" text-anchor="middle" font-weight="700" style="fill:#22090F">${e.era}</text>`).join('')}`
+            + SL.map(([k, l, u, c]) => `<polyline fill="none" stroke="${c}" stroke-width="2.2" points="${st.eras.map((e, i) => `${sx[i]},${sy(slV(e, k))}`).join(' ')}"/>`
+                + st.eras.map((e, i) => `<circle cx="${sx[i]}" cy="${sy(slV(e, k))}" r="4" fill="${c}"/>`).join('')
+                + `<text x="${sx[0] - 8}" y="${lyL[SL.findIndex(q => q[0] === k)]}" font-size="9.5" text-anchor="end" style="fill:${c}" font-weight="700">${l} ${st.eras[0][k]}${u}</text><text x="${sx[2] + 8}" y="${lyR[SL.findIndex(q => q[0] === k)]}" font-size="9.5" style="fill:${c}" font-weight="700">${st.eras[2][k]}${u} ${l.toLowerCase()}</text>`).join('') + '</svg>';
+        const shiftRow = r => row(r.artist_name, '', `${r.before} → ${r.after} h`, img(face(r.artist_name), 'art round'));
+        $('#leftArtists').innerHTML = st.shifts.filter(r => r.way === 'left').map(shiftRow).join('');
+        $('#arrivedArtists').innerHTML = st.shifts.filter(r => r.way === 'arrived').map(shiftRow).join('');
+        $('#lifeNotes').innerHTML = notes([
+            ['The summer between was the quietest stretch of my life:', `${sm.hours_per_day} hours a day, less than half of high school's ${hs.hours_per_day}, and ${sm.ariana_share}% of it was Ariana. Between graduating and leaving, I went back to what was safe.`],
+            ['Austin made me a night owl.', `After-midnight listening went from ${hs.late_share}% to ${au.late_share}%. College nights are real.`],
+            ['But Austin also loosened her grip:', `Ariana fell from ${hs.ariana_share}% in high school to ${au.ariana_share}%, the lowest of any era, as new artists moved in.`],
+        ]);
+
+        // ---------- 12. desi ----------
+        const chY = Object.fromEntries(change.map(c => [c.period, c]));
+        const dY = st.desi_years, dPeakM = best(st.desi_months.filter(m => months.find(mm => mm.month === m.month && mm.hours > 20)), m => m.share);
+        $('#desiKpis').innerHTML = [
+            [`${(dY.reduce((t, y) => t + y.share * chY[y.year].listens, 0) / dY.reduce((t, y) => t + chY[y.year].listens, 0)).toFixed(1)}%`, 'of all my listens are desi'],
+            [`${best(st.desi_hours, r => r.share).share}%`, `at ${hour(best(st.desi_hours, r => r.share).hour)}, the most desi hour`],
+            [monthName(dPeakM.month).replace(/ (\d{4})/, ' ’$1').replace('’20', '’'), `most desi month (${dPeakM.share}%)`],
+            [dY.map(y => Math.round(y.share)).join(' · '), dY.map(y => y.year).join(' · ') + ' (%)'],
+        ].map(([v, l]) => `<div><b style="font-size:${String(v).length > 14 ? 11 : 14}pt">${v}</b><span>${l}</span></div>`).join('');
+        const AW = 680, AH = 130, dm = st.desi_months, dMaxS = Math.max(...dm.map(m => m.share));
+        const dPts = dm.map((m, i) => [i / (dm.length - 1) * AW, AH - m.share / dMaxS * AH]);
+        const dgx = dm.findIndex(m => m.month.slice(0, 7) === st.graduated.slice(0, 7)) / (dm.length - 1) * AW, dmx = dm.findIndex(m => m.month.slice(0, 7) === st.moved.slice(0, 7)) / (dm.length - 1) * AW;
+        $('#desiMonths').innerHTML = `<svg viewBox="0 -12 ${AW} ${AH + 28}"><defs><linearGradient id="dg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9952A"/><stop offset="1" stop-color="#D9952A" stop-opacity=".25"/></linearGradient></defs>
+            <path d="M0,${AH} ${dPts.map(p => 'L' + p.join(',')).join(' ')} L${AW},${AH} Z" fill="url(#dg)"/><polyline fill="none" stroke="#B5761A" stroke-width="1.5" points="${dPts.map(p => p.join(',')).join(' ')}"/>
+            ${[dgx, dmx].map((xx, i) => `<line x1="${xx}" x2="${xx}" y1="0" y2="${AH}" stroke="#22090F" stroke-dasharray="2 2"/><text x="${xx + (i ? 3 : -3)}" y="-2" font-size="9" text-anchor="${i ? 'start' : 'end'}" style="fill:#22090F">${i ? 'Austin' : 'graduated'}</text>`).join('')}
+            ${dm.map((m, i) => m.month.endsWith('-01-01') ? `<text x="${i / (dm.length - 1) * AW}" y="${AH + 13}" font-size="9.5">${m.month.slice(0, 4)}</text>` : '').join('')}
+            <text x="${AW}" y="${AH - (dMaxS / dMaxS) * AH + 10}" font-size="9" text-anchor="end">peak ${dMaxS}%</text></svg>`;
+        $('#desiArtists').innerHTML = st.desi_artists.map(a => `<div><img src="${face(a.artist_name)}" alt="" style="width:100%;aspect-ratio:1;border-radius:50%;object-fit:cover;background:var(--blush)"><b style="display:block;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.artist_name)}</b><span class="muted">${fmt(a.listens)}</span></div>`).join('');
+        $('#desiSongs').innerHTML = st.desi_songs.map(r => `<div>${img(art(r.track_name, r.artist_name), '')}<span class="t">${esc(r.track_name)}</span><span class="muted">${esc(r.artist_name)}, ${fmt(r.listens)}</span></div>`).join('');
+        $('#desiNotes').innerHTML = notes([
+            ['It comes in waves, not a steady stream.', `Some months are barely desi at all; others go past ${Math.round(dMaxS / 5) * 5}%. A Bollywood soundtrack drops, and it takes over.`],
+            [`${dY[0].year} was my most desi year (${dY[0].share}%),`, `it dipped to ${best(dY, y => -y.share).share}% in ${best(dY, y => -y.share).year}, and it's climbing again: ${dY[dY.length - 1].share}% in ${dY[dY.length - 1].year}.`],
+            ['And it\'s my night music.', 'Twice as desi at 4 AM as at noon (chapter 9).'],
+        ]);
+
+        // ---------- 13. skips ----------
+        const secOf = Object.fromEntries(st.skip_seconds.map(r => [r.artist_name, r.seconds]));
+        const sr = (skipRates || []).filter(r => r.plays >= 200);
+        const survivors = [...sr].sort((a, b) => a.skip_pct - b.skip_pct).slice(0, 5), fallen = [...sr].sort((a, b) => b.skip_pct - a.skip_pct).slice(0, 5);
+        const TDW = 680;
+        $('#trapdoor').innerHTML = `<svg viewBox="0 0 ${TDW} 210">
+            <rect x="0" y="70" width="330" height="10" rx="3" fill="#22090F"/><text x="4" y="140" font-size="9" font-weight="700" style="fill:#22090F">↑ SAFE: the ones I let play</text>
+            <rect x="420" y="70" width="${TDW - 420}" height="10" rx="3" fill="#22090F"/><line x1="330" x2="372" y1="75" y2="112" stroke="#22090F" stroke-width="6" stroke-linecap="round"/>
+            <rect x="335" y="80" width="80" height="130" fill="#F7EFF1"/><text x="375" y="205" font-size="9" text-anchor="middle" font-weight="700" style="fill:var(--mul)">THE TRAPDOOR</text>
+            ${survivors.map((r, i) => `<image href="${face(r.artist_name)}" x="${10 + i * 64}" y="18" width="46" height="46" clip-path="circle(23px)" preserveAspectRatio="xMidYMid slice"/><text x="${33 + i * 64}" y="12" font-size="9" text-anchor="middle" style="fill:#22090F" font-weight="700">${Math.round(r.skip_pct)}%</text><text x="${33 + i * 64}" y="${i % 2 ? 120 : 108}" font-size="8" text-anchor="middle" style="fill:#22090F">${esc(short(r.artist_name, 16))}</text>`).join('')}
+            ${fallen.map((r, i) => `<g transform="translate(${348 + (i % 2) * 22 + (i > 2 ? 10 : 0)},${96 + i * 21}) rotate(${(i % 2 ? 1 : -1) * (12 + i * 6)})"><image href="${face(r.artist_name)}" x="-15" y="-15" width="30" height="30" clip-path="circle(15px)" preserveAspectRatio="xMidYMid slice"/></g>`).join('')}
+            ${fallen.map((r, i) => `<text x="${430}" y="${108 + i * 20}" font-size="9.5" style="fill:#22090F"><tspan font-weight="700">${Math.round(r.skip_pct)}%</tspan> · ${(secOf[r.artist_name] || 0).toFixed(1)}s · ${esc(r.artist_name)}</text>`).join('')}
+            <text x="430" y="62" font-size="9" font-weight="700" style="fill:#22090F">FELL THROUGH (skip rate, median seconds before the skip):</text></svg>`;
+        const love = st.love, QW = 640, QH = 200, sMin = Math.min(...love.map(v => v.skip_pct)), sMax = Math.max(...love.map(v => v.skip_pct)), lx = l => 40 + Math.log(l.listens / 120) / Math.log(Math.max(...love.map(v => v.listens)) / 120) * (QW - 200), ly = l => 24 + (l.skip_pct - sMin) / (sMax - sMin) * (QH - 64);
+        const medL = [...love].sort((a, b) => a.listens - b.listens)[Math.floor(love.length / 2)], medS = [...love].sort((a, b) => a.skip_pct - b.skip_pct)[Math.floor(love.length / 2)];
+        const quad = l => (l.listens >= medL.listens ? (l.skip_pct <= medS.skip_pct ? 'true' : 'comp') : (l.skip_pct <= medS.skip_pct ? 'gem' : 'why'));
+        const qc = { true: C[0], comp: C[2], gem: C[1], why: OTHER };
+        const labelOf = {}; ['true', 'comp', 'gem', 'why'].forEach(q => { const inQ = love.filter(l => quad(l) === q); const pick = q === 'true' ? best(inQ, l => l.listens - l.skip_pct * 5) : q === 'comp' ? best(inQ, l => l.listens * l.skip_pct) : q === 'gem' ? best(inQ, l => -l.skip_pct) : best(inQ, l => l.skip_pct); if (pick) labelOf[pick.track_name] = 1; });
+        $('#quadrant').innerHTML = `<svg viewBox="0 0 680 ${QH + 20}">
+            <line x1="${lx(medL)}" x2="${lx(medL)}" y1="16" y2="${QH - 34}" stroke="#B9A3A9" stroke-dasharray="3 3"/><line x1="40" x2="${QW + 30}" y1="${ly(medS)}" y2="${ly(medS)}" stroke="#B9A3A9" stroke-dasharray="3 3"/>
+            <text x="${QW + 30}" y="12" font-size="10" text-anchor="end" font-weight="700" style="fill:var(--c1)">TRUE LOVE ♥</text><text x="${QW + 30}" y="${QH - 22}" font-size="10" text-anchor="end" font-weight="700" style="fill:#B5761A">IT'S COMPLICATED</text>
+            <text x="40" y="12" font-size="10" font-weight="700" style="fill:var(--c2)">HIDDEN GEMS</text><text x="40" y="${QH - 22}" font-size="10" font-weight="700">WHY IS THIS HERE?</text>
+            <text x="40" y="${QH - 6}" font-size="9">← played less · finished more often ↑ · played more →</text>
+            ${love.map(l => `<circle cx="${lx(l)}" cy="${ly(l)}" r="4" fill="${qc[quad(l)]}" stroke="#FFFBFB" stroke-width="1"><title>${esc(l.track_name)}: ${l.listens} listens, ${l.skip_pct}% skipped</title></circle>`).join('')}
+            ${love.filter(l => labelOf[l.track_name]).map(l => `<text x="${lx(l) + 7}" y="${ly(l) + 3}" font-size="9" style="fill:#22090F" font-weight="600">${esc(short(l.track_name, 26))} (${Math.round(l.skip_pct)}%)</text>`).join('')}</svg>`;
+        const trueLove = best(love.filter(l => quad(l) === 'true'), l => l.listens - l.skip_pct * 5), comp = love.filter(l => quad(l) === 'comp').sort((a, b) => b.listens - a.listens)[0];
+        $('#skipGiant').textContent = `${st.habits.skip_seconds.toFixed(1)}s`;
+        $('#skipGiantLine').innerHTML = `is how long a song usually gets before I skip it. Not three seconds. <b>Under two.</b> And ${fmt(fallen.filter(r => secOf[r.artist_name] < 2).length)} of my five most-skipped artists get even less.`;
+        $('#skipNotes').innerHTML = notes([
+            ['The victims:', `${fallen.map(r => `${esc(r.artist_name)} (${Math.round(r.skip_pct)}%, gone in ${(secOf[r.artist_name] || 0).toFixed(1)}s)`).join(', ')}. They keep showing up on shuffle and in playlists; I keep pressing next.`],
+            ['The survivors:', `${survivors.map(r => esc(r.artist_name)).join(', ')}.`],
+            ['True love', `is "${esc(trueLove.track_name)}": ${trueLove.listens} listens and skipped only ${Math.round(trueLove.skip_pct)}% of the time.`],
+            ['It\'s complicated', `with "${esc(comp.track_name)}": ${comp.listens} listens, but I skip it ${Math.round(comp.skip_pct)}% of the times it starts.`],
+        ]);
+
+        // ---------- 14. fingerprints ----------
+        const discY = Object.fromEntries(disc.map(d => [d.year, d])), nY = Object.fromEntries(st.night_years.map(r => [r.year, r.late_share])), dYm = Object.fromEntries(dY.map(r => [r.year, r.share]));
+        const IDX = [
+            ['Loyalty', y => chY[y].top10_share, '% to top 10 artists'],
+            ['Curiosity', y => discY[y].new_song_share, '% new songs'],
+            ['Obsession', y => chY[y].listens_per_song, 'listens per song'],
+            ['Patience', y => 100 - chY[y].skip_rate, '% not skipped'],
+            ['Night owl', y => nY[y], '% after midnight'],
+            ['Melancholy', y => sadShare(y), '% sad songs'],
+            ['Desi', y => dYm[y], '% desi'],
+        ];
+        const rangeOf = IDX.map(([, f]) => { const v = yearsList.map(f); return [Math.min(...v), Math.max(...v)]; });
+        const radar = y => { const R = 46, k = IDX.length;
+            const pt = (i, r) => [Math.sin(i / k * 2 * Math.PI) * r, -Math.cos(i / k * 2 * Math.PI) * r];
+            const vals = IDX.map(([, f], i) => { const [lo, hi] = rangeOf[i]; return 0.2 + 0.8 * ((f(y) - lo) / ((hi - lo) || 1)); });
+            return `<svg viewBox="-52 -52 104 104">${[0.5, 1].map(f => `<polygon points="${IDX.map((_, i) => pt(i, R * f).join(',')).join(' ')}" fill="none" stroke="#F0D6DC"/>`).join('')}
+
+                <polygon points="${vals.map((v, i) => pt(i, R * v).join(',')).join(' ')}" fill="var(--c1)" fill-opacity=".35" stroke="var(--c1)" stroke-width="1.5"/></svg><p style="text-align:center;font-family:var(--serif);font-weight:700;font-size:12pt;color:var(--mul)">${y}</p>`;
+        };
+        $('#prints').innerHTML = yearsList.map(y => `<div>${radar(y)}</div>`).join('');
+        const shape = (y, R) => IDX.map(([, f], i) => { const [lo, hi] = rangeOf[i], v = 0.2 + 0.8 * ((f(y) - lo) / ((hi - lo) || 1)), a = i / IDX.length * 2 * Math.PI; return `${Math.sin(a) * R * v},${-Math.cos(a) * R * v}`; }).join(' ');
+        $('#overlay').innerHTML = `<svg viewBox="-150 -116 300 234">${[0.5, 1].map(f => `<polygon points="${IDX.map((_, i) => { const a = i / IDX.length * 2 * Math.PI; return `${Math.sin(a) * 90 * f},${-Math.cos(a) * 90 * f}`; }).join(' ')}" fill="none" stroke="#F0D6DC"/>`).join('')}
+            ${IDX.map(([l], i) => { const a = i / IDX.length * 2 * Math.PI; return `<text x="${Math.sin(a) * 106}" y="${-Math.cos(a) * 106 + 3}" font-size="9" text-anchor="middle" font-weight="600">${l}</text>`; }).join('')}
+            <polygon points="${shape(y0, 90)}" fill="var(--c2)" fill-opacity=".25" stroke="var(--c2)" stroke-width="2"/><polygon points="${shape(yN, 90)}" fill="var(--c1)" fill-opacity=".3" stroke="var(--c1)" stroke-width="2"/></svg>
+            <div class="legend" style="justify-content:center"><span><i style="background:var(--c2)"></i>${y0}</span><span><i style="background:var(--c1)"></i>${yN}</span></div>`;
+        $('#overlayHead').textContent = `${y0} me vs. ${yN} me`;
+        $('#printTable').innerHTML = `<tbody><tr><td></td>${yearsList.map(y => `<td><b>${y}</b></td>`).join('')}</tr>` + IDX.map(([l, f, u], i) => `<tr><td><b>${l}</b> <span class="muted">${u}</span></td>${yearsList.map(y => { const v = f(y), [lo, hi] = rangeOf[i]; return `<td style="${v === hi ? 'color:var(--mul);font-weight:700' : ''}">${Math.round(v * 10) / 10}</td>`; }).join('')}</tr>`).join('') + '</tbody>';
+        const yA = y => x.year_artists.filter(r => r.year === y);
+        $('#thenHead').textContent = `${y0} me's top 5 artists`; $('#nowHead').textContent = `${yN} me's top 5 artists`;
+        $('#thenArtists').innerHTML = yA(y0).map(r => row(r.artist_name, '', `${fmt(r.hours)} h`, img(face(r.artist_name), 'art round'))).join('');
+        $('#nowArtists').innerHTML = yA(yN).map(r => row(r.artist_name, '', `${fmt(r.hours)} h`, img(face(r.artist_name), 'art round'))).join('');
+        const extreme = (i, hi) => yearsList.reduce((a, b) => (hi ? IDX[i][1](b) > IDX[i][1](a) : IDX[i][1](b) < IDX[i][1](a)) ? b : a);
+        $('#printNotes').innerHTML = notes([
+            [`${extreme(0, true)} was my most loyal year`, `and ${extreme(1, true)} my most curious. ${extreme(2, true)} was peak obsession: the most listens per song.`],
+            [`${extreme(4, true)} was the night-owl year,`, `${extreme(5, true)} the most melancholy and ${extreme(5, false)} the least.`],
+            ['So, am I the same listener?', 'The artists barely changed. Everything about how I listen did.'],
+        ]);
+
+        // ---------- the questions (prologue), answered with receipts from every chapter ----------
+        const pageOf = t => sheets.findIndex(sh => sh.dataset.title === t) + 1;
+        const lateTop1 = st.by_period.filter(r => r.period === 'late night')[0], cb0 = st.comebacks[0], auE = st.eras[st.eras.length - 1], hs0 = st.eras[0];
+        const Q = [
+            ['Who is the main character of my soundtrack?', `${owned}/${dynasty.length}`, `months had ${esc(top.artist_name)} at #1.`, 'The soundtrack has a main character'],
+            ['How fast do I get obsessed with a song?', obs[0].days_to_obsession <= 1 ? '<24 hours' : `${obs[0].days_to_obsession} days`, `"${esc(obs[0].track_name)}" went from first play to 25 plays.`, "Apparently, I don't casually discover songs"],
+            ['What\'s the most times I\'ve played one song in a row?', `${st.in_a_row[0].plays}`, `"${esc(st.in_a_row[0].track_name)}", nothing in between.`, "Some songs I didn't listen to. I moved into them."],
+            ['What\'s my longest relationship with a song?', `${contender.years.length} years`, `"${esc(contender.track_name)}" never left my top ${contender.worst_place}.`, 'The songs that refused to leave'],
+            ['Which song did I bring back from the dead?', `${fmt(cb0.gap)} days`, `of silence before "${esc(cb0.track_name)}" came back.`, 'The songs that refused to leave'],
+            ['How many songs never got a second chance?', fmt(st.habits.one_listen_songs), `songs, ${pct(st.habits.one_listen_songs, st.habits.songs)}% of all I've tried, got one listen.`, "But I'm not as loyal as that makes me sound"],
+            ['What did my saddest-sounding day sound like?', `${mood.saddest_days[0].n}×`, `"${esc(mood.saddest_days[0].track_name)}" on ${day(mood.saddest_days[0].full_date)}, all night.`, 'My saddest-sounding night was also an all-nighter'],
+            ['So… when do I sleep?', `~${hour(best(night.stops, r => r.nights).hour)}`, `is when the music usually stops. Spotify stays dark until mid-morning.`, 'So… when does Suhani sleep?'],
+            ['How many all-nighters have I pulled?', `${allN.length}`, `nights with music every hour from midnight to 6 AM.`, 'The all-nighters'],
+            ['Who is 2 AM me?', `${lateTop1.lift}×`, `more ${esc(lateTop1.artist_name)} after midnight. 2 AM me is desi.`, 'Daylight me vs. 2 AM me'],
+            ['What did moving to Austin change?', `${hs0.late_share}→${auE.late_share}%`, `of my listening now happens after midnight.`, 'Then I graduated and moved to Austin'],
+            ['How long do I give a song?', `${st.habits.skip_seconds.toFixed(1)}s`, `before I skip it, on a typical skip.`, 'Who gets two seconds to impress me?'],
+        ];
+        $('#questions').innerHTML = Q.map(([q, a, d, t]) => `<div><span class="q">${q}</span><span class="a">${a}</span><span class="d">${d}</span><span class="go">→ page ${pageOf(t)}</span></div>`).join('');
+
+        // ---------- epilogue ----------
+        $('#closing').innerHTML = `
+            <p>I repeat things until they become eras. ${fmt(big.listens)} plays of one song in one day; ${streaks[0].days_in_a_row} days in a row of another.</p>
+            <p>I return to the same artist, ${esc(top.artist_name)}, for ${owned} of ${dynasty.length} months, while constantly wandering into new songs, more in some years than others.</p>
+            <p>My music got brighter. In ${y0}, ${Math.round(sadShare(y0))}% of what I played was heartbreak, bittersweet or dark; by ${yN}, ${Math.round(sadShare(yN))}%.</p>
+            <p>My taste changes with the hour. Daylight me plays Ariana. 2 AM me plays Shashwat Sachdev. And I've been up with my music until dawn ${allN.length} times.</p>
+            <p>Spotify recorded the songs. The interesting part was everything hiding between them.</p>`;
+        $('#numbers').innerHTML = [[s.listens, 'listens'], [s.hours, 'hours'], [s.songs, 'songs'], [s.artists, 'artists'], [s.sessions, 'sessions'], [allN.length, 'all-nighters']].map(([v, l]) => `<div><b>${fmt(v)}</b><span>${l}</span></div>`).join('');
+        $('#wall').innerHTML = songs.slice(0, 40).map(t => img(art(t.track_name, t.artist_name), '')).join('');
+
+        // ready once every cover has loaded (or failed), so the PDF prints with all the art
+        Promise.all([...document.images].map(i => i.complete ? 1 : new Promise(r => { i.onload = i.onerror = r; })))
+            .then(() => { document.body.dataset.ready = '1'; });
     });
 </script>
 </body>
