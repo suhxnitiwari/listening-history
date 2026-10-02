@@ -400,6 +400,9 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
                                for y in years if date(y, 2, 14) >= at(listens[0]).date()]
     F["quirks"] = Q
 
+    # her day as a playlist: the song that owns each hour, leaving out my #1 artist so everyone else gets a turn
+    F["clock"] = [[h, [song_index[k] for k, _ in Counter(p["track_key"] for p in listens if at(p).hour == h and art(p) != top).most_common(10)]] for h in range(24)]
+
     # mood swings: a heartbreak or dark song straight into a party or confident one (or back), inside one session,
     # using my hand tags and the inferred moods
     feel_of = lambda k: song_rows[song_index[k]][12] or song_rows[song_index[k]][13]
