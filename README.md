@@ -191,6 +191,23 @@ export DATABASE_URL="postgresql://..."
 uvicorn app.main:app --reload
 ```
 
+## The galaxy (a downstream data product)
+
+[Listening Galaxy](https://suhxnitiwari.github.io/listening-galaxy/) draws every song as a star and every artist as a constellation. It runs on one JSON file that this warehouse writes, so the two projects can never disagree on a number:
+
+```bash
+python3 etl/galaxy_export.py --input ~/Downloads/my_spotify_data.zip --out ../listening-galaxy/data/galaxy.json
+```
+
+`etl/galaxy_export.py` runs the same extract and transform as the pipeline, then answers the galaxy's questions from `fact_play`, `dim_track`, `dim_artist` and `dim_session`:
+
+- **Each song's life:** listens, minutes, first and last listen, peak month, usual hour, skip rate, biggest day, longest streak, my mood tag
+- **Each artist's orbit:** when they entered, their peak month, their strongest week, when I last played them
+- **Songs that travel together:** pairs of songs played back-to-back inside one session, scored by cosine similarity, `together / sqrt(listens A × listens B)`, so my #1 artist doesn't link to everything. Each song keeps its three strongest pairs: 1,887 links, about half of them between different artists
+- **Story chapters**, found rather than written: the arrivals of big artists, the rival who took the most months from my #1, each year's song, the busiest month, the biggest day, the longest streak
+
+It writes summaries per song and artist only, never a timestamp of a single play. It also runs on the made-up sample (`--input sample/sample_history.json`). On my export it takes about four seconds: 91,210 listens become 4,648 stars, 1,231 constellations and 16 chapters in 680 KB.
+
 ## Coming next
 
 - Song similarity with embeddings and `pgvector`: "what else do I listen to like this?"
