@@ -38,6 +38,7 @@ UNATTENDED_LOOPS = [
 # Songs removed entirely, in every version: every play of them was an accident.
 ACCIDENTAL_SONGS = [
     "How Far I'll Go",      # April 2023, 176 plays across three versions I never meant to make
+    "Clean White Noise",    # a sleep sound, not music: 55 plays that would otherwise be my "fastest obsession"
 ]
 
 # My own mood label for my ~400 most-played songs: Spotify's export has no mood data.

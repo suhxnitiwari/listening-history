@@ -36,6 +36,175 @@ def longest_streak(days: set) -> tuple:
     return best
 
 
+# My life's turning points, the same boundaries app/main.py uses for eras.
+GRADUATED = date(2024, 6, 1)        # finished high school in May 2024
+MOVED_TO_AUSTIN = date(2024, 8, 15)  # moved from my parents' house in Dallas to Austin
+
+
+def era_of(d: date) -> str:
+    if d < GRADUATED:
+        return "high_school"
+    if d < MOVED_TO_AUSTIN:
+        return "summer"
+    return "austin" if d.year < 2026 else "y2026"
+
+
+def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, track: dict, artist_name: dict, desi: set, months: list) -> dict:
+    """The evidence for the tour: every number a chapter quotes, computed here so none is typed by hand."""
+    plays = tables["fact_play"]
+    at = lambda p: datetime.fromisoformat(p["played_at"])
+    art = lambda p: track[p["track_key"]]["artist_key"]
+    F = {}
+
+    # who runs this galaxy, and who took the crown
+    ms = Counter()
+    for p in listens:
+        ms[art(p)] += p["ms_played"]
+    top = ms.most_common(1)[0][0]
+    owners = [m["owner"] for m in months]
+    F["top"] = {"artist": artist_index[top], "share": round(100 * ms[top] / sum(ms.values()), 1),
+                "owned": owners.count(0), "months": len(months)}
+    rivals = Counter(o for o in owners if o != 0)
+    rival, wins = rivals.most_common(1)[0]
+    first_win = next(i for i, o in enumerate(owners) if o == rival)
+    run = 0
+    for o in reversed(owners[:first_win]):
+        if o != 0:
+            break
+        run += 1
+    m0 = months[first_win]["month"]
+    in_month = Counter(p["track_key"] for p in listens if p["played_at"].startswith(m0) and art(p) == next(k for k, v in artist_index.items() if v == rival))
+    F["rival"] = {"artist": rival, "months": [m["month"] for m, o in zip(months, owners) if o == rival], "first": m0,
+                  "reign_before": run, "song": song_index[in_month.most_common(1)[0][0]], "runner_up_max": max([c for a, c in rivals.items() if a != rival] or [0]),
+                  "others": [[a, c, [m["month"] for m, o in zip(months, owners) if o == a]] for a, c in rivals.most_common() if a != rival]}
+
+    # one song, one day
+    per_day = Counter((p["played_at"][:10], p["track_key"]) for p in listens)
+    (d, k), n = per_day.most_common(1)[0]
+    those = [p for p in listens if p["played_at"].startswith(d) and p["track_key"] == k]
+    F["day"] = {"song": song_index[k], "date": d, "count": n, "from": those[0]["played_at"][11:16], "to": those[-1]["played_at"][11:16],
+                "hours": round(sum(p["ms_played"] for p in those) / 3.6e6, 1), "autoplayed": sum(p["reason_start"] == "trackdone" for p in those),
+                "else": sum(1 for p in listens if p["played_at"].startswith(d)) - n}
+
+    # night and day: which artists over-index after midnight (lift), and which in the daytime
+    count = Counter(art(p) for p in listens)
+    def lift(hours):
+        sel = [p for p in listens if at(p).hour in hours]
+        c = Counter(art(p) for p in sel)
+        return sorted(((c[a] / len(sel)) / (count[a] / len(listens)), a) for a in count if count[a] >= 300)[::-1]
+    F["night"] = [[artist_index[a], round(l, 1)] for l, a in lift({0, 1, 2, 3})[:3]]
+    F["day_artist"] = [[artist_index[a], round(l, 1)] for l, a in lift(set(range(9, 17)))[:1]]
+
+    # all-nighters: music in every hour from midnight to 6 AM, the same rule as /api/nights
+    hours, nights = defaultdict(set), defaultdict(list)
+    for p in listens:
+        t = at(p)
+        if t.hour <= 5:
+            hours[t.date()].add(t.hour)
+            nights[t.date()].append(p)
+    alln = sorted(d for d, h in hours.items() if len(h) == 6)
+    def night(d):
+        ps = nights[d]
+        k, c = Counter(p["track_key"] for p in ps).most_common(1)[0]
+        return {"date": d.isoformat(), "weekday": d.strftime("%A"), "song": song_index[k], "times": c, "songs": sorted({song_index[p["track_key"]] for p in ps}),
+                "five_am": song_index[[p for p in ps if at(p).hour == 5][-1]["track_key"]]}
+    F["allnighters"] = {"count": len(alln), "by_era": Counter(era_of(d) for d in alln), "first": night(alln[0]), "latest": night(alln[-1]),
+                        "top_month": Counter(d.strftime("%Y-%m") for d in alln).most_common(1)[0], "top_weekday": Counter(d.strftime("%A") for d in alln).most_common(1)[0]}
+    # when the music usually stops: the last play before a quiet stretch of 3 to 20 hours that starts at night
+    stops = Counter()
+    for a, b in zip(listens, listens[1:]):
+        gap = (at(b) - at(a)).total_seconds() / 3600
+        if 3 <= gap <= 20 and (at(a).hour >= 21 or at(a).hour <= 4):
+            stops[at(a).hour] += 1
+    F["sleep"] = {"hours": [h for h, _ in stops.most_common(4)]}
+    night_song = lambda sel: song_index[Counter(p["track_key"] for p in listens if at(p).hour <= 4 and sel(at(p).date())).most_common(1)[0][0]]
+    F["night_song"] = {"high_school": night_song(lambda d: d < GRADUATED), "austin": night_song(lambda d: d >= MOVED_TO_AUSTIN),
+                       "five_am": song_index[Counter(p["track_key"] for p in listens if at(p).hour in (4, 5)).most_common(1)[0][0]],
+                       "five_am_times": Counter(p["track_key"] for p in listens if at(p).hour in (4, 5)).most_common(1)[0][1]}
+
+    # the longest session
+    sess = max(tables["dim_session"], key=lambda r: r["minutes"])
+    sp = [p for p in listens if p["session_key"] == sess["session_key"]]
+    sk, sc = Counter(p["track_key"] for p in sp).most_common(1)[0]
+    sa, sac = Counter(art(p) for p in sp).most_common(1)[0]
+    F["longest_session"] = {"start": sess["started_at"][:16], "end": sess["ended_at"][:16], "hours": round(sess["minutes"] / 60, 1), "listens": len(sp),
+                            "song": song_index[sk], "song_times": sc, "artist": artist_index[sa], "artist_listens": sac}
+
+    # eras: how college changed me, and how 2026 is changing me again
+    first_heard = {}
+    for p in listens:
+        first_heard.setdefault(p["track_key"], at(p))
+    eras = {}
+    for e in ("high_school", "summer", "austin", "y2026"):
+        ps = [p for p in listens if era_of(at(p).date()) == e]
+        allp = [p for p in plays if era_of(at(p).date()) == e]
+        moods_e = Counter(track[p["track_key"]]["mood"] for p in ps if track[p["track_key"]]["mood"])
+        mt = sum(moods_e.values()) or 1
+        ac = Counter(art(p) for p in ps)
+        eras[e] = {"late": round(100 * sum(at(p).hour <= 4 for p in ps) / len(ps), 1), "desi": round(100 * sum(art(p) in desi for p in ps) / len(ps), 1),
+                   "top_share": round(100 * ac[top] / len(ps), 1), "top5": [artist_index[a] for a, _ in ac.most_common(5)],
+                   "upbeat": round(100 * (moods_e["party"] + moods_e["confident"]) / mt), "skip": round(100 * sum(p["skipped"] for p in allp) / len(allp), 1),
+                   "per_day": round(len(ps) / len({at(p).date() for p in ps}), 1)}
+    first_artist = {}
+    for p in listens:
+        first_artist.setdefault(art(p), at(p).date())
+    newcomers = lambda e: [[artist_index[a], c] for a, c in Counter(art(p) for p in listens if era_of(at(p).date()) == e and era_of(first_artist[art(p)]) == e).most_common(3)]
+    austin_first = next(p for p in listens if at(p).date() >= MOVED_TO_AUSTIN)
+    F["eras"] = {"graduated": GRADUATED.isoformat(), "moved": MOVED_TO_AUSTIN.isoformat(), "stats": eras,
+                 "austin_new": newcomers("austin"), "new_2026": newcomers("y2026"),
+                 "austin_first": {"song": song_index[austin_first["track_key"]], "at": austin_first["played_at"][:16]},
+                 "top_every_era": all(eras[e]["top5"][0] == artist_index[top] for e in eras)}
+    years = sorted({at(p).year for p in listens})
+    in_hours = lambda hs: [p for p in listens if at(p).hour in hs]
+    F["desi_by_hour"] = {k: round(100 * sum(art(p) in desi for p in ps) / len(ps), 1) for k, ps in (("night", in_hours({0, 1, 2, 3})), ("day", in_hours(set(range(9, 17)))))}
+    F["peak_hour"] = Counter(at(p).hour for p in listens).most_common(1)[0][0]
+    F["desi_by_year"] = {y: round(100 * sum(art(p) in desi for p in listens if at(p).year == y) / sum(1 for p in listens if at(p).year == y), 1) for y in years}
+
+    # the saddest month: the highest share of my heartbreak-tagged songs
+    mm = defaultdict(Counter)
+    for p in listens:
+        if track[p["track_key"]]["mood"]:
+            mm[p["played_at"][:7]][track[p["track_key"]]["mood"]] += 1
+    share, month = max((c["heartbreak"] / sum(c.values()), m) for m, c in mm.items() if sum(c.values()) >= 200)
+    F["heartbreak"] = {"month": month, "share": round(100 * share, 1)}
+
+    # loyalty: songs I played every single year, and the one I played most
+    years_of = defaultdict(set)
+    for p in listens:
+        years_of[p["track_key"]].add(at(p).year)
+    loyal = [k for k, ys in years_of.items() if len(ys) == len(years)]
+    lk = max(loyal, key=lambda k: sum(1 for p in listens if p["track_key"] == k))
+    lm = Counter(p["played_at"][:7] for p in listens if p["track_key"] == lk).most_common(1)[0]
+    F["loyal"] = {"count": len(loyal), "song": song_index[lk], "peak": lm[0], "peak_times": lm[1], "songs": sorted(song_index[k] for k in loyal)}
+
+    # the comeback: the longest silence a song came back from, with at least 20 listens after
+    times = defaultdict(list)
+    for p in listens:
+        times[p["track_key"]].append(at(p))
+    best = max(((ts[i] - ts[i - 1]).days, k, i) for k, ts in times.items() for i in range(1, len(ts)) if len(ts) - i >= 20)
+    gap, k, i = best
+    F["comeback"] = {"song": song_index[k], "gap_days": gap, "back": times[k][i].date().isoformat(), "after": len(times[k]) - i}
+
+    # skip, but can't quit: the most-skipped artist I still played 150+ times
+    tot, sk_ = Counter(), Counter()
+    for p in plays:
+        tot[art(p)] += 1
+        sk_[art(p)] += p["skipped"]
+    skr = max((sk_[a] / tot[a], a) for a in count if count[a] >= 150)[1]
+    sp = [p for p in plays if art(p) == skr]
+    skipped_ms = sorted(p["ms_played"] for p in sp if p["skipped"])
+    by_song = Counter(p["track_key"] for p in sp)
+    F["skip"] = {"artist": artist_index[skr], "plays": len(sp), "listens": count[skr], "rate": round(100 * sk_[skr] / tot[skr]),
+                 "median_seconds": round(skipped_ms[len(skipped_ms) // 2] / 1000, 1), "arrived_by_skip": sum(p["reason_start"] == "fwdbtn" for p in sp),
+                 "songs": [[song_index[k] if k in song_index else None, n, round(100 * sum(p["skipped"] for p in sp if p["track_key"] == k) / n)] for k, n in by_song.most_common(3)]}
+
+    # explorer or loyalist: new artists per year, and how much of each year went to songs from earlier years
+    F["discovery"] = {y: {"new_artists": sum(1 for d in first_artist.values() if d.year == y),
+                          "comfort": round(100 * sum(first_heard[p["track_key"]].year < y for p in listens if at(p).year == y) / sum(1 for p in listens if at(p).year == y), 1),
+                          "hours": round(sum(p["ms_played"] for p in listens if at(p).year == y) / 3.6e6)} for y in years}
+    return F
+
+
 def export(tables: dict, records: int, song_records: int, private: int) -> dict:
     artist_name = {a["artist_key"]: a["artist_name"] for a in tables["dim_artist"]}
     desi = {a["artist_key"] for a in tables["dim_artist"] if a["desi"]}
@@ -203,6 +372,7 @@ def export(tables: dict, records: int, song_records: int, private: int) -> dict:
                   "title": "Now", "text": f"{artists[top]['name']} owned {owned} of my {len(months)} months."})
     story.sort(key=lambda c: (c["date"], c["kind"] == "now"))
 
+    tour_facts = facts(tables, listens, song_index, artist_index, track, artist_name, desi, months)
     period = (listens[0]["played_at"][:10], listens[-1]["played_at"][:10])
     return {
         "generated": datetime.now().strftime("%Y-%m-%d"),
@@ -217,6 +387,7 @@ def export(tables: dict, records: int, song_records: int, private: int) -> dict:
         "song_fields": ["title", "artist", "listens", "minutes", "first", "last", "peak_month", "hour",
                         "skip_rate", "best_day_listens", "best_day", "streak", "mood", "mood_inferred"],
         "songs": songs, "artists": artists, "months": months, "links": links, "story": story,
+        "facts": tour_facts,
     }
 
 
