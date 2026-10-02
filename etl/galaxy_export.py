@@ -400,6 +400,33 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
                                for y in years if date(y, 2, 14) >= at(listens[0]).date()]
     F["quirks"] = Q
 
+    # picky: how fast she rejects songs, her wildest skip spree, her most ruthless session, and the song that never gets a chance
+    quick = sorted(p["ms_played"] for p in plays if p["ms_played"] < 1000)
+    spree, run, start = (0, None), 0, None
+    for i, p in enumerate(plays):
+        if p["reason_end"] == "fwdbtn" and p["ms_played"] < 30000 and (i == 0 or (at(p) - at(plays[i - 1])).total_seconds() < 600):
+            if run == 0:
+                start = p
+            run += 1
+            if run > spree[0]:
+                spree = (run, start, p)
+        else:
+            run = 0
+    skipped_in = Counter(p["session_key"] for p in plays if p["skipped"])
+    worst = skipped_in.most_common(1)[0][0]
+    worst_plays = [p for p in plays if p["session_key"] == worst]
+    tried, longest = Counter(), defaultdict(int)
+    for p in plays:
+        tried[p["track_key"]] += 1
+        longest[p["track_key"]] = max(longest[p["track_key"]], p["ms_played"])
+    never = max((n, k) for k, n in tried.items() if longest[k] < 8000 and k in track)
+    rejected = [p["ms_played"] for p in plays if p["skipped"] and p["ms_played"] < 30000]
+    F["picky"] = {"under_1s": len(quick), "median_ms": quick[len(quick) // 2], "under_100ms": sum(1 for m in quick if m < 100),
+                  "spree": {"count": spree[0], "seconds": round((at(spree[2]) - at(spree[1])).total_seconds()), "at": spree[1]["played_at"][:16]},
+                  "session": {"date": worst_plays[0]["played_at"][:10], "started": len(worst_plays), "skipped": skipped_in[worst]},
+                  "never": {"title": track[never[1]]["track_name"], "artist": artist_name[track[never[1]]["artist_key"]], "tries": never[0], "longest_s": round(longest[never[1]] / 1000, 1)},
+                  "intro_hours": round(sum(rejected) / 3.6e6, 1)}
+
     per_song_days = defaultdict(set)
     for p in listens:
         per_song_days[p["track_key"]].add(at(p).date())
