@@ -399,6 +399,24 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
                                 "songs": sorted({song_index[p["track_key"]] for p in listens if at(p).date() == date(y, 2, 14)})}
                                for y in years if date(y, 2, 14) >= at(listens[0]).date()]
     F["quirks"] = Q
+
+    # mood swings: a heartbreak or dark song straight into a party or confident one (or back), inside one session,
+    # using my hand tags and the inferred moods
+    feel_of = lambda k: song_rows[song_index[k]][12] or song_rows[song_index[k]][13]
+    SAD, UP = ("heartbreak", "dark"), ("party", "confident")
+    ups, downs = Counter(), Counter()
+    for a, b in zip(listens, listens[1:]):
+        if a["session_key"] != b["session_key"] or a["track_key"] == b["track_key"]:
+            continue
+        fa, fb = feel_of(a["track_key"]), feel_of(b["track_key"])
+        if fa in SAD and fb in UP:
+            ups[(song_index[a["track_key"]], song_index[b["track_key"]])] += 1
+        elif fa in UP and fb in SAD:
+            downs[(song_index[a["track_key"]], song_index[b["track_key"]])] += 1
+    swing_days = len({at(p).date() for p in listens})
+    F["mood_swings"] = {"total": sum(ups.values()) + sum(downs.values()), "comebacks": sum(ups.values()), "crashes": sum(downs.values()),
+                        "per_day": round((sum(ups.values()) + sum(downs.values())) / swing_days, 1),
+                        "up": [[a, b, n] for (a, b), n in ups.most_common(150) if n >= 3], "down": [[a, b, n] for (a, b), n in downs.most_common(150) if n >= 3]}
     return F
 
 
