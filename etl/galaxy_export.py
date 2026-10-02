@@ -215,6 +215,26 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
         return round(100 * sum(track[p["track_key"]]["mood"] == "heartbreak" for p in tagged) / len(tagged), 1)
     F["morning_heartbreak"] = {"morning": heartbreak_share(lambda h: 5 <= h <= 11), "rest": heartbreak_share(lambda h: not 5 <= h <= 11)}
 
+    # homework hour: the busiest weekday hour, and how much of weekday listening lands there, by era
+    def weekday_peak(e):
+        ps = [p for p in listens if at(p).weekday() < 5 and era_of(at(p).date()) == e]
+        h, n = Counter(at(p).hour for p in ps).most_common(1)[0]
+        return {"hour": h, "share": round(100 * n / len(ps), 1), "three_to_eight": round(100 * sum(15 <= at(p).hour <= 19 for p in ps) / len(ps), 1)}
+    F["weekday_peak"] = {e: weekday_peak(e) for e in ("high_school", "austin", "y2026")}
+    F["weekend_peak"] = Counter(at(p).hour for p in listens if at(p).weekday() >= 5).most_common(1)[0][0]
+
+    # album days: the first time she heard most of an album in a single day (catalog deep-dives and release nights)
+    album_of = {t["track_key"]: t["album_key"] for t in tables["dim_track"]}
+    album_name = {a["album_key"]: a["album_name"] for a in tables["dim_album"]}
+    firsts = {}
+    for p in listens:
+        firsts.setdefault(p["track_key"], p)
+    days = Counter((p["played_at"][:10], album_of[k], art(p)) for k, p in firsts.items())
+    def album_day(d, al, a):
+        new = sorted((firsts[k] for k in firsts if album_of[k] == al and firsts[k]["played_at"][:10] == d), key=lambda p: p["played_at"])
+        return {"date": d, "album": album_name[al], "artist": artist_index[a], "new_songs": len(new), "first_at": new[0]["played_at"][11:16], "song": song_index[new[0]["track_key"]]}
+    F["album_days"] = [album_day(d, al, a) for (d, al, a), n in sorted(days.items()) if n >= 6 and a in (top, next(k for k, v in artist_index.items() if v == rival))]
+
     # favorites: the songs she hits back on, the song that opens her sessions, the songs that close her nights
     F["rewound"] = [[song_index[k], n] for k, n in Counter(p["track_key"] for p in plays if p["reason_start"] == "backbtn" and p["track_key"] in song_index).most_common(3)]
     sessions = defaultdict(list)
