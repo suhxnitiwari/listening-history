@@ -354,6 +354,51 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
     newbie = next(k for k, v in artist_index.items() if v == F["eras"]["new_2026"][0][0])
     F["eras"]["new_2026_first"] = min(p["played_at"][:10] for p in listens if art(p) == newbie)
 
+    # the quirks file: holidays, loops, versions, skips and naps
+    def day_top(d):
+        ps = [p for p in listens if at(p).date() == d]
+        if not ps:
+            return None
+        c = Counter(p["track_key"] for p in ps)
+        k, n = c.most_common(1)[0]
+        return {"date": d.isoformat(), "song": song_index[k], "times": n, "of": len(ps), "tied": [song_index[t] for t, m in c.items() if m == n and t != k]}
+    years = sorted({at(p).year for p in listens})
+    Q = {"halloween": max(filter(None, (day_top(date(y, 10, 31)) for y in years)), key=lambda x: x["times"] / x["of"] + x["times"] / 100),
+         "valentines": max(filter(None, (day_top(date(y, 2, 14)) for y in years)), key=lambda x: x["times"])}
+    ny = [p for p in listens if at(p).month == 1 and at(p).day == 1 and at(p).hour == 0 and at(p).minute < 5]
+    if ny:
+        Q["new_year"] = {"song": song_index[ny[0]["track_key"]], "at": ny[0]["played_at"][:16]}
+    runs, run = [], 1
+    for a, b in zip(listens, listens[1:]):
+        if a["track_key"] == b["track_key"] and (at(b) - at(a)).total_seconds() < 3600:
+            run += 1
+        else:
+            runs.append((run, a["track_key"], a["played_at"][:10]))
+            run = 1
+    Q["loops"] = [[song_index[k], n, d] for n, k, d in sorted(runs, reverse=True)[1:3]]
+    hour_runs = Counter((p["played_at"][:13], p["track_key"]) for p in listens)
+    (h, k), n = hour_runs.most_common(1)[0]
+    Q["one_hour"] = {"song": song_index[k], "times": n, "date": h[:10]}
+    starts, skips = Counter(), Counter()
+    for p in plays:
+        starts[p["track_key"]] += 1
+        skips[p["track_key"]] += p["skipped"]
+    r, n, k = max((skips[k] / starts[k], starts[k], k) for k in starts if starts[k] >= 100 and k in song_index)
+    Q["never_finished"] = {"song": song_index[k], "starts": n, "rate": round(100 * r)}
+    Q["naps"] = sum(p["reason_end"] == "unexpected-exit-while-paused" for p in plays)
+    Q["summer_xmas"] = sum(1 for p in listens if at(p).month in (6, 7, 8) and any(w in track[p["track_key"]]["track_name"].lower() for w in ("christmas", "santa", "mistletoe", "jingle", "sleigh")))
+    per_artist = Counter(art(p) for p in listens)
+    Q["one_listen_artists"] = sum(1 for n in per_artist.values() if n == 1)
+    name = lambda p: track[p["track_key"]]["track_name"].lower()
+    sped = Counter(p["track_key"] for p in listens if "sped up" in name(p))
+    Q["sped_up"] = [song_index[sped.most_common(1)[0][0]], sped.most_common(1)[0][1]] if sped else None
+    Q["karaoke"] = sorted({song_index[p["track_key"]] for p in listens if "karaoke" in name(p)})
+    hsm = Counter(p["track_key"] for p in listens if "high school musical" in name(p))
+    Q["hsm"] = [song_index[hsm.most_common(1)[0][0]], sum(hsm.values())] if hsm else None
+    Q["valentines_by_year"] = [{"year": y, **(day_top(date(y, 2, 14)) or {"song": None, "times": 0, "of": 0}),
+                                "songs": sorted({song_index[p["track_key"]] for p in listens if at(p).date() == date(y, 2, 14)})}
+                               for y in years if date(y, 2, 14) >= at(listens[0]).date()]
+    F["quirks"] = Q
     return F
 
 
