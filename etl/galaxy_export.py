@@ -53,7 +53,7 @@ def era_of(d: date) -> str:
     return "austin" if d.year < 2026 else "y2026"
 
 
-def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, track: dict, artist_name: dict, desi: set, months: list, offline: dict) -> dict:
+def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, track: dict, artist_name: dict, desi: set, months: list, offline: dict, song_rows: list) -> dict:
     """The evidence for the tour: every number a chapter quotes, computed here so none is typed by hand."""
     plays = tables["fact_play"]
     at = lambda p: datetime.fromisoformat(p["played_at"])
@@ -234,6 +234,23 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
         new = sorted((firsts[k] for k in firsts if album_of[k] == al and firsts[k]["played_at"][:10] == d), key=lambda p: p["played_at"])
         return {"date": d, "album": album_name[al], "artist": artist_index[a], "new_songs": len(new), "first_at": new[0]["played_at"][11:16], "song": song_index[new[0]["track_key"]]}
     F["album_days"] = [album_day(d, al, a) for (d, al, a), n in sorted(days.items()) if n >= 6 and a in (top, next(k for k, v in artist_index.items() if v == rival))]
+
+    # the rival's reign: the albums and the song she played most while writing college essays (June to December 2023)
+    rival_key = next(k for k, v in artist_index.items() if v == rival)
+    reign = [p for p in listens if "2023-06" <= p["played_at"][:7] <= "2023-12" and art(p) == rival_key]
+    F["taylor_favs"] = [[album_name[a], n] for a, n in Counter(album_of[p["track_key"]] for p in reign).most_common(2)]
+    F["taylor_song"] = song_index[Counter(p["track_key"] for p in reign).most_common(1)[0][0]]
+
+    # the homework soundtrack: what played most on high-school weekdays between 3 and 8 PM
+    F["homework"] = [song_index[k] for k, _ in Counter(p["track_key"] for p in listens if at(p).date() < GRADUATED and at(p).weekday() < 5 and 15 <= at(p).hour <= 19).most_common(4)]
+
+    # first semester in Austin: the new party and confident songs, and the new song played most (whatever it was)
+    first_day = {}
+    for p in listens:
+        first_day.setdefault(p["track_key"], at(p).date())
+    sem = Counter(p["track_key"] for p in listens if MOVED_TO_AUSTIN <= at(p).date() <= date(2024, 12, 31) and first_day[p["track_key"]] >= MOVED_TO_AUSTIN)
+    feel = lambda k: song_rows[song_index[k]][12] or song_rows[song_index[k]][13]
+    F["fall2024"] = {"party": [song_index[k] for k, _ in sem.most_common() if feel(k) in ("party", "confident")][:4], "top_new": song_index[sem.most_common(1)[0][0]]}
 
     # favorites: the songs she hits back on, the song that opens her sessions, the songs that close her nights
     F["rewound"] = [[song_index[k], n] for k, n in Counter(p["track_key"] for p in plays if p["reason_start"] == "backbtn" and p["track_key"] in song_index).most_common(3)]
@@ -472,7 +489,7 @@ def export(tables: dict, records: int, song_records: int, private: int, offline:
                   "title": "Now", "text": f"{artists[top]['name']} owned {owned} of my {len(months)} months."})
     story.sort(key=lambda c: (c["date"], c["kind"] == "now"))
 
-    tour_facts = facts(tables, listens, song_index, artist_index, track, artist_name, desi, months, offline)
+    tour_facts = facts(tables, listens, song_index, artist_index, track, artist_name, desi, months, offline, songs)
     period = (listens[0]["played_at"][:10], listens[-1]["played_at"][:10])
     return {
         "generated": datetime.now().strftime("%Y-%m-%d"),
