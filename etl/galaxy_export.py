@@ -127,6 +127,34 @@ def export(tables: dict, records: int, song_records: int, private: int) -> dict:
     keep = {p for l in mine.values() for _, p in sorted(l, reverse=True)[:LINKS_PER_SONG]}
     links = sorted([a, b, together[(a, b)]] for a, b in keep)
 
+    # ---- moods for untagged songs, inferred from the songs I play them with (label propagation).
+    # A song takes the mood that wins at least 60% of its link weight to songs that already have one;
+    # each later round can lean on inferred moods too, at half the weight of the round before.
+    neighbours = defaultdict(list)
+    for a, b, c in links:
+        neighbours[a].append((b, c))
+        neighbours[b].append((a, c))
+    tagged = {i: s[12] for i, s in enumerate(songs) if s[12]}
+    inferred = {}
+    for weight in (1.0, 0.5, 0.25):
+        found = {}
+        for i in range(len(songs)):
+            if i in tagged or i in inferred:
+                continue
+            votes = Counter()
+            for j, c in neighbours[i]:
+                if j in tagged:
+                    votes[tagged[j]] += c
+                elif j in inferred:
+                    votes[inferred[j]] += c * weight
+            if votes:
+                mood, v = votes.most_common(1)[0]
+                if v / sum(votes.values()) >= 0.6:
+                    found[i] = mood
+        inferred.update(found)
+    for i, s in enumerate(songs):
+        s.append(inferred.get(i, ""))
+
     # ---- story: chapters found in the data, in date order
     story = []
     period_end = listens[-1]["played_at"][:10]
@@ -184,9 +212,10 @@ def export(tables: dict, records: int, song_records: int, private: int) -> dict:
             "plays": len(plays), "listens": len(listens), "songs": len(songs), "artists": len(artists),
             "sessions": len(tables["dim_session"]), "hours": round(sum(p["ms_played"] for p in listens) / 3.6e6),
             "skipped": sum(p["skipped"] for p in plays), "links": len(links),
+            "moods_tagged": len(tagged), "moods_inferred": len(inferred),
         },
         "song_fields": ["title", "artist", "listens", "minutes", "first", "last", "peak_month", "hour",
-                        "skip_rate", "best_day_listens", "best_day", "streak", "mood"],
+                        "skip_rate", "best_day_listens", "best_day", "streak", "mood", "mood_inferred"],
         "songs": songs, "artists": artists, "months": months, "links": links, "story": story,
     }
 
