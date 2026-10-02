@@ -41,6 +41,10 @@ GRADUATED = date(2024, 6, 1)        # finished high school in May 2024
 MOVED_TO_AUSTIN = date(2024, 8, 15)  # moved from my parents' house in Dallas to Austin
 
 
+# Trips home to India, found as days of long offline listening (flights) and confirmed by me.
+TRIPS = [(date(2024, 3, 7), date(2024, 3, 18)), (date(2024, 12, 21), date(2025, 1, 7))]
+
+
 def era_of(d: date) -> str:
     if d < GRADUATED:
         return "high_school"
@@ -49,7 +53,7 @@ def era_of(d: date) -> str:
     return "austin" if d.year < 2026 else "y2026"
 
 
-def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, track: dict, artist_name: dict, desi: set, months: list) -> dict:
+def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, track: dict, artist_name: dict, desi: set, months: list, offline: dict) -> dict:
     """The evidence for the tour: every number a chapter quotes, computed here so none is typed by hand."""
     plays = tables["fact_play"]
     at = lambda p: datetime.fromisoformat(p["played_at"])
@@ -202,10 +206,86 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
     F["discovery"] = {y: {"new_artists": sum(1 for d in first_artist.values() if d.year == y),
                           "comfort": round(100 * sum(first_heard[p["track_key"]].year < y for p in listens if at(p).year == y) / sum(1 for p in listens if at(p).year == y), 1),
                           "hours": round(sum(p["ms_played"] for p in listens if at(p).year == y) / 3.6e6)} for y in years}
+    # when she listens: the share of listens in each hour, mornings, and how mornings feel
+    by_hour = Counter(at(p).hour for p in listens)
+    F["hours"] = [round(100 * by_hour[h] / len(listens), 1) for h in range(24)]
+    F["before_9"] = round(100 * sum(by_hour[h] for h in range(0, 9) if h >= 5) / len(listens), 1)
+    def heartbreak_share(sel):
+        tagged = [p for p in listens if sel(at(p).hour) and track[p["track_key"]]["mood"]]
+        return round(100 * sum(track[p["track_key"]]["mood"] == "heartbreak" for p in tagged) / len(tagged), 1)
+    F["morning_heartbreak"] = {"morning": heartbreak_share(lambda h: 5 <= h <= 11), "rest": heartbreak_share(lambda h: not 5 <= h <= 11)}
+
+    # favorites: the songs she hits back on, the song that opens her sessions, the songs that close her nights
+    F["rewound"] = [[song_index[k], n] for k, n in Counter(p["track_key"] for p in plays if p["reason_start"] == "backbtn" and p["track_key"] in song_index).most_common(3)]
+    sessions = defaultdict(list)
+    for p in listens:
+        sessions[p["session_key"]].append(p)
+    F["opener"] = [[song_index[k], n] for k, n in Counter(v[0]["track_key"] for v in sessions.values() if len(v) >= 5).most_common(1)][0]
+    F["closers"] = [[song_index[k], n] for k, n in Counter(v[-1]["track_key"] for v in sessions.values() if len(v) >= 5 and (at(v[-1]).hour >= 21 or at(v[-1]).hour <= 4)).most_common(2)]
+
+    # phone down: instrumentals of my #1 artist, played start to finish
+    inst = [p for p in listens if "instrumental" in track[p["track_key"]]["track_name"].lower() and art(p) == top]
+    F["instrumentals"] = {"count": len(inst), "by_year": Counter(at(p).year for p in inst), "songs": sorted({song_index[p["track_key"]] for p in inst})}
+
+    # trips home: offline hours on the flight days, and how much South Asian music she played while there
+    F["trips"] = []
+    for a, b in TRIPS:
+        ps = [p for p in listens if a <= at(p).date() <= b]
+        F["trips"].append({"from": a.isoformat(), "to": b.isoformat(), "listens": len(ps), "desi": round(100 * sum(art(p) in desi for p in ps) / len(ps), 1),
+                           "flight_hours": [round(max(offline.get((a + timedelta(days=i)).isoformat(), 0) for i in (-1, 0, 1)) / 3.6e6, 1), round(max(offline.get((b + timedelta(days=i)).isoformat(), 0) for i in (-1, 0, 1)) / 3.6e6, 1)],
+                           "songs": [song_index[k] for k, _ in Counter(p["track_key"] for p in ps).most_common(3)], "all": sorted({song_index[p["track_key"]] for p in ps})})
+    F["desi_overall"] = round(100 * sum(art(p) in desi for p in listens) / len(listens), 1)
+
+    # albums in order: the most predictable "next song", and whether it came from the album's own track order
+    album = {t["track_key"]: t["album_key"] for t in tables["dim_track"]}
+    nxt, how = defaultdict(Counter), defaultdict(Counter)
+    for a, b in zip(listens, listens[1:]):
+        if a["session_key"] == b["session_key"] and a["track_key"] != b["track_key"]:
+            nxt[a["track_key"]][b["track_key"]] += 1
+            how[(a["track_key"], b["track_key"])][(b["reason_start"] == "trackdone", b["shuffle"])] += 1
+    n_of = Counter(p["track_key"] for p in listens)
+    rows = sorted(((c.most_common(1)[0][1] / n_of[a], a, c.most_common(1)[0][0], c.most_common(1)[0][1]) for a, c in nxt.items() if n_of[a] >= 40), reverse=True)
+    F["in_order"] = [{"a": song_index[a], "b": song_index[b], "pct": round(100 * r), "times": k, "same_album": album[a] == album[b],
+                      "auto": round(100 * sum(v for (auto, _), v in how[(a, b)].items() if auto) / k), "shuffled": sum(v for (_, sh), v in how[(a, b)].items() if sh)} for r, a, b, k in rows[:12]]
+
+    # moods by month: saddest, happiest and most in love (my hand tags), and the saddest month of the calendar
+    mm = defaultdict(Counter)
+    for p in listens:
+        if track[p["track_key"]]["mood"]:
+            mm[p["played_at"][:7]][track[p["track_key"]]["mood"]] += 1
+    big = {m: c for m, c in mm.items() if sum(c.values()) >= 200}
+    pct = lambda c, ks: round(100 * sum(c[k] for k in ks) / sum(c.values()))
+    SAD, HAPPY = ("heartbreak", "dark", "bittersweet"), ("party", "confident")
+    F["moods"] = {"saddest": sorted(([m, pct(c, SAD)] for m, c in big.items()), key=lambda x: -x[1])[:3],
+                  "happiest": sorted(([m, pct(c, HAPPY)] for m, c in big.items()), key=lambda x: -x[1])[:4],
+                  "in_love": sorted(([m, pct(c, ("love",))] for m, c in big.items()), key=lambda x: -x[1])[:2],
+                  "typical_sad": sorted(pct(c, SAD) for c in big.values())[len(big) // 2]}
+    cal = defaultdict(list)
+    for m, c in big.items():
+        cal[m[5:]].append(pct(c, SAD))
+    F["moods"]["sad_calendar"] = max(((round(sum(v) / len(v)), k) for k, v in cal.items()))[::-1]
+    F["moods"]["octobers"] = [[m, pct(c, SAD)] for m, c in sorted(big.items()) if m.endswith("-10")]
+
+    # how she finds music: half the songs she ever heard, she reached by skipping the one before
+    first_play = {}
+    for p in plays:
+        first_play.setdefault(p["track_key"], p)
+    F["discover"] = {"by_skip": round(100 * sum(p["reason_start"] == "fwdbtn" for p in first_play.values()) / len(first_play)),
+                     "chosen": round(100 * sum(p["reason_start"] == "clickrow" for p in first_play.values()) / len(first_play)),
+                     "chose_by_era": {e: round(100 * sum(p["reason_start"] == "clickrow" for p in plays if era_of(at(p).date()) == e) / sum(1 for p in plays if era_of(at(p).date()) == e), 1) for e in ("high_school", "summer", "austin", "y2026")},
+                     "shuffle_by_era": {e: round(100 * sum(p["shuffle"] for p in plays if era_of(at(p).date()) == e) / sum(1 for p in plays if era_of(at(p).date()) == e), 1) for e in ("high_school", "summer", "austin", "y2026")}}
+
+    # holiday songs far from the holidays
+    xmas = [p for p in listens if any(w in track[p["track_key"]]["track_name"].lower() for w in ("christmas", "santa", "mistletoe", "jingle", "sleigh")) and at(p).month in (3, 4, 5, 6, 7, 8)]
+    if xmas:
+        (k, m), n = Counter((p["track_key"], p["played_at"][:7]) for p in xmas).most_common(1)[0]
+        F["off_season"] = {"song": song_index[k], "month": m, "times": n}
+    # the loop year: how often the next listen is the same song again
+    F["loops"] = {y: round(100 * sum(a["track_key"] == b["track_key"] for a, b in zip(ys, ys[1:])) / len(ys), 1) for y in sorted({at(p).year for p in listens}) for ys in [[p for p in listens if at(p).year == y]]}
     return F
 
 
-def export(tables: dict, records: int, song_records: int, private: int) -> dict:
+def export(tables: dict, records: int, song_records: int, private: int, offline: dict) -> dict:
     artist_name = {a["artist_key"]: a["artist_name"] for a in tables["dim_artist"]}
     desi = {a["artist_key"] for a in tables["dim_artist"] if a["desi"]}
     track = {t["track_key"]: t for t in tables["dim_track"]}
@@ -372,7 +452,7 @@ def export(tables: dict, records: int, song_records: int, private: int) -> dict:
                   "title": "Now", "text": f"{artists[top]['name']} owned {owned} of my {len(months)} months."})
     story.sort(key=lambda c: (c["date"], c["kind"] == "now"))
 
-    tour_facts = facts(tables, listens, song_index, artist_index, track, artist_name, desi, months)
+    tour_facts = facts(tables, listens, song_index, artist_index, track, artist_name, desi, months, offline)
     period = (listens[0]["played_at"][:10], listens[-1]["played_at"][:10])
     return {
         "generated": datetime.now().strftime("%Y-%m-%d"),
@@ -391,6 +471,17 @@ def export(tables: dict, records: int, song_records: int, private: int) -> dict:
     }
 
 
+def offline_by_day(records: list) -> dict:
+    """Milliseconds listened offline per Austin day, dated by when the song actually played (long offline days are flights)."""
+    from pipeline import AUSTIN
+    days = Counter()
+    for r in records:
+        if r.get("offline") and r.get("offline_timestamp") and not r.get("incognito_mode") and r["ms_played"] >= 30000:
+            ts = r["offline_timestamp"] / 1000 if r["offline_timestamp"] > 1e11 else r["offline_timestamp"]
+            days[datetime.fromtimestamp(ts, AUSTIN).date().isoformat()] += r["ms_played"]
+    return days
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--input", required=True, type=Path, help="Spotify's my_spotify_data.zip, or sample/sample_history.json")
@@ -403,7 +494,7 @@ def main() -> None:
     problems = check(tables)
     if problems:
         raise SystemExit("Integrity check failed:\n  " + "\n  ".join(problems))
-    data = export(tables, len(records), len(song_records), sum(bool(r.get("incognito_mode")) for r in song_records))
+    data = export(tables, len(records), len(song_records), sum(bool(r.get("incognito_mode")) for r in song_records), offline_by_day(song_records))
     args.out.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
     t = data["totals"]
     print(f"{t['listens']:,} listens -> {t['songs']:,} stars in {t['artists']:,} constellations, "
