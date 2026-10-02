@@ -400,6 +400,17 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
                                for y in years if date(y, 2, 14) >= at(listens[0]).date()]
     F["quirks"] = Q
 
+    per_song_days = defaultdict(set)
+    for p in listens:
+        per_song_days[p["track_key"]].add(at(p).date())
+    # the longest daily streak of any song (gaps and islands, as in v_song_streaks)
+    best = (0, None, None)
+    for k, ps in per_song_days.items():
+        n, start = longest_streak(ps)
+        if n > best[0]:
+            best = (n, k, start)
+    F["streak"] = {"days": best[0], "song": song_index[best[1]], "from": best[2].isoformat(), "to": (best[2] + timedelta(days=best[0] - 1)).isoformat()}
+
     # her day as a playlist: the song that owns each hour, leaving out my #1 artist so everyone else gets a turn
     F["clock"] = [[h, [song_index[k] for k, _ in Counter(p["track_key"] for p in listens if at(p).hour == h and art(p) != top).most_common(10)]] for h in range(24)]
 
