@@ -53,6 +53,11 @@ def era_of(d: date) -> str:
     return "austin" if d.year < 2026 else "y2026"
 
 
+def clean_title(t: str) -> str:
+    """A song's title without the version: '(with Em Beihold) - Em Beihold Version' and '- Piano Version' are the same song."""
+    return t.split(" (")[0].split(" - ")[0].strip().lower()
+
+
 def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, track: dict, artist_name: dict, desi: set, months: list, offline: dict, song_rows: list) -> dict:
     """The evidence for the tour: every number a chapter quotes, computed here so none is typed by hand."""
     plays = tables["fact_play"]
@@ -85,6 +90,7 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
     # one song, one day
     per_day = Counter((p["played_at"][:10], p["track_key"]) for p in listens)
     (d, k), n = per_day.most_common(1)[0]
+    F_day_key = k
     those = [p for p in listens if p["played_at"].startswith(d) and p["track_key"] == k]
     F["day"] = {"song": song_index[k], "date": d, "count": n, "from": those[0]["played_at"][11:16], "to": those[-1]["played_at"][11:16],
                 "hours": round(sum(p["ms_played"] for p in those) / 3.6e6, 1), "autoplayed": sum(p["reason_start"] == "trackdone" for p in those),
@@ -319,6 +325,35 @@ def facts(tables: dict, listens: list, song_index: dict, artist_index: dict, tra
         F["off_season"] = {"song": song_index[k], "month": m, "times": n}
     # the loop year: how often the next listen is the same song again
     F["loops"] = {y: round(100 * sum(a["track_key"] == b["track_key"] for a, b in zip(ys, ys[1:])) / len(ys), 1) for y in sorted({at(p).year for p in listens}) for ys in [[p for p in listens if at(p).year == y]]}
+    # extra detail for the tour, so every sentence can name real songs
+    top_ps = [p for p in listens if art(p) == top]
+    active = {at(p).date() for p in listens}
+    F["top_detail"] = {"days_nonstop": round(sum(p["ms_played"] for p in top_ps) / 8.64e7, 1), "songs": len({p["track_key"] for p in top_ps}),
+                       "days_share": round(100 * len({at(p).date() for p in top_ps}) / len(active)), "per_day": round(len(top_ps) / len({at(p).date() for p in top_ps})),
+                       "albums": [[album_name[a], n] for a, n in Counter(album_of[p["track_key"]] for p in top_ps).most_common(3)]}
+    F["taylor_album_songs"] = {album_name[a]: [song_index[k] for k, _ in Counter(p["track_key"] for p in listens if album_of[p["track_key"]] == a and art(p) == rival_key).most_common(2)]
+                               for a, _ in Counter(album_of[p["track_key"]] for p in reign).most_common(2)}
+    day_title = clean_title(track[F_day_key]["track_name"])
+    versions = [p for p in listens if clean_title(track[p["track_key"]]["track_name"]) == day_title and art(p) == art(next(q for q in listens if q["track_key"] == F_day_key))]
+    F["day"]["all_versions"] = len(versions)
+    F["day"]["since"] = sum(1 for p in versions if p["played_at"][:10] > F["day"]["date"])
+    night_artist = next(k for k, v in artist_index.items() if v == F["night"][0][0])
+    na = Counter(p["track_key"] for p in listens if art(p) == night_artist)
+    F["night_artist"] = {"first": min(p["played_at"][:10] for p in listens if art(p) == night_artist), "listens": sum(na.values()), "song": song_index[na.most_common(1)[0][0]], "song_times": na.most_common(1)[0][1]}
+    for t in F["trips"]:
+        a0, b0 = date.fromisoformat(t["from"]), date.fromisoformat(t["to"])
+        ps = [p for p in listens if a0 <= at(p).date() <= b0]
+        t["artists"] = [artist_index[a] for a, _ in Counter(art(p) for p in ps).most_common(8)]
+        al, n = Counter(album_of[p["track_key"]] for p in ps).most_common(1)[0]
+        t["album"] = [album_name[al], n]
+    F["fall2024"]["newcomers"] = [[artist_index[a], song_index[Counter(p["track_key"] for p in listens if art(p) == a).most_common(1)[0][0]]] for a in
+                                  [next(k for k, v in artist_index.items() if v == x[0]) for x in F["eras"]["austin_new"]]]
+    F["heartbreak"]["songs"] = [song_index[k] for k, _ in Counter(p["track_key"] for p in listens if p["played_at"].startswith(F["heartbreak"]["month"])).most_common(2)]
+    y_last = max(at(p).year for p in listens)
+    F["year_now"] = {"songs": [song_index[k] for k, _ in Counter(p["track_key"] for p in listens if at(p).year == y_last).most_common(5)]}
+    newbie = next(k for k, v in artist_index.items() if v == F["eras"]["new_2026"][0][0])
+    F["eras"]["new_2026_first"] = min(p["played_at"][:10] for p in listens if art(p) == newbie)
+
     return F
 
 
